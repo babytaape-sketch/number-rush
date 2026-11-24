@@ -168,7 +168,7 @@ def me(authorization: str | None = Header(default=None)):
         "free_spin_seconds": seconds_left
     }
 
-"/api/spin"
+@app.post("/api/spin")
 def spin(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]

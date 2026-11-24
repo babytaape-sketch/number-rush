@@ -138,7 +138,6 @@ def health():
 app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 @app.get("/api/me")
-@app.get("/api/me")
 def me(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     now = int(time.time())

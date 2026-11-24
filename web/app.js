@@ -159,10 +159,7 @@ $("spin").addEventListener("click", async () => {
     } catch (e) {
         $("hint").textContent = e.message;
     } finally {
-        $("spin")
-
-
-disabled = false;
+        $("spin").disabled = false;
     }
 });
 
@@ -185,8 +182,4 @@ document.querySelectorAll(".tab").forEach(btn => {
 refresh().catch(e => {
     $("items").textContent = e.message;
     $("hint").textContent = e.message;
-});.
-refresh().catch(e => {
-$("items").textContent = e.message;
-$("hint").textContent = e.message;
 });

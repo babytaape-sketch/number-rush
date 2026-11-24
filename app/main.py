@@ -277,6 +277,16 @@ def telegram_polling():
 
 @app.on_event("startup")
 def start_telegram_bot():
+    if not BOT_TOKEN or DEV_MODE:
+        print("Telegram bot is disabled")
+        return
+
+    try:
+        telegram_request("deleteWebhook", {})
+        print("Telegram webhook removed")
+    except Exception as exc:
+        print(f"Webhook error: {exc}")
+
     threading.Thread(
         target=telegram_polling,
         daemon=True

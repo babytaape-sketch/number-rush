@@ -58,17 +58,24 @@ function randomPlateFrame(finalPlate) {
 }
 
 async function animatePlate(finalPlate) {
-    const plate = $("plate");
+    const main = document.querySelector(".plate-main");
+    const region = document.querySelector(".region-code");
+    const parts = finalPlate.split(" ");
+    const mainFinal = parts[0];
+    const regionFinal = parts[1] || "77";
+
     const frames = 28;
 
     for (let i = 0; i < frames; i++) {
-        plate.textContent = randomPlateFrame(finalPlate);
+        main.textContent = randomPlateFrame(mainFinal);
+        region.textContent = randomPlateFrame(regionFinal);
 
         const delay = 35 + i * 7;
         await new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    plate.textContent = finalPlate;
+    main.textContent = mainFinal;
+    region.textContent = regionFinal;
 }
 
 let freeSpinTimer = null;

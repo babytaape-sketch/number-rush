@@ -136,6 +136,12 @@ def generate_plate():
     digits = "".join(random.choice("0123456789") for _ in range(3))
     last_letters = "".join(random.choice(letters) for _ in range(2))
 
+    def generate_plate():
+    letters = "АВЕКМНОРСТУХ"
+    first = random.choice(letters)
+    digits = "".join(random.choice("0123456789") for _ in range(3))
+    last = "".join(random.choice(letters) for _ in range(2))
+
     regions = [
         "01", "02", "03", "04", "05", "06", "07", "08", "09",
         "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
@@ -147,7 +153,6 @@ def generate_plate():
         "71", "72", "73", "74", "75", "76", "77", "78", "79", "80",
         "81", "82", "83", "84", "85", "86", "87", "88", "89",
         "90", "91", "92", "94", "95", "96", "97", "98", "99",
-
         "101", "102", "103", "105", "109", "111", "113", "115",
         "116", "118", "121", "122", "123", "124", "125", "126",
         "127", "130", "131", "133", "134", "136", "138", "142",
@@ -161,6 +166,7 @@ def generate_plate():
     ]
 
     region = random.choice(regions)
+    return f"{first}{digits}{last} {region}"
 
     return f"{first_letter}{digits}{last_letters} {region}"
 @app.get("/")

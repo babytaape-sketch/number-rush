@@ -5,6 +5,7 @@ import os
 import random
 import sqlite3
 import time
+import threading
 from pathlib import Path
 from urllib.parse import parse_qsl
 from urllib.request import Request, urlopen
@@ -215,3 +216,68 @@ def buy_listing(listing_id: int, authorization: str | None = Header(default=None
         con.execute("DELETE FROM listings WHERE id=?", (listing_id,))
         con.commit()
     return {"ok": True}
+
+TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
+WEB_APP_URL = "https://number-rush-5jne.onrender.com"
+
+
+def telegram_request(method, payload):
+    request = Request(
+        f"{TELEGRAM_API}/{method}",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urlopen(request, timeout=35) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def telegram_polling():
+    if not BOT_TOKEN or DEV_MODE:
+        return
+
+    offset = 0
+
+    while True:
+        try:
+            result = telegram_request(
+                "getUpdates",
+                {"offset": offset, "timeout": 25}
+            )
+
+            for update in result.get("result", []):
+                offset = update["update_id"] + 1
+                message = update.get("message")
+
+                if not message:
+                    continue
+
+                chat_id = message["chat"]["id"]
+                text = message.get("text", "")
+
+                if text.startswith("/start"):
+                    keyboard = {
+                        "inline_keyboard": [[
+                            {
+                                "text": "🎮 Играть в NUMBER RUSH",
+                                "web_app": {"url": WEB_APP_URL}
+                            }
+                        ]]
+                    }
+
+                    telegram_request("sendMessage", {
+                        "chat_id": chat_id,
+                        "text": "Добро пожаловать в NUMBER RUSH! Готов испытать удачу?",
+                        "reply_markup": keyboard
+                    })
+
+        except Exception:
+            time.sleep(5)
+
+
+@app.on_event("startup")
+def start_telegram_bot():
+    threading.Thread(
+        target=telegram_polling,
+        daemon=True
+    ).start()

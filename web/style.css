@@ -4,10 +4,11 @@
 
 :root {
   color-scheme: light;
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   min-height: 100%;
   background: #f1f4fa !important;
@@ -24,8 +25,8 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 20px;
-  background: #f1f4fa !important;
   color: #202a40 !important;
+  background: #f1f4fa !important;
 }
 
 header {
@@ -82,27 +83,30 @@ h1 span {
   color: #3478f6;
 }
 
+/* Российский регистрационный знак */
 .plate {
   width: 100%;
   max-width: 340px;
   aspect-ratio: 520 / 112;
   margin: 0 auto;
-  padding: 5px 8px;
+  padding: 4px 7px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 5px;
   background: #fff;
   color: #111;
   border: 2px solid #111;
-  border-radius: 4px;
+  border-radius: 5px;
   box-shadow: 0 4px 12px #00000012;
 }
 
 .plate-main {
   flex: 1;
+  min-width: 0;
   text-align: center;
   white-space: nowrap;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(20px, 6vw, 36px);
   line-height: 1;
   font-weight: 900;
@@ -112,12 +116,14 @@ h1 span {
 
 .plate-region {
   width: 48px;
+  height: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 2px;
+  border-left: 1px solid #222;
   color: #111;
 }
 
@@ -147,9 +153,17 @@ h1 span {
   display: block;
 }
 
-.region-flag span:nth-child(1) { background: #fff; }
-.region-flag span:nth-child(2) { background: #0039a6; }
-.region-flag span:nth-child(3) { background: #d52b1e; }
+.region-flag span:nth-child(1) {
+  background: #fff;
+}
+
+.region-flag span:nth-child(2) {
+  background: #0039a6;
+}
+
+.region-flag span:nth-child(3) {
+  background: #d52b1e;
+}
 
 .rarity {
   margin: 20px 0;
@@ -170,6 +184,10 @@ h1 span {
   font-weight: 900;
   box-shadow: 0 7px 18px #3478f640;
   cursor: pointer;
+}
+
+#spin:active {
+  transform: scale(0.98);
 }
 
 #spin span {
@@ -196,6 +214,7 @@ nav {
   color: #65738c;
   font-size: 14px;
   font-weight: 800;
+  cursor: pointer;
 }
 
 .tab.active {
@@ -253,5 +272,9 @@ max-width: 360px {
 
   h1 {
     font-size: 25px;
+  }
+
+  .plate-main {
+    font-size: 21px;
   }
 }

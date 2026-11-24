@@ -1,4 +1,7 @@
 const tg = window.Telegram?.WebApp;
+console.log("Telegram theme:", tg?.colorScheme);
+console.log("Background:", tg?.backgroundColor);
+console.log("Version:", tg?.version);
 if (tg) {
     tg.ready();
     tg.expand();

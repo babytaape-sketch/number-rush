@@ -4,11 +4,48 @@ console.log("Telegram theme:", tg?.colorScheme);
 console.log("Background:", tg?.backgroundColor);
 console.log("Version:", tg?.version);
 
+function forceLightTheme() {
+    document.documentElement.style.setProperty(
+        "color-scheme", "light", "important"
+    );
+
+    document.documentElement.style.setProperty(
+        "background", "#f3f6fc", "important"
+    );
+
+    document.body.style.setProperty(
+        "background", "#f3f6fc", "important"
+    );
+
+    document.body.style.setProperty(
+        "color", "#18243a", "important"
+    );
+
+    const app = document.querySelector(".app");
+
+    if (app) {
+        app.style.setProperty(
+            "background", "#f3f6fc", "important"
+        );
+        app.style.setProperty(
+            "color", "#18243a", "important"
+        );
+    }
+
+    if (tg) {
+        tg.setHeaderColor("#f3f6fc");
+        tg.setBackgroundColor("#f3f6fc");
+    }
+}
+
 if (tg) {
     tg.ready();
     tg.expand();
-    tg.setHeaderColor("#f2f4f8");
-    tg.setBackgroundColor("#f2f4f8");
+    forceLightTheme();
+
+    tg.onEvent("themeChanged", forceLightTheme);
+} else {
+    forceLightTheme();
 }
 
 const initData = tg?.initData || "";

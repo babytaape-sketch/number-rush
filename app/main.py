@@ -139,11 +139,36 @@ def health():
 app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 @app.get("/api/me")
+@app.get("/api/me")
 def me(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
+    now = int(time.time())
+
     with db() as con:
-        count = con.execute("SELECT COUNT(*) n FROM plates WHERE owner_id=?", (user["user_id"],)).fetchone()["n"]
-    return {"id": user["user_id"], "username": user["username"], "coins": user["coins"], "spins": user["spins"], "collection_count": count}
+        count = con.execute(
+            "SELECT COUNT(*) n FROM plates WHERE owner_id=?",
+            (user["user_id"],)
+        ).fetchone()["n"]
+
+        row = con.execute(
+            "SELECT last_free_spin_at FROM users WHERE user_id=?",
+            (user["user_id"],)
+        ).fetchone()
+
+    seconds_left = max(
+        0,
+        86400 - (now - row["last_free_spin_at"])
+    )
+
+    return {
+        "id": user["user_id"],
+        "username": user["username"],
+        "coins": user["coins"],
+        "spins": user["spins"],
+        "collection_count": count,
+        "free_spin_available": seconds_left == 0,
+        "free_spin_seconds": seconds_left
+    }
 
 @app.post("/api/spin")
 @app.post("/api/spin")

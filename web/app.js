@@ -87,7 +87,7 @@ function updateFreeSpinTimer() {
 }
 async function refresh() {
 const me = await api("/api/me");
-    freeSpinSeconds = me.free_spin_seconds || 0;
+    freeSpinSeconds = Number(me.free_spin_seconds ?? 0);
 
 if (freeSpinTimer) {
     clearInterval(freeSpinTimer);

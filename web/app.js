@@ -1,12 +1,14 @@
 const tg = window.Telegram?.WebApp;
+
 console.log("Telegram theme:", tg?.colorScheme);
 console.log("Background:", tg?.backgroundColor);
 console.log("Version:", tg?.version);
+
 if (tg) {
     tg.ready();
     tg.expand();
     tg.setHeaderColor("#f2f4f8");
-tg.setBackgroundColor("#f2f4f8");
+    tg.setBackgroundColor("#f2f4f8");
 }
 
 const initData = tg?.initData || "";
@@ -152,7 +154,7 @@ async function refresh() {
 
 $("spin").addEventListener("click", async () => {
     $("spin").disabled = true;
-    $("hint").textContent = "🎰 Крутим номер...";
+    $(").textContent = "🎰 Крутим номер...";
 
     try {
         const result = await api("/api/spin", {
@@ -194,4 +196,4 @@ document.querySelectorAll(".tab").forEach(btn => {
 refresh().catch(e => {
     $("items").textContent = e.message;
     $("hint").textContent = e.message;
-});
+});"hint

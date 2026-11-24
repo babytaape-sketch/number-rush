@@ -55,9 +55,35 @@ for (let i = 0; i < frames; i++) {
 
 plate.textContent = finalPlate;
 }
+let freeSpinTimer = null;
+let freeSpinSeconds = 0;
 
+function updateFreeSpinTimer() {
+    if (freeSpinSeconds <= 0) {
+        $("hint").textContent = "🎁 Бесплатный спин доступен!";
+        return;
+    }
+
+    const hours = Math.floor(freeSpinSeconds / 3600);
+    const minutes = Math.floor((freeSpinSeconds % 3600) / 60);
+    const seconds = freeSpinSeconds % 60;
+
+    $("hint").textContent =
+        `🎁 Бесплатный спин через ${hours}ч ${minutes}м ${seconds}с`;
+
+    freeSpinSeconds--;
+}
 async function refresh() {
 const me = await api("/api/me");
+    freeSpinSeconds = me.free_spin_seconds || 0;
+
+if (freeSpinTimer) {
+    clearInterval(freeSpinTimer);
+}
+
+updateFreeSpinTimer();
+
+freeSpinTimer = setInterval(updateFreeSpinTimer, 1000);
     
 $("coins").textContent = me.coins.toLocaleString("ru-RU");
 $("spins").textContent = me.spins;

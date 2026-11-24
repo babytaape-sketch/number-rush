@@ -3,44 +3,47 @@
 }
 
 :root {
-  color-scheme: light;
-  font-family: Arial, Helvetica, sans-serif;
+  color-scheme: light !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: #f3f6fc !important;
+  color: #18243a;
 }
 
-html,
+html {
+  color-scheme: light !important;
+  background: #f3f6fc !important;
+}
+
 body {
   margin: 0;
-  min-height: 100%;
-  background: #f1f4fa !important;
-  color: #202a40;
-}
-
-body {
   min-height: 100vh;
-  padding: 18px 12px 30px;
+  padding: 18px 14px 32px;
+  background: #f3f6fc !important;
+  color: #18243a !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
 
 .app {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: 20px;
-  color: #202a40 !important;
-  background: #f1f4fa !important;
+  padding: 18px;
+  background: #f3f6fc !important;
+  color: #18243a !important;
 }
 
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  justify-content: space-between;
+  margin-bottom: 26px;
 }
 
 .brand {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: #172642;
+  font-size: 23px;
+  font-weight: 950;
+  letter-spacing: -1px;
+  color: #17243c;
 }
 
 .brand span {
@@ -48,42 +51,47 @@ header {
 }
 
 .wallet {
-  padding: 10px 15px;
-  border-radius: 14px;
+  padding: 11px 16px;
+  border: 1px solid #e6ebf4;
+  border-radius: 15px;
   background: #fff;
   color: #263653;
-  box-shadow: 0 4px 15px #253c6410;
+  box-shadow: 0 5px 18px #243b6410;
+  font-weight: 800;
 }
 
 .hero {
-  padding: 25px 17px;
-  border-radius: 25px;
+  padding: 27px 18px 23px;
+  border: 1px solid #e9edf5;
+  border-radius: 27px;
   background: #fff;
   text-align: center;
-  box-shadow: 0 8px 30px #253c6412;
+  box-shadow: 0 12px 35px #243b6410;
 }
 
 .eyebrow {
   color: #8492aa;
   font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2px;
+  font-weight: 900;
+  letter-spacing: 2.2px;
 }
 
 h1 {
-  margin: 13px 0 25px;
-  color: #1c2941;
-  font-size: 29px;
-  line-height: 1.2;
+  margin: 15px 0 27px;
+  color: #17243c;
+  font-size: clamp(25px, 7vw, 32px);
+  line-height: 1.13;
   font-weight: 900;
+  letter-spacing: -1px;
 }
 
 h1 span {
   display: block;
+  margin-top: 4px;
   color: #3478f6;
 }
 
-/* Российский регистрационный знак */
+/* Регистрационный знак: пропорции 520 × 112 */
 .plate {
   width: 100%;
   max-width: 340px;
@@ -94,11 +102,12 @@ h1 span {
   align-items: center;
   justify-content: space-between;
   gap: 5px;
+  overflow: hidden;
   background: #fff;
-  color: #111;
+  color: #000;
   border: 2px solid #111;
   border-radius: 5px;
-  box-shadow: 0 4px 12px #00000012;
+  box-shadow: 0 5px 13px #00000018;
 }
 
 .plate-main {
@@ -106,12 +115,12 @@ h1 span {
   min-width: 0;
   text-align: center;
   white-space: nowrap;
+  color: #000;
   font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(20px, 6vw, 36px);
   line-height: 1;
   font-weight: 900;
   letter-spacing: 1px;
-  color: #111;
 }
 
 .plate-region {
@@ -124,19 +133,21 @@ h1 span {
   justify-content: center;
   gap: 2px;
   border-left: 1px solid #222;
-  color: #111;
+  color: #000;
 }
 
 .region-code {
+  font-family: Arial, sans-serif;
   font-size: 19px;
   line-height: 1;
   font-weight: 900;
 }
 
 .region-country {
+  font-family: Arial, sans-serif;
   font-size: 8px;
   line-height: 1;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .region-flag {
@@ -166,28 +177,37 @@ h1 span {
 }
 
 .rarity {
-  margin: 20px 0;
-  color: #8a96ab;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1px;
+  margin: 22px 0 18px;
+  color: #77859d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.3px;
 }
 
 #spin {
   width: 100%;
-  min-height: 55px;
+  min-height: 57px;
+  padding: 0 18px;
   border: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #3478f6, #2456d9);
+  border-radius: 17px;
+  background: linear-gradient(135deg, #4385ff, #2458d9);
   color: #fff;
-  font-size: 16px;
+  font-family: inherit;
+  font-size: 15px;
   font-weight: 900;
-  box-shadow: 0 7px 18px #3478f640;
+  letter-spacing: .5px;
+  box-shadow: 0 8px 20px #3478f640;
   cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
 }
 
 #spin:active {
-  transform: scale(0.98);
+  transform: scale(.98);
+}
+
+#spin:disabled {
+  opacity: .6;
+  cursor: wait;
 }
 
 #spin span {
@@ -195,8 +215,9 @@ h1 span {
 }
 
 .hint {
-  color: #8995a9;
+  color: #8794a9;
   font-size: 13px;
+  line-height: 1.5;
 }
 
 nav {
@@ -207,37 +228,85 @@ nav {
 
 .tab {
   flex: 1;
-  padding: 14px 8px;
-  border: 0;
-  border-radius: 14px;
-  background: #e3e9f3;
+  min-height: 48px;
+  padding: 12px 8px;
+  border: 1px solid #e5eaf3;
+  border-radius: 15px;
+  background: #e8edf6;
   color: #65738c;
+  font-family: inherit;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 850;
   cursor: pointer;
 }
 
 .tab.active {
+  border-color: #3478f6;
   background: #3478f6;
   color: #fff;
-}
-
-.panel {
-  padding: 20px;
-  border-radius: 20px;
+  box-shadow: 0 5px 14px #3478f630;
+  .panel {
+  padding: 21px;
+  border: 1px solid #e9edf5;
+  border-radius: 22px;
   background: #fff;
-  box-shadow: 0 5px 20px #253c6410;
+  box-shadow: 0 7px 24px #243b640c;
 }
 
 .panel h2 {
-  margin: 0 0 15px;
-  color: #25334c;
+  margin: 0 0 17px;
+  color: #1c2b45;
   font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -.3px;
 }
 
 .items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   color: #8290a7;
   font-size: 14px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid #e9edf5;
+  border-radius: 14px;
+  background: #f8faff;
+  color: #263653;
+}
+
+.item b {
+  display: block;
+  color: #1c2b45;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.item small {
+  display: block;
+  margin-top: 4px;
+  color: #8996aa;
+  font-size: 11px;
+}
+
+.item strong {
+  color: #3478f6;
+  font-size: 13px;
+}
+
+.empty {
+  padding: 18px 12px;
+  border-radius: 14px;
+  background: #f7f9fd;
+  color: #8794a9;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .hidden {
@@ -246,10 +315,10 @@ nav {
 
 footer {
   padding: 25px 0 5px;
+  color: #9aa6b9;
   text-align: center;
-  color: #a1aabd;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 2px;
 }
 
@@ -262,19 +331,23 @@ button {
 }
 
 max-width: 360px {
+  body {
+    padding: 12px 9px 24px;
+  }
+
   .app {
-    padding: 12px;
+    padding: 10px;
   }
 
   .hero {
-    padding: 22px 12px;
-  }
-
-  h1 {
-    font-size: 25px;
+    padding: 23px 12px 19px;
   }
 
   .plate-main {
     font-size: 21px;
   }
-}
+
+  .plate-region {
+    width: 43px;
+  }
+}}

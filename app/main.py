@@ -146,23 +146,80 @@ def me(authorization: str | None = Header(default=None)):
     return {"id": user["user_id"], "username": user["username"], "coins": user["coins"], "spins": user["spins"], "collection_count": count}
 
 @app.post("/api/spin")
+@app.post("/api/spin")
 def spin(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]
+    now = int(time.time())
+
     with db() as con:
         con.execute("BEGIN IMMEDIATE")
-        row = con.execute("SELECT coins, spins FROM users WHERE user_id=?", (uid,)).fetchone()
-        if row["spins"] <= 0:
+
+        row = con.execute(
+            "SELECT coins, spins, last_free_spin_at FROM users WHERE user_id=?",
+            (uid,)
+        ).fetchone()
+
+        free_spin_ready = (
+            row["last_free_spin_at"] == 0
+            or now - row["last_free_spin_at"] >= 86400
+        )
+
+        used_free_spin = False
+
+        if free_spin_ready:
+            used_free_spin = True
+            con.execute(
+                "UPDATE users SET last_free_spin_at=? WHERE user_id=?",
+                (now, uid)
+            )
+        elif row["spins"] > 0:
+            con.execute(
+                "UPDATE users SET spins=spins-1 WHERE user_id=?",
+                (uid,)
+            )
+        else:
             con.rollback()
-            raise HTTPException(400, "No spins left. Come back later!")
+            raise HTTPException(400, "No spins left. Free spin is not ready yet.")
+
         rarity = weighted_rarity()
         reward = next(r for n, c, r in RARITIES if n == rarity)
         number = generate_plate()
-        con.execute("UPDATE users SET spins=spins-1, coins=coins+? WHERE user_id=?", (reward, uid))
-        cur = con.execute("INSERT INTO plates(owner_id, number, rarity, created_at) VALUES(?,?,?,?)", (uid, number, rarity, int(time.time())))
+
+        con.execute(
+            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            (reward, uid)
+        )
+
+        cur = con.execute(
+            "INSERT INTO plates(owner_id, number, rarity, created_at) VALUES(?,?,?,?)",
+            (uid, number, rarity, now)
+        )
+
         plate_id = cur.lastrowid
-        updated = con.execute("SELECT coins, spins FROM users WHERE user_id=?", (uid,)).fetchone()
+
+        updated = con.execute(
+            "SELECT coins, spins, last_free_spin_at FROM users WHERE user_id=?",
+            (uid,)
+        ).fetchone()
+
         con.commit()
+
+    seconds_left = max(0, 86400 - (now - updated["last_free_spin_at"]))
+
+    return {
+        "plate": {
+            "id": plate_id,
+            "number": number,
+            "rarity": rarity
+        },
+        "reward": reward,
+        "coins": updated["coins"],
+        "spins": updated["spins"],
+        "used_free_spin": used_free_spin,
+        "free_spin_available": seconds_left == 0,
+        "free_spin_seconds": seconds_left
+    }
     return {"plate": {"id": plate_id, "number": number, "rarity": rarity}, "reward": reward, "coins": updated["coins"], "spins": updated["spins"]}
 
 @app.get("/api/collection")

@@ -51,7 +51,6 @@ def init_db():
     last_free_spin_at INTEGER NOT NULL DEFAULT 0
 );
 
-        );
         CREATE TABLE IF NOT EXISTS plates (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             owner_id TEXT NOT NULL,

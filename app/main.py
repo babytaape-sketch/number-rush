@@ -168,8 +168,7 @@ def me(authorization: str | None = Header(default=None)):
         "free_spin_seconds": seconds_left
     }
 
-@app.post("/api/spin")
-@app.post("/api/spin")
+"/api/spin"
 def spin(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]
@@ -189,6 +188,7 @@ def spin(authorization: str | None = Header(default=None)):
         )
 
         used_free_spin = False
+        used_paid_spin = False
 
         if free_spin_ready:
             used_free_spin = True
@@ -196,14 +196,26 @@ def spin(authorization: str | None = Header(default=None)):
                 "UPDATE users SET last_free_spin_at=? WHERE user_id=?",
                 (now, uid)
             )
+
         elif row["spins"] > 0:
             con.execute(
                 "UPDATE users SET spins=spins-1 WHERE user_id=?",
                 (uid,)
             )
+
+        elif row["coins"] >= 100:
+            used_paid_spin = True
+            con.execute(
+                "UPDATE users SET coins=coins-100 WHERE user_id=?",
+                (uid,)
+            )
+
         else:
             con.rollback()
-            raise HTTPException(400, "No spins left. Free spin is not ready yet.")
+            raise HTTPException(
+                400,
+                "Not enough coins. One spin costs 100 coins."
+            )
 
         rarity = weighted_rarity()
         reward = next(r for n, c, r in RARITIES if n == rarity)
@@ -228,7 +240,10 @@ def spin(authorization: str | None = Header(default=None)):
 
         con.commit()
 
-    seconds_left = max(0, 86400 - (now - updated["last_free_spin_at"]))
+    seconds_left = max(
+        0,
+        86400 - (now - updated["last_free_spin_at"])
+    )
 
     return {
         "plate": {
@@ -240,6 +255,7 @@ def spin(authorization: str | None = Header(default=None)):
         "coins": updated["coins"],
         "spins": updated["spins"],
         "used_free_spin": used_free_spin,
+        "used_paid_spin": used_paid_spin,
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left
     }

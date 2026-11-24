@@ -58,8 +58,7 @@ plate.textContent = finalPlate;
 
 async function refresh() {
 const me = await api("/api/me");
-    state.freeSpinAvailable = me.free_spin_available;
-state.freeSpinSeconds = me.free_spin_seconds;
+    
 $("coins").textContent = me.coins.toLocaleString("ru-RU");
 $("spins").textContent = me.spins;
 

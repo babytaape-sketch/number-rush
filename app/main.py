@@ -43,11 +43,14 @@ def init_db():
     with db() as con:
         con.executescript("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id TEXT PRIMARY KEY,
-            username TEXT NOT NULL DEFAULT 'Player',
-            coins INTEGER NOT NULL DEFAULT 100,
-            spins INTEGER NOT NULL DEFAULT 5,
-            created_at INTEGER NOT NULL
+    user_id TEXT PRIMARY KEY,
+    username TEXT NOT NULL DEFAULT 'Player',
+    coins INTEGER NOT NULL DEFAULT 100,
+    spins INTEGER NOT NULL DEFAULT 5,
+    created_at INTEGER NOT NULL,
+    last_free_spin_at INTEGER NOT NULL DEFAULT 0
+);
+
         );
         CREATE TABLE IF NOT EXISTS plates (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,6 +68,15 @@ def init_db():
         );
         """)
 init_db()
+with db() as con:
+    columns = [row["name"] for row in con.execute(
+        "PRAGMA table_info(users)"
+    ).fetchall()]
+
+    if "last_free_spin_at" not in columns:
+        con.execute(
+            "ALTER TABLE users ADD COLUMN last_free_spin_at INTEGER NOT NULL DEFAULT 0"
+        )
 
 def validate_init_data(raw: str):
     if DEV_MODE:

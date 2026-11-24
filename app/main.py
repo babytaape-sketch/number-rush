@@ -7,7 +7,7 @@ import sqlite3
 import time
 from pathlib import Path
 from urllib.parse import parse_qsl
-
+from urllib.request import Request, urlopen
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse

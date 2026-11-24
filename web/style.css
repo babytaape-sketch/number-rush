@@ -83,3 +83,11 @@ body {
 .region-flag span:nth-child(1) { background: #fff; }
 .region-flag span:nth-child(2) { background: #0039a6; }
 .region-flag span:nth-child(3) { background: #d52b1e; }
+
+html,
+body,
+.app {
+  background-color: #f2f4f8 !important;
+  color: #202536 !important;
+  min-height: 100vh;
+}

@@ -1,97 +1,94 @@
-* {
-  box-sizing: border-box;
-}
-
+/* NUMBER RUSH — fixed light theme
+   Replace web/style.css with this file. No server or game logic changes. */
 :root {
   color-scheme: light !important;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  background: #f3f6fc !important;
-  color: #18243a;
+  background-color: #edf3ff !important;
+  color: #17243c !important;
+  supported-color-schemes: light;
 }
-
+* { box-sizing: border-box; }
 html {
+  min-height: 100%;
   color-scheme: light !important;
-  background: #f3f6fc !important;
+  background-color: #edf3ff !important;
 }
-
 body {
-  margin: 0;
   min-height: 100vh;
-  padding: 18px 14px 32px;
-  background: #f3f6fc !important;
-  color: #18243a !important;
+  margin: 0;
+  padding: 16px 12px 30px;
+  color: #17243c !important;
+  background-color: #edf3ff !important;
+  /* Decorative background image is embedded: no extra file is needed. */
+  background-image:
+    radial-gradient(ellipse at 12% 8%, rgba(88,145,255,.18), transparent 34%),
+    radial-gradient(ellipse at 90% 35%, rgba(105,190,255,.16), transparent 32%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='none' stroke='%239bb8e8' stroke-opacity='.22' stroke-width='1.2'%3E%3Cpath d='M-30 55L55 -30M-10 105L105 -10M40 155L155 40M90 205L205 90M140 255L255 140'/%3E%3Ccircle cx='190' cy='35' r='19'/%3E%3Ccircle cx='190' cy='35' r='8'/%3E%3Ccircle cx='35' cy='190' r='13'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat, no-repeat, repeat !important;
+  background-size: auto, auto, 240px 240px !important;
+  background-attachment: fixed !important;
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
-
 .app {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
-  padding: 18px;
-  background: #f3f6fc !important;
-  color: #18243a !important;
+  padding: 16px;
+  color: #17243c !important;
+  background: transparent !important;
 }
-
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 26px;
+  gap: 12px;
+  margin: 2px 2px 22px;
 }
-
 .brand {
+  color: #17243c !important;
   font-size: 23px;
   font-weight: 950;
   letter-spacing: -1px;
-  color: #17243c;
 }
-
-.brand span {
-  color: #3478f6;
-}
-
+.brand span { color: #3478f6 !important; }
 .wallet {
-  padding: 11px 16px;
-  border: 1px solid #e6ebf4;
+  padding: 10px 15px;
+  border: 1px solid #e2eaf7;
   border-radius: 15px;
-  background: #fff;
-  color: #263653;
-  box-shadow: 0 5px 18px #243b6410;
+  background: #fff !important;
+  color: #263653 !important;
+  box-shadow: 0 5px 18px rgba(31,58,100,.09);
   font-weight: 800;
 }
-
 .hero {
-  padding: 27px 18px 23px;
-  border: 1px solid #e9edf5;
+  padding: 27px 18px 22px;
+  border: 1px solid #e4ebf7;
   border-radius: 27px;
-  background: #fff;
+  background: #fff !important;
+  color: #17243c !important;
   text-align: center;
-  box-shadow: 0 12px 35px #243b6410;
+  box-shadow: 0 14px 38px rgba(31,58,100,.11);
 }
-
 .eyebrow {
-  color: #8492aa;
+  color: #8292ad !important;
   font-size: 10px;
   font-weight: 900;
-  letter-spacing: 2.2px;
+  letter-spacing: 2px;
 }
-
 h1 {
-  margin: 15px 0 27px;
-  color: #17243c;
+  margin: 15px 0 26px;
+  color: #17243c !important;
   font-size: clamp(25px, 7vw, 32px);
   line-height: 1.13;
   font-weight: 900;
   letter-spacing: -1px;
 }
-
 h1 span {
   display: block;
   margin-top: 4px;
-  color: #3478f6;
+  color: #3478f6 !important;
 }
-
-/* Регистрационный знак: пропорции 520 × 112 */
+/* Plate display styled to resemble Russian type-1 registration plate. */
 .plate {
   width: 100%;
   max-width: 340px;
@@ -103,26 +100,24 @@ h1 span {
   justify-content: space-between;
   gap: 5px;
   overflow: hidden;
-  background: #fff;
-  color: #000;
-  border: 2px solid #111;
+  border: 2px solid #111 !important;
   border-radius: 5px;
-  box-shadow: 0 5px 13px #00000018;
+  background: #fff !important;
+  color: #000 !important;
+  box-shadow: 0 5px 13px rgba(0,0,0,.15);
 }
-
 .plate-main {
   flex: 1;
   min-width: 0;
+  color: #000 !important;
   text-align: center;
   white-space: nowrap;
-  color: #000;
   font-family: Arial, Helvetica, sans-serif;
   font-size: clamp(20px, 6vw, 36px);
   line-height: 1;
   font-weight: 900;
   letter-spacing: 1px;
 }
-
 .plate-region {
   width: 48px;
   height: 100%;
@@ -133,23 +128,16 @@ h1 span {
   justify-content: center;
   gap: 2px;
   border-left: 1px solid #222;
-  color: #000;
+  color: #000 !important;
 }
-
 .region-code {
-  font-family: Arial, sans-serif;
-  font-size: 19px;
-  line-height: 1;
-  font-weight: 900;
+  color: #000 !important;
+  font: 900 19px/1 Arial, sans-serif;
 }
-
 .region-country {
-  font-family: Arial, sans-serif;
-  font-size: 8px;
-  line-height: 1;
-  font-weight: 900;
+  color: #000 !important;
+  font: 900 8px/1 Arial, sans-serif;
 }
-
 .region-flag {
   width: 23px;
   height: 12px;
@@ -158,196 +146,138 @@ h1 span {
   overflow: hidden;
   border: 1px solid #ddd;
 }
-
-.region-flag span {
-  flex: 1;
-  display: block;
-}
-
-.region-flag span:nth-child(1) {
-  background: #fff;
-}
-
-.region-flag span:nth-child(2) {
-  background: #0039a6;
-}
-
-.region-flag span:nth-child(3) {
-  background: #d52b1e;
-}
-
+.region-flag span { display: block; flex: 1; }
+.region-flag span:nth-child(1) { background: #fff !important; }
+.region-flag span:nth-child(2) { background: #0039a6 !important; }
+.region-flag span:nth-child(3) { background: #d52b1e !important; }
 .rarity {
-  margin: 22px 0 18px;
-  color: #77859d;
+  margin: 21px 0 17px;
+  color: #74839d !important;
   font-size: 11px;
   font-weight: 900;
-  letter-spacing: 1.3px;
+  letter-spacing: 1.2px;
 }
-
 #spin {
   width: 100%;
-  min-height: 57px;
+  min-height: 56px;
   padding: 0 18px;
   border: 0;
-  border-radius: 17px;
-  background: linear-gradient(135deg, #4385ff, #2458d9);
-  color: #fff;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #4385ff, #2458d9) !important;
+  color: #fff !important;
   font-family: inherit;
   font-size: 15px;
   font-weight: 900;
   letter-spacing: .5px;
-  box-shadow: 0 8px 20px #3478f640;
+  box-shadow: 0 8px 20px rgba(52,120,246,.30);
   cursor: pointer;
   transition: transform .15s ease, opacity .15s ease;
 }
-
-#spin:active {
-  transform: scale(.98);
-}
-
-#spin:disabled {
-  opacity: .6;
-  cursor: wait;
-}
-
-#spin span {
-  margin-left: 8px;
-}
-
+#spin:active { transform: scale(.985); }
+#spin:disabled { opacity: .6; cursor: wait; }
+#spin span { margin-left: 8px; }
 .hint {
-  color: #8794a9;
+  color: #8290a7 !important;
   font-size: 13px;
   line-height: 1.5;
 }
-
 nav {
   display: flex;
   gap: 10px;
-  margin: 22px 0 15px;
+  margin: 21px 0 14px;
 }
-
 .tab {
   flex: 1;
-  min-height: 48px;
+  min-height: 47px;
   padding: 12px 8px;
-  border: 1px solid #e5eaf3;
-  border-radius: 15px;
-  background: #e8edf6;
-  color: #65738c;
+  border: 1px solid #e2eaf6;
+  border-radius: 14px;
+  background: #fff !important;
+  color: #61718c !important;
   font-family: inherit;
   font-size: 14px;
   font-weight: 850;
   cursor: pointer;
 }
-
 .tab.active {
-  border-color: #3478f6;
-  background: #3478f6;
-  color: #fff;
-  box-shadow: 0 5px 14px #3478f630;
-  .panel {
-  padding: 21px;
-  border: 1px solid #e9edf5;
-  border-radius: 22px;
-  background: #fff;
-  box-shadow: 0 7px 24px #243b640c;
+  border-color: #3478f6 !important;
+  background: #3478f6 !important;
+  color: #fff !important;
+  box-shadow: 0 5px 14px rgba(52,120,246,.24);
 }
-
+.panel {
+  padding: 20px;
+  border: 1px solid #e4ebf7;
+  border-radius: 21px;
+  background: #fff !important;
+  color: #17243c !important;
+  box-shadow: 0 8px 25px rgba(31,58,100,.08);
+}
 .panel h2 {
-  margin: 0 0 17px;
-  color: #1c2b45;
+  margin: 0 0 16px;
+  color: #1c2b45 !important;
   font-size: 19px;
   font-weight: 900;
-  letter-spacing: -.3px;
 }
-
 .items {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: #8290a7;
+  color: #8290a7 !important;
   font-size: 14px;
 }
-
 .item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 13px 14px;
-  border: 1px solid #e9edf5;
+  border: 1px solid #e7edf7;
   border-radius: 14px;
-  background: #f8faff;
-  color: #263653;
+  background: #f7faff !important;
+  color: #263653 !important;
 }
-
 .item b {
   display: block;
-  color: #1c2b45;
+  color: #1c2b45 !important;
   font-size: 16px;
   font-weight: 900;
 }
-
 .item small {
   display: block;
   margin-top: 4px;
-  color: #8996aa;
+  color: #8996aa !important;
   font-size: 11px;
 }
-
 .item strong {
-  color: #3478f6;
+  color: #3478f6 !important;
   font-size: 13px;
 }
-
 .empty {
   padding: 18px 12px;
   border-radius: 14px;
-  background: #f7f9fd;
-  color: #8794a9;
+  background: #f5f8fe !important;
+  color: #8794a9 !important;
   text-align: center;
   line-height: 1.5;
 }
-
-.hidden {
-  display: none !important;
-}
-
+.hidden { display: none !important; }
 footer {
-  padding: 25px 0 5px;
-  color: #9aa6b9;
+  padding: 24px 0 5px;
+  color: #8796ae !important;
   text-align: center;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: 2px;
 }
-
-footer span {
-  color: #3478f6;
+footer span { color: #3478f6 !important; }
+button { font-family: inherit; }
+@media (max-width: 360px) {
+  body { padding: 11px 8px 22px; }
+  .app { padding: 9px; }
+  .hero { padding: 22px 12px 18px; }
+  .plate-main { font-size: 21px; }
+  .plate-region { width: 43px; }
 }
-
-button {
-  font-family: inherit;
-}
-
-max-width: 360px {
-  body {
-    padding: 12px 9px 24px;
-  }
-
-  .app {
-    padding: 10px;
-  }
-
-  .hero {
-    padding: 23px 12px 19px;
-  }
-
-  .plate-main {
-    font-size: 21px;
-  }
-
-  .plate-region {
-    width: 43px;
-  }
-}}
+/* Keep native form controls light even inside a dark Telegram client. */
+input, button, select, textarea { color-scheme: light !important; }

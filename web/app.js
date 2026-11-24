@@ -2,6 +2,8 @@ const tg = window.Telegram?.WebApp;
 if (tg) {
     tg.ready();
     tg.expand();
+    tg.setHeaderColor("#f2f4f8");
+tg.setBackgroundColor("#f2f4f8");
 }
 
 const initData = tg?.initData || "";

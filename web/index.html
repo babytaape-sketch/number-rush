@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NUMBER RUSH</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header><div class="brand">NUMBER<span>RUSH</span></div><div class="wallet">🪙 <b id="coins">—</b></div></header>
+    <section class="hero">
+      <div class="eyebrow">YOUR NEXT RARE DROP</div>
+      <h1>Сгенерируй<br><span>свой номер</span></h1>
+      <div class="plate" id="plate">NR 777</div>
+      <div class="rarity" id="rarity">ГОТОВ К ЗАПУСКУ</div>
+      <button id="spin">ГЕНЕРИРОВАТЬ <span>↗</span></button>
+      <p class="hint" id="hint">У тебя <b id="spins">—</b> попыток</p>
+    </section>
+    <nav><button class="tab active" data-tab="collection">Коллекция</button><button class="tab" data-tab="market">Рынок</button></nav>
+    <section id="collection" class="panel"><h2>Мои номера</h2><div id="items" class="items">Загрузка...</div></section>
+    <section id="market" class="panel hidden"><h2>Рынок игроков</h2><div id="market-items" class="items">Загрузка...</div></section>
+    <footer>NUMBER RUSH <span>•</span> DEMO BUILD</footer>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

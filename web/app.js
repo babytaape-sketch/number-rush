@@ -59,10 +59,22 @@ let freeSpinTimer = null;
 let freeSpinSeconds = 0;
 
 function updateFreeSpinTimer() {
+    const status = $("free-spin-status");
+
     if (freeSpinSeconds <= 0) {
-        $("hint").textContent = "🎁 Бесплатный спин доступен!";
+        status.textContent = "🎁 Бесплатный спин доступен!";
         return;
     }
+
+    const hours = Math.floor(freeSpinSeconds / 3600);
+    const minutes = Math.floor((freeSpinSeconds % 3600) / 60);
+    const seconds = freeSpinSeconds % 60;
+
+    status.textContent =
+        `🎁 Бесплатный спин через ${hours}ч ${minutes}м ${seconds}с`;
+
+    freeSpinSeconds--;
+}
 
     const hours = Math.floor(freeSpinSeconds / 3600);
     const minutes = Math.floor((freeSpinSeconds % 3600) / 60);

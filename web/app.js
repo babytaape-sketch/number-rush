@@ -1,3 +1,4 @@
+
 const tg = window.Telegram?.WebApp;
 
 if (tg) {
@@ -69,6 +70,8 @@ function setRarityEffect(rarity) {
     const rarityLabel = $("rarity");
     const color = rarityColors[rarity] || rarityColors.Common;
 
+    if (!plate || !rarityLabel) return;
+
     plate.style.setProperty("--rarity-color", color);
     plate.dataset.rarity = rarity;
 
@@ -80,7 +83,19 @@ function setRarityEffect(rarity) {
     rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
 }
 
+function renderTags(tags) {
+    if (!Array.isArray(tags) || tags.length === 0) {
+        return "";
+    }
 
+    return `
+        <div class="plate-tags">
+            ${tags.map(tag => `
+                <span class="plate-tag">${escapeHtml(tag)}</span>
+            `).join("")}
+        </div>
+    `;
+}
 
 function randomSymbol(finalChar) {
     const alphabet = plateLetters.includes(finalChar)
@@ -207,8 +222,6 @@ async function animatePlate(finalPlate, rarity) {
 
     const slots = [];
 
-    // Keep every character in a compact, fixed-width cell.
-    // This prevents flexbox from spreading characters across the whole plate.
     main.style.justifyContent = "center";
     main.style.gap = "0.02em";
     region.style.justifyContent = "center";
@@ -225,14 +238,14 @@ async function animatePlate(finalPlate, rarity) {
     }
 
     for (const char of regionFinal) {
-    const cell = document.createElement("span");
-    cell.className = "slot-cell";
-    cell.style.flex = "1 1 0";
-    cell.style.width = "0";
-    region.appendChild(cell);
+        const cell = document.createElement("span");
+        cell.className = "slot-cell";
+        cell.style.flex = "1 1 0";
+        cell.style.width = "0";
+        region.appendChild(cell);
 
-    slots.push({ element: cell, char });
-}
+        slots.push({ element: cell, char });
+    }
 
     const rare = rarity === "Legendary" || rarity === "Mythic";
     const epic = rarity === "Epic";
@@ -250,16 +263,15 @@ async function animatePlate(finalPlate, rarity) {
         })
     );
 
-
-
-    if (typeof setRarityEffect === "function") {
-        setRarityEffect(rarity);
-    }
+    setRarityEffect(rarity);
 
     await sleep(500);
 }
 
 
+// =========================================================
+// БЕСПЛАТНЫЕ ПРОКРУТКИ
+// =========================================================
 
 let freeSpinTimer = null;
 let freeSpinSeconds = 0;
@@ -284,6 +296,11 @@ function updateFreeSpinTimer() {
     freeSpinSeconds--;
 }
 
+
+// =========================================================
+// МИНИАТЮРА НОМЕРА
+// =========================================================
+
 function createMiniPlate(number) {
     const parts = String(number).split(" ");
     const main = parts[0] || "";
@@ -303,6 +320,11 @@ function createMiniPlate(number) {
     `;
 }
 
+
+// =========================================================
+// ОБНОВЛЕНИЕ ИГРЫ
+// =========================================================
+
 async function refresh() {
     const me = await api("/api/me");
 
@@ -319,13 +341,15 @@ async function refresh() {
     const spinsElement = $("spins");
 
     if (coinsElement) {
-        coinsElement.textContent = Number(me.coins).toLocaleString("ru-RU");
+        coinsElement.textContent =
+            Number(me.coins).toLocaleString("ru-RU");
     }
 
     if (spinsElement) {
         spinsElement.textContent = me.spins;
     }
 
+    // КОЛЛЕКЦИЯ
     const plates = await api("/api/collection");
     const itemsElement = $("items");
 
@@ -336,6 +360,7 @@ async function refresh() {
                     <div class="collection-plate-wrap">
                         ${createMiniPlate(p.number)}
                         <small>${escapeHtml(p.rarity)}</small>
+                        ${renderTags(p.tags)}
                     </div>
                     <strong>#${p.id}</strong>
                 </div>
@@ -343,6 +368,7 @@ async function refresh() {
             : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';
     }
 
+    // РЫНОК
     const market = await api("/api/market");
     const marketElement = $("market-items");
 
@@ -353,6 +379,7 @@ async function refresh() {
                     <div>
                         <b>${escapeHtml(p.number)}</b>
                         <small>${escapeHtml(p.rarity)}</small>
+                        ${renderTags(p.tags)}
                     </div>
                     <strong>${p.price} 🪙</strong>
                 </div>
@@ -360,6 +387,12 @@ async function refresh() {
             : '<div class="empty">На рынке пока пусто.</div>';
     }
 }
+
+
+// =========================================================
+// КНОПКА СПИНА
+// =========================================================
+
 $("spin").addEventListener("click", async () => {
     $("spin").disabled = true;
     $("hint").textContent = "🎰 Барабаны вращаются...";
@@ -369,25 +402,44 @@ $("spin").addEventListener("click", async () => {
             method: "POST"
         });
 
-               await animatePlate(
+        await animatePlate(
             result.plate.number,
             result.plate.rarity
         );
 
         await refresh();
 
-        $("rarity").textContent =
-            (rarityNames[result.plate.rarity] ||
-                result.plate.rarity.toUpperCase()) +
-            " • +" + result.reward + " COINS";
+        const rarityText =
+            rarityNames[result.plate.rarity] ||
+            result.plate.rarity.toUpperCase();
 
-        $("hint").textContent = "Номер добавлен в коллекцию!";
+        const tags = result.plate.tags || [];
+
+        let message =
+            `${rarityText} • +${result.reward} COINS`;
+
+        if (tags.length > 0) {
+            message += " • " + tags.join(" • ");
+        }
+
+        $("rarity").textContent = message;
+
+        $("hint").textContent =
+            tags.length > 0
+                ? "✨ " + tags.join(" • ")
+                : "Номер добавлен в коллекцию!";
+
     } catch (e) {
         $("hint").textContent = e.message;
     } finally {
         $("spin").disabled = false;
     }
 });
+
+
+// =========================================================
+// ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+// =========================================================
 
 document.querySelectorAll(".tab").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -396,16 +448,28 @@ document.querySelectorAll(".tab").forEach(btn => {
         );
 
         $("collection").classList.toggle(
-            "hidden", btn.dataset.tab !== "collection"
+            "hidden",
+            btn.dataset.tab !== "collection"
         );
 
         $("market").classList.toggle(
-            "hidden", btn.dataset.tab !== "market"
+            "hidden",
+            btn.dataset.tab !== "market"
         );
     });
 });
 
+
+// =========================================================
+// ПЕРВАЯ ЗАГРУЗКА
+// =========================================================
+
 refresh().catch(e => {
-    $("items").textContent = e.message;
-    $("hint").textContent = e.message;
+    if ($("items")) {
+        $("items").textContent = e.message;
+    }
+
+    if ($("hint")) {
+        $("hint").textContent = e.message;
+    }
 });

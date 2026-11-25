@@ -217,8 +217,8 @@ async function animatePlate(finalPlate, rarity) {
     for (const char of mainFinal) {
         const cell = document.createElement("span");
         cell.className = "slot-cell";
-        cell.style.flex = "0 0 0.72em";
-        cell.style.width = "0.72em";
+        cell.style.flex = "1 1 0";
+        cell.style.width = "0";
         main.appendChild(cell);
 
         slots.push({ element: cell, char });

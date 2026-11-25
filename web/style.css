@@ -1,3 +1,4 @@
+
 :root {
     color-scheme: dark;
     --bg: #080b10;
@@ -122,7 +123,7 @@ h1 span {
     border-radius: 5px;
 }
 
-/* Основная часть номера */
+/* Основная часть — символы почти от края до края */
 
 .plate-main,
 .mini-plate-main {
@@ -147,10 +148,10 @@ h1 span {
 }
 
 .plate-main {
-    font-size: clamp(34px, 10vw, 54px);
+    font-size: clamp(46px, 15vw, 64px);
 }
 
-/* Правая часть номера */
+/* Правая часть — регион */
 
 .plate-region,
 .mini-plate-region {
@@ -171,7 +172,7 @@ h1 span {
     background: linear-gradient(180deg, #fff, #e3e7eb);
 }
 
-/* Код региона */
+/* Цифры региона — крупнее */
 
 .region-code,
 .mini-region-code {
@@ -190,22 +191,22 @@ h1 span {
 }
 
 .region-code {
-    font-size: clamp(19px, 5.2vw, 27px);
-    letter-spacing: 1px;
+    font-size: clamp(25px, 8vw, 36px);
+    letter-spacing: 0;
 }
 
-/* Надпись RUS */
+/* RUS */
 
 .region-country,
 .mini-region-country {
     grid-column: 1;
     grid-row: 2;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 900;
     line-height: 1;
 }
 
-/* Российский флаг */
+/* Флаг */
 
 .region-flag,
 .mini-region-flag {
@@ -351,22 +352,22 @@ nav {
 /* Маленький номер в коллекции */
 
 .mini-plate-main {
-    font-size: clamp(13px, 3.5vw, 20px);
-    letter-spacing: -1px;
+    font-size: clamp(21px, 7.2vw, 30px);
+    letter-spacing: -1.5px;
 }
 
 .mini-plate-region {
     border-left-width: 2px;
-    padding: 2px;
+    padding: 2px 3px;
 }
 
 .mini-region-code {
-    font-size: clamp(9px, 2.5vw, 13px);
+    font-size: clamp(14px, 4.8vw, 18px);
     letter-spacing: 0;
 }
 
 .mini-region-country {
-    font-size: 5px;
+    font-size: 6px;
 }
 
 .mini-region-flag {
@@ -397,8 +398,8 @@ nav {
 
 .slot-cell {
     display: flex;
-    flex: 1 1 0;
-    width: 0;
+    flex: 1 1 0 !important;
+    width: 0 !important;
     min-width: 0;
     height: 100%;
     flex-direction: row;
@@ -510,5 +511,21 @@ footer span {
 
     .item {
         padding: 10px;
+    }
+
+    .plate-main {
+        font-size: clamp(42px, 14vw, 54px);
+    }
+
+    .region-code {
+        font-size: clamp(23px, 8vw, 29px);
+    }
+
+    .mini-plate-main {
+        font-size: clamp(20px, 7vw, 25px);
+    }
+
+    .mini-region-code {
+        font-size: clamp(13px, 4.5vw, 16px);
     }
 }

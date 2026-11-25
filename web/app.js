@@ -82,6 +82,7 @@ function setRarityEffect(rarity) {
 }
 
 
+
 function randomSymbol(finalChar) {
     const alphabet = plateLetters.includes(finalChar)
         ? plateLetters
@@ -95,7 +96,7 @@ function sleep(ms) {
 }
 
 async function rollSlot(element, finalChar, options = {}) {
-    const duration = options.duration || 2200;
+    const duration = options.duration || 2600;
     const delay = options.delay || 0;
 
     const alphabet = plateLetters.includes(finalChar)
@@ -104,7 +105,9 @@ async function rollSlot(element, finalChar, options = {}) {
 
     const fontSize = parseFloat(
         getComputedStyle(element).fontSize
-    ) || 32;
+    ) || 36;
+
+    const symbolHeight = fontSize;
 
     const strip = document.createElement("span");
     strip.className = "slot-strip";
@@ -112,34 +115,38 @@ async function rollSlot(element, finalChar, options = {}) {
     const windowElement = document.createElement("span");
     windowElement.className = "slot-window";
 
-    const totalSymbols = 22;
-    const symbols = [];
+    windowElement.style.height = `${symbolHeight}px`;
+    windowElement.style.overflow = "hidden";
+
+    const totalSymbols = 30;
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
         symbol.className = "slot-symbol";
-        symbol.textContent =
-            alphabet[Math.floor(Math.random() * alphabet.length)];
-
-        symbols.push(symbol);
+        symbol.textContent = randomSymbol(finalChar);
+        symbol.style.height = `${symbolHeight}px`;
+        symbol.style.flexBasis = `${symbolHeight}px`;
         strip.appendChild(symbol);
     }
 
     const finalSymbol = document.createElement("span");
     finalSymbol.className = "slot-symbol";
     finalSymbol.textContent = finalChar;
+    finalSymbol.style.height = `${symbolHeight}px`;
+    finalSymbol.style.flexBasis = `${symbolHeight}px`;
     strip.appendChild(finalSymbol);
 
     windowElement.appendChild(strip);
     element.replaceChildren(windowElement);
 
     strip.style.transform = "translateY(0)";
+    strip.style.willChange = "transform";
 
     await sleep(delay);
 
-    const distance = totalSymbols * fontSize;
+    const distance = totalSymbols * symbolHeight;
 
-    if (typeof strip.animate === "function") {
+    if (strip.animate) {
         const animation = strip.animate(
             [
                 { transform: "translateY(0)" },
@@ -147,14 +154,37 @@ async function rollSlot(element, finalChar, options = {}) {
             ],
             {
                 duration,
-                easing: "cubic-bezier(.08,.72,.12,1)",
+                easing: "cubic-bezier(.12,.72,.16,1)",
                 fill: "forwards"
             }
         );
 
         await animation.finished;
+        animation.cancel();
     } else {
-        await sleep(duration);
+        const start = performance.now();
+
+        await new Promise(resolve => {
+            function frame(now) {
+                const progress = Math.min(
+                    1,
+                    (now - start) / duration
+                );
+
+                const eased = 1 - Math.pow(1 - progress, 3);
+
+                strip.style.transform =
+                    `translateY(-${distance * eased}px)`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    resolve();
+                }
+            }
+
+            requestAnimationFrame(frame);
+        });
     }
 
     element.textContent = finalChar;
@@ -164,46 +194,50 @@ async function animatePlate(finalPlate, rarity) {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
 
-    if (!main || !region) return;
+    if (!main || !region) {
+        console.error("Plate animation: elements not found");
+        return;
+    }
 
-    const parts = finalPlate.split(" ");
+    const parts = finalPlate.trim().split(/\s+/);
     const mainFinal = parts[0];
     const regionFinal = parts[1] || "77";
 
     main.replaceChildren();
     region.replaceChildren();
 
-    const mainSlots = [];
-    const regionSlots = [];
+    const slots = [];
 
     for (const char of mainFinal) {
-        const slot = document.createElement("span");
-        slot.className = "slot-cell";
-        main.appendChild(slot);
-        mainSlots.push({ element: slot, char });
+        const cell = document.createElement("span");
+        cell.className = "slot-cell";
+        main.appendChild(cell);
+
+        slots.push({ element: cell, char });
     }
 
     for (const char of regionFinal) {
-        const slot = document.createElement("span");
-        slot.className = "slot-cell";
-        region.appendChild(slot);
-        regionSlots.push({ element: slot, char });
-    }
+        const cell = document.createElement("span");
+        cell.className = "slot-cell";
+        region.appendChild(cell);
 
-    const allSlots = [...mainSlots, ...regionSlots];
+        slots.push({ element: cell, char });
+    }
 
     const rare = rarity === "Legendary" || rarity === "Mythic";
     const epic = rarity === "Epic";
 
     await Promise.all(
-        allSlots.map((slot, index) =>
-            rollSlot(slot.element, slot.char, {
-                duration: index === allSlots.length - 1
-                    ? (rare ? 4800 : epic ? 3800 : 3000)
-                    : 2200 + index * 180,
-                delay: index * 130
-            })
-        )
+        slots.map((slot, index) => {
+            const isLast = index === slots.length - 1;
+
+            return rollSlot(slot.element, slot.char, {
+                duration: isLast
+                    ? (rare ? 5200 : epic ? 4200 : 3200)
+                    : 2300 + index * 250,
+                delay: index * 180
+            });
+        })
     );
 
     main.textContent = mainFinal;

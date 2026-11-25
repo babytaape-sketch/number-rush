@@ -127,24 +127,8 @@ h1 span {
 
 .plate-main,
 .mini-plate-main {
-    flex: 0 0 75%;
-    width: 75%;
-    min-width: 0;
-    min-height: 0;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: #080a0d;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-    white-space: nowrap;
+    font-size: clamp(23px, 7.5vw, 32px);
     letter-spacing: -2px;
-    line-height: 1;
-    writing-mode: horizontal-tb;
 }
 
 .plate-main {
@@ -176,18 +160,8 @@ h1 span {
 
 .region-code,
 .mini-region-code {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    font-weight: 900;
-    line-height: 1;
-    white-space: nowrap;
-    writing-mode: horizontal-tb;
+    font-size: clamp(16px, 5.2vw, 21px);
+    letter-spacing: -1px;
 }
 
 .region-code {

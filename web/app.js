@@ -240,8 +240,7 @@ async function animatePlate(finalPlate, rarity) {
         })
     );
 
-    main.textContent = mainFinal;
-    region.textContent = regionFinal;
+
 
     if (typeof setRarityEffect === "function") {
         setRarityEffect(rarity);

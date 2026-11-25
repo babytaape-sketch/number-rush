@@ -116,6 +116,15 @@ def init_db():
             price INTEGER NOT NULL,
             created_at INTEGER NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS daily_task_progress (
+            user_id TEXT NOT NULL,
+            task_date TEXT NOT NULL,
+            task_key TEXT NOT NULL,
+            progress INTEGER NOT NULL DEFAULT 0,
+            claimed INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (user_id, task_date, task_key)
+        );
         """)
 
 
@@ -143,6 +152,85 @@ with db() as con:
     if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", ("remove_initial_five_spins",)).fetchone():
         con.execute("UPDATE users SET spins=0")
         con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", ("remove_initial_five_spins", int(time.time())))
+
+
+DAILY_TASKS = [
+    {"key": "spin_5", "title": "Сделать 5 прокруток", "description": "Используй бесплатные или платные прокрутки", "target": 5, "reward": 150},
+    {"key": "sell_1", "title": "Продать 1 номер", "description": "Продай номер через рынок или быструю продажу", "target": 1, "reward": 100},
+    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи номер редкости Rare или выше", "target": 1, "reward": 250},
+]
+
+
+def daily_task_date(now=None):
+    return time.strftime("%Y-%m-%d", time.gmtime(now or time.time()))
+
+
+def update_daily_task(con, uid, task_key, now=None):
+    task = next((item for item in DAILY_TASKS if item["key"] == task_key), None)
+    if not task:
+        return
+
+    today = daily_task_date(now)
+    con.execute(
+        """INSERT OR IGNORE INTO daily_task_progress
+        (user_id, task_date, task_key, progress, claimed)
+        VALUES (?, ?, ?, 0, 0)""",
+        (uid, today, task_key)
+    )
+    row = con.execute(
+        """SELECT progress, claimed FROM daily_task_progress
+        WHERE user_id=? AND task_date=? AND task_key=?""",
+        (uid, today, task_key)
+    ).fetchone()
+
+    if row["claimed"]:
+        return
+
+    progress = min(task["target"], row["progress"] + 1)
+    claimed = int(progress >= task["target"])
+    con.execute(
+        """UPDATE daily_task_progress SET progress=?, claimed=?
+        WHERE user_id=? AND task_date=? AND task_key=?""",
+        (progress, claimed, uid, today, task_key)
+    )
+    if claimed:
+        con.execute(
+            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            (task["reward"], uid)
+        )
+
+
+@app.get("/api/daily-tasks")
+def get_daily_tasks(authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    today = daily_task_date()
+
+    with db() as con:
+        for task in DAILY_TASKS:
+            con.execute(
+                """INSERT OR IGNORE INTO daily_task_progress
+                (user_id, task_date, task_key, progress, claimed)
+                VALUES (?, ?, ?, 0, 0)""",
+                (user["user_id"], today, task["key"])
+            )
+        rows = con.execute(
+            """SELECT task_key, progress, claimed FROM daily_task_progress
+            WHERE user_id=? AND task_date=?""",
+            (user["user_id"], today)
+        ).fetchall()
+
+    progress = {row["task_key"]: dict(row) for row in rows}
+    return {
+        "date": today,
+        "tasks": [
+            {
+                **task,
+                "progress": progress[task["key"]]["progress"],
+                "completed": bool(progress[task["key"]]["claimed"]),
+            }
+            for task in DAILY_TASKS
+        ]
+    }
 
 
 # =========================================================
@@ -819,6 +907,9 @@ def spin(authorization: str | None = Header(default=None)):
         )
 
         plate_id = cur.lastrowid
+        update_daily_task(con, uid, "spin_5", now)
+        if rarity in ("Rare", "Epic", "Legendary", "Mythic"):
+            update_daily_task(con, uid, "rare_1", now)
 
         updated = con.execute(
             """
@@ -931,6 +1022,7 @@ def quick_sell_plate(
             (plate_id, uid, price, now)
         )
         con.execute("DELETE FROM plates WHERE id=?", (plate_id,))
+        update_daily_task(con, uid, "sell_1", now)
         con.commit()
 
     return {"ok": True, "price": price}
@@ -1102,6 +1194,7 @@ def buy_listing(
             "DELETE FROM listings WHERE id=?",
             (listing_id,)
         )
+        update_daily_task(con, listing["seller_id"], "sell_1", int(time.time()))
 
         con.commit()
 

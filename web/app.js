@@ -625,7 +625,7 @@ function renderDailyTasks(data) {
         const progress = Math.min(Number(task.progress || 0), Number(task.target || 1));
         const percent = Math.round(progress / Math.max(1, Number(task.target)) * 100);
         return `
-            <article class="daily-task-card ${task.completed ? "is-completed" : ""}">
+            <article class="daily-task-card ${task.completed ? "is-completed" : ""} ${task.claimed ? "is-claimed" : ""}">
                 <div class="daily-task-top">
                     <div>
                         <strong>${escapeHtml(task.title)}</strong>
@@ -636,12 +636,29 @@ function renderDailyTasks(data) {
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
                     <small>${progress} / ${task.target}</small>
-                    <b>${task.completed ? "ВЫПОЛНЕНО" : "В ПРОЦЕССЕ"}</b>
+                    <b>${task.claimed ? "НАГРАДА ПОЛУЧЕНА" : task.completed ? "ГОТОВО К ПОЛУЧЕНИЮ" : "В ПРОЦЕССЕ"}</b>
                 </div>
+                ${task.completed && !task.claimed ? `<button class="daily-task-claim" data-claim-task="${escapeHtml(task.key)}">ЗАБРАТЬ НАГРАДУ</button>` : ""}
             </article>
         `;
     }).join("");
 }
+
+async function claimDailyTask(taskKey, button) {
+    if (button) button.disabled = true;
+    try {
+        await api(`/api/daily-tasks/${encodeURIComponent(taskKey)}/claim`, { method: "POST" });
+        await refresh();
+    } catch (e) {
+        alert(e.message);
+        if (button) button.disabled = false;
+    }
+}
+
+$("daily-task-list")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-claim-task]");
+    if (button) claimDailyTask(button.dataset.claimTask, button);
+});
 
 async function refresh() {
     const me = await api("/api/me");

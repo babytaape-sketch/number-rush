@@ -269,13 +269,18 @@ async function animatePlate(finalPlate, rarity) {
     await Promise.all(
         mainSlots.map((slot, index) => {
             const isSuspense = index === suspenseLetter || index === suspenseDigit;
+            const isFinalTwo = index >= mainSlots.length - 2;
             const randomExtra = isSuspense
                 ? Math.floor(Math.random() * 500)
+                : 0;
+            const finalTwoExtra = isFinalTwo
+                ? 900 + rarityLevel * 220 + Math.floor(Math.random() * 350)
                 : 0;
 
             return rollSlot(slot, mainChars[index], {
                 duration: baseDuration + index * stopInterval +
-                    (isSuspense ? suspenseExtra + randomExtra : 0),
+                    (isSuspense ? suspenseExtra + randomExtra : 0) +
+                    finalTwoExtra,
                 totalSymbols: 22
             });
         })

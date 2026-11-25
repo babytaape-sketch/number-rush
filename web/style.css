@@ -191,8 +191,8 @@ h1 span {
 }
 
 .region-code {
-    font-size: clamp(25px, 8vw, 36px);
-    letter-spacing: 0;
+    font-size: clamp(29px, 8.5vw, 40px);
+    letter-spacing: -1px;
 }
 
 /* RUS */

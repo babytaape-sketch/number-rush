@@ -1105,3 +1105,30 @@ footer {
     position: relative;
     top: .08em;
 }
+
+
+/* Крупный номер в профиле: заполняем табличку, убираем пустые поля */
+.profile-rarest-plate .mini-plate {
+    width: 100%;
+    min-height: 92px;
+    aspect-ratio: 520 / 112;
+}
+.profile-rarest-plate .mini-plate-main {
+    font-size: clamp(30px, 7vw, 46px) !important;
+    line-height: 1;
+}
+.profile-rarest-plate .mini-region-code {
+    font-size: clamp(22px, 4.5vw, 34px) !important;
+    line-height: 1;
+}
+@media (max-width: 520px) {
+    .profile-rarest-plate .mini-plate {
+        min-height: 82px;
+    }
+    .profile-rarest-plate .mini-plate-main {
+        font-size: clamp(27px, 8vw, 38px) !important;
+    }
+    .profile-rarest-plate .mini-region-code {
+        font-size: clamp(19px, 5vw, 27px) !important;
+    }
+}

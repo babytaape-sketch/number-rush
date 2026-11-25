@@ -582,3 +582,166 @@ select,
 textarea {
   color-scheme: dark;
 }
+
+
+/* Единые пропорции российских номерных знаков */
+.plate {
+    width: 100%;
+    max-width: 520px;
+    aspect-ratio: 520 / 112;
+    height: auto;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.plate-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    white-space: nowrap;
+    font-size: clamp(24px, 7vw, 52px);
+    line-height: 1;
+    box-sizing: border-box;
+}
+
+.plate-region {
+    flex: 0 0 15.8%;
+    width: 15.8%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.region-code {
+    font-size: clamp(14px, 3.8vw, 27px);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.region-country {
+    font-size: clamp(6px, 1.6vw, 10px);
+    line-height: 1.2;
+}
+
+.region-flag {
+    width: 48%;
+    max-width: 30px;
+    aspect-ratio: 3 / 2;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.region-flag span {
+    flex: 1;
+    width: 100%;
+}
+
+/* Прокрутка символов */
+.slot-cell {
+    display: inline-block;
+    height: 1.15em;
+    min-width: 0.55em;
+    overflow: hidden;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.slot-window {
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.slot-strip {
+    display: block;
+    will-change: transform;
+}
+
+.slot-symbol {
+    display: block;
+    width: 100%;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Уменьшенная копия того же формата в коллекции */
+.mini-plate {
+    width: clamp(115px, 38vw, 190px);
+    max-width: 100%;
+    aspect-ratio: 520 / 112;
+    height: auto;
+    min-height: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.mini-plate-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    white-space: nowrap;
+    font-size: clamp(13px, 3.2vw, 25px);
+    line-height: 1;
+    box-sizing: border-box;
+}
+
+.mini-plate-region {
+    flex: 0 0 15.8%;
+    width: 15.8%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-region-code {
+    font-size: clamp(8px, 2vw, 14px);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.mini-region-country {
+    font-size: clamp(5px, 1.1vw, 7px);
+    line-height: 1.2;
+}
+
+.mini-region-flag {
+    width: 48%;
+    max-width: 15px;
+    aspect-ratio: 3 / 2;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mini-region-flag span {
+    flex: 1;
+    width: 100%;
+}
+
+.collection-plate-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+}
+

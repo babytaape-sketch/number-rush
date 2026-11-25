@@ -1191,3 +1191,64 @@ footer {
     min-height: 0 !important;
     aspect-ratio: 520 / 112;
 }
+
+
+/* Профиль: табличка в стиле реального российского госномера */
+.profile-rarest-plate {
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 10px 0 4px !important;
+}
+.profile-rarest-plate .mini-plate {
+    width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    aspect-ratio: 520 / 112 !important;
+    padding: 0 !important;
+    border: 3px solid #17191b !important;
+    border-radius: 7px !important;
+    box-shadow: 0 0 0 1px #777, 0 0 0 3px #080808, inset 0 1px 3px #fff !important;
+}
+.profile-rarest-plate .mini-plate-main {
+    height: 100% !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: "GOSTPlate", Arial, sans-serif !important;
+    font-size: 43px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    top: 0 !important;
+    white-space: nowrap !important;
+}
+.profile-rarest-plate .mini-plate-region {
+    height: 100% !important;
+    padding: 2px 4px !important;
+    border-left: 2px solid #171717 !important;
+}
+.profile-rarest-plate .mini-region-code {
+    font-family: "GOSTPlate", Arial, sans-serif !important;
+    font-size: 31px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    top: 0 !important;
+}
+.profile-rarest-plate .mini-region-country {
+    font-size: 10px !important;
+    line-height: 1 !important;
+}
+.profile-rarest-plate .mini-region-flag {
+    width: 23px !important;
+    height: 15px !important;
+}
+@media (max-width: 520px) {
+    .profile-rarest-plate {
+        max-width: 300px !important;
+    }
+    .profile-rarest-plate .mini-plate-main {
+        font-size: 38px !important;
+    }
+    .profile-rarest-plate .mini-region-code {
+        font-size: 27px !important;
+    }
+}

@@ -1252,3 +1252,16 @@ footer {
         font-size: 27px !important;
     }
 }
+
+
+/* Уменьшаем подписи и информацию о номере в карточках коллекции */
+#collection .collection-item > strong {
+    font-size: 12px !important;
+}
+#collection .collection-plate-wrap small {
+    font-size: 9px !important;
+    line-height: 1.2;
+}
+#collection .collection-item small {
+    font-size: 9px !important;
+}

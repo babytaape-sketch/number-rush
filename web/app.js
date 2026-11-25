@@ -555,12 +555,9 @@ async function refresh() {
                         ${renderTags(p.tags)}
                     </div>
                     <strong>#${p.id}</strong>
-                    <button
-                        class="market-action"
-                        data-list-plate="${p.id}"
-                    >
-                        ВЫСТАВИТЬ
-                    </button>
+                    ${p.is_listed
+                        ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
+                        : `<button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>`}
                 </div>
             `).join("")
             : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';

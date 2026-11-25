@@ -1065,3 +1065,14 @@ footer {
 .profile-rarest { margin-top:10px; }
 .profile-rarest b { display:block; margin-top:7px; color:#91adff; overflow-wrap:anywhere; }
 @media (max-width:360px) { .profile-stats { grid-template-columns:1fr; } }
+
+
+/* Коррекция вертикального положения символов на разных платформах */
+.slot-symbol {
+    position: relative;
+    top: .06em;
+}
+
+.mini-plate-main {
+    padding-top: .06em;
+}

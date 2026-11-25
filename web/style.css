@@ -384,3 +384,122 @@ footer span {
     }
 }
 
+
+/* FIX: единая пропорциональная конструкция номера */
+
+#plate {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 380px !important;
+    aspect-ratio: 520 / 112 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(180deg, #fff, #e5e8eb) !important;
+    border: 3px solid #d9e0e8 !important;
+    border-radius: 9px !important;
+}
+
+#plate .plate-main {
+    display: flex !important;
+    flex: 1 1 82% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 3% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    color: #101318 !important;
+    font-size: clamp(20px, 7vw, 42px) !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+}
+
+#plate .plate-region {
+    display: flex !important;
+    flex: 0 0 18% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-left: 2px solid #252a30 !important;
+    background: linear-gradient(180deg, #fff, #e3e7eb) !important;
+    color: #111 !important;
+}
+
+#plate .region-code {
+    font-size: clamp(15px, 4.5vw, 24px) !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+}
+
+#plate .region-country {
+    font-size: 8px !important;
+    line-height: 1.2 !important;
+}
+
+#plate .region-flag {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 23px !important;
+    height: 12px !important;
+    overflow: hidden !important;
+}
+
+#plate .region-flag span {
+    display: block !important;
+    flex: 1 !important;
+}
+
+#plate .region-flag span:nth-child(1) { background: #fff !important; }
+#plate .region-flag span:nth-child(2) { background: #1746a2 !important; }
+#plate .region-flag span:nth-child(3) { background: #d52b35 !important; }
+
+/* Уменьшенная копия номера в коллекции */
+
+.mini-plate {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 190px !important;
+    max-width: 48vw !important;
+    aspect-ratio: 520 / 112 !important;
+    height: auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(180deg, #fff, #e5e8eb) !important;
+}
+
+.mini-plate-main {
+    display: flex !important;
+    flex: 1 1 82% !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 2% !important;
+    white-space: nowrap !important;
+    color: #101318 !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+}
+
+.mini-plate-region {
+    display: flex !important;
+    flex: 0 0 18% !important;
+    min-width: 0 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-left: 1px solid #252a30 !important;
+}
+
+.mini-region-code { font-size: 12px !important; }
+.mini-region-country { font-size: 5px !important; }
+.mini-region-flag { width: 14px !important; height: 7px !important; }

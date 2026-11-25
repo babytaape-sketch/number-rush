@@ -1612,3 +1612,25 @@ footer {
 .daily-task-card.is-claimed .daily-task-bottom b {
     color: #91a2bb;
 }
+
+
+/* Индикатор наград, ожидающих получения на вкладке заданий */
+.tab { position: relative; }
+.tab-badge {
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    margin-left: 5px;
+    padding: 0 5px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #ff4d5e;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    vertical-align: middle;
+    box-shadow: 0 0 0 2px #111e32, 0 0 10px rgba(255,77,94,.35);
+}
+.tab-badge[hidden] { display: none; }

@@ -322,6 +322,70 @@ function createMiniPlate(number) {
 
 
 // =========================================================
+// ДЕЙСТВИЯ НА РЫНКЕ
+// =========================================================
+
+async function marketAction(action, listingId) {
+    try {
+        await api(`/api/market/${listingId}/${action}`, {
+            method: "POST"
+        });
+
+        await refresh();
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+async function listPlate(plateId) {
+    const price = Number(
+        prompt("За сколько монет выставить номер?")
+    );
+
+    if (!Number.isInteger(price) || price < 1 || price > 1000000) {
+        return;
+    }
+
+    try {
+        await api("/api/market/list", {
+            method: "POST",
+            body: JSON.stringify({
+                plate_id: plateId,
+                price: price
+            })
+        });
+
+        alert("Номер выставлен на рынок!");
+        await refresh();
+    } catch (e) {
+        alert(e.message);
+    }
+}
+
+// Кнопки коллекции
+$("items").addEventListener("click", event => {
+    const button = event.target.closest("[data-list-plate]");
+    if (!button) return;
+
+    listPlate(Number(button.dataset.listPlate));
+});
+
+// Кнопки рынка
+$("market-items").addEventListener("click", event => {
+    const buyButton = event.target.closest("[data-buy-listing]");
+    const cancelButton = event.target.closest("[data-cancel-listing]");
+
+    if (buyButton) {
+        marketAction("buy", Number(buyButton.dataset.buyListing));
+    }
+
+    if (cancelButton) {
+        marketAction("cancel", Number(cancelButton.dataset.cancelListing));
+    }
+});
+
+
+// =========================================================
 // ОБНОВЛЕНИЕ ИГРЫ
 // =========================================================
 

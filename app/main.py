@@ -845,6 +845,9 @@ def market(authorization: str | None = Header(default=None)):
         result.append(item)
 
     return result
+    class ListingRequest(BaseModel):
+    plate_id: int
+    price: int
 
 
 

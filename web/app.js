@@ -469,11 +469,27 @@ async function listPlate(plateId) {
 }
 
 // Кнопки коллекции
-$("items").addEventListener("click", event => {
-    const button = event.target.closest("[data-list-plate]");
-    if (!button) return;
+async function quickSellPlate(plateId) {
+    if (!confirm("Продать этот номер и убрать его из коллекции?")) return;
+    try {
+        const result = await api(`/api/plates/${plateId}/quick-sell`, {
+            method: "POST"
+        });
+        alert(`Номер продан за ${Number(result.price).toLocaleString("ru-RU")} 🪙!`);
+        await refresh();
+    } catch (e) {
+        alert(e.message);
+    }
+}
 
-    listPlate(Number(button.dataset.listPlate));
+$("items").addEventListener("click", event => {
+    const quickButton = event.target.closest("[data-quick-sell]");
+    const listButton = event.target.closest("[data-list-plate]");
+    if (quickButton) {
+        quickSellPlate(Number(quickButton.dataset.quickSell));
+        return;
+    }
+    if (listButton) listPlate(Number(listButton.dataset.listPlate));
 });
 
 // Кнопки рынка
@@ -555,9 +571,13 @@ async function refresh() {
                         ${renderTags(p.tags)}
                     </div>
                     <strong>#${p.id}</strong>
+                    <small class="collection-value">Оценка: ${Number(p.market_value || 0).toLocaleString("ru-RU")} 🪙</small>
                     ${p.is_listed
                         ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
-                        : `<button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>`}
+                        : `<div class="collection-actions">
+                            <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${Number(p.quick_sell_price || 0).toLocaleString("ru-RU")} 🪙</button>
+                            <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>
+                          </div>`}
                 </div>
             `).join("")
             : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';

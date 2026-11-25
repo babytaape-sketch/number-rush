@@ -81,6 +81,7 @@ function setRarityEffect(rarity) {
     rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
 }
 
+
 function randomSymbol(finalChar) {
     const alphabet = plateLetters.includes(finalChar)
         ? plateLetters
@@ -93,30 +94,26 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
 async function rollSlot(element, finalChar, options = {}) {
-    const {
-        duration = 2200,
-        extraTurns = 0,
-        dramatic = false
-    } = options;
+    const duration = options.duration || 2200;
+    const delay = options.delay || 0;
 
     const alphabet = plateLetters.includes(finalChar)
         ? plateLetters
         : plateDigits;
 
     const fontSize = parseFloat(
-        getComputedStyle(element.parentElement).fontSize
-    ) || 30;
+        getComputedStyle(element).fontSize
+    ) || 32;
 
-    const rowHeight = fontSize * 1.15;
-    const totalSymbols = 28 + extraTurns * 8;
+    const strip = document.createElement("span");
+    strip.className = "slot-strip";
 
     const windowElement = document.createElement("span");
     windowElement.className = "slot-window";
 
-    const strip = document.createElement("span");
-    strip.className = "slot-strip";
+    const totalSymbols = 22;
+    const symbols = [];
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
@@ -124,46 +121,41 @@ async function rollSlot(element, finalChar, options = {}) {
         symbol.textContent =
             alphabet[Math.floor(Math.random() * alphabet.length)];
 
-        symbol.style.height = `${rowHeight}px`;
-        symbol.style.lineHeight = `${rowHeight}px`;
+        symbols.push(symbol);
         strip.appendChild(symbol);
     }
 
     const finalSymbol = document.createElement("span");
     finalSymbol.className = "slot-symbol";
     finalSymbol.textContent = finalChar;
-    finalSymbol.style.height = `${rowHeight}px`;
-    finalSymbol.style.lineHeight = `${rowHeight}px`;
     strip.appendChild(finalSymbol);
-
-    windowElement.style.display = "inline-block";
-    windowElement.style.height = `${rowHeight}px`;
-    windowElement.style.overflow = "hidden";
-    windowElement.style.verticalAlign = "middle";
-
-    strip.style.display = "block";
-    strip.style.transform = "translateY(0)";
-    strip.style.transition = "none";
 
     windowElement.appendChild(strip);
     element.replaceChildren(windowElement);
 
-    // Даём браузеру отобразить начальное положение барабана.
-    await new Promise(resolve =>
-        requestAnimationFrame(() =>
-            requestAnimationFrame(resolve)
-        )
-    );
+    strip.style.transform = "translateY(0)";
 
-    const targetPosition = totalSymbols * rowHeight;
+    await sleep(delay);
 
-    strip.style.transition =
-        `transform ${duration}ms cubic-bezier(.08,.72,.12,1)`;
+    const distance = totalSymbols * fontSize;
 
-    strip.style.transform =
-        `translateY(-${targetPosition}px)`;
+    if (typeof strip.animate === "function") {
+        const animation = strip.animate(
+            [
+                { transform: "translateY(0)" },
+                { transform: `translateY(-${distance}px)` }
+            ],
+            {
+                duration,
+                easing: "cubic-bezier(.08,.72,.12,1)",
+                fill: "forwards"
+            }
+        );
 
-    await sleep(duration + 100);
+        await animation.finished;
+    } else {
+        await sleep(duration);
+    }
 
     element.textContent = finalChar;
 }
@@ -172,64 +164,58 @@ async function animatePlate(finalPlate, rarity) {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
 
+    if (!main || !region) return;
+
     const parts = finalPlate.split(" ");
     const mainFinal = parts[0];
     const regionFinal = parts[1] || "77";
 
-    const color = rarityColors[rarity] || rarityColors.Common;
-    $("plate").style.setProperty("--rarity-color", color);
-
     main.replaceChildren();
     region.replaceChildren();
 
-    const mainSlots = Array.from(mainFinal, () => {
+    const mainSlots = [];
+    const regionSlots = [];
+
+    for (const char of mainFinal) {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
         main.appendChild(slot);
-        return slot;
-    });
+        mainSlots.push({ element: slot, char });
+    }
 
-    const regionSlots = Array.from(regionFinal, () => {
+    for (const char of regionFinal) {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
         region.appendChild(slot);
-        return slot;
-    });
+        regionSlots.push({ element: slot, char });
+    }
+
+    const allSlots = [...mainSlots, ...regionSlots];
 
     const rare = rarity === "Legendary" || rarity === "Mythic";
     const epic = rarity === "Epic";
 
-    const allSlots = [
-        ...Array.from(mainFinal, (char, index) => ({
-            element: mainSlots[index],
-            char
-        })),
-        ...Array.from(regionFinal, (char, index) => ({
-            element: regionSlots[index],
-            char
-        }))
-    ];
-
-    for (let i = 0; i < allSlots.length; i++) {
-        const slot = allSlots[i];
-        const isLast = i === allSlots.length - 1;
-
-        await rollSlot(slot.element, slot.char, {
-            duration: isLast
-                ? (rare ? 4200 : epic ? 3400 : 2400)
-                : 1100 + i * 180,
-            extraTurns: isLast
-                ? (rare ? 7 : epic ? 4 : 2)
-                : 0
-        });
-    }
+    await Promise.all(
+        allSlots.map((slot, index) =>
+            rollSlot(slot.element, slot.char, {
+                duration: index === allSlots.length - 1
+                    ? (rare ? 4800 : epic ? 3800 : 3000)
+                    : 2200 + index * 180,
+                delay: index * 130
+            })
+        )
+    );
 
     main.textContent = mainFinal;
     region.textContent = regionFinal;
 
-    setRarityEffect(rarity);
-    await sleep(rarity === "Mythic" ? 1300 : 550);
+    if (typeof setRarityEffect === "function") {
+        setRarityEffect(rarity);
+    }
+
+    await sleep(500);
 }
+
 
 
 let freeSpinTimer = null;

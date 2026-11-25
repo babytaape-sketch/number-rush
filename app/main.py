@@ -248,11 +248,13 @@ def claim_daily_task(task_key: str, authorization: str | None = Header(default=N
         if row["claimed"]:
             raise HTTPException(400, "Награда уже получена")
 
-        con.execute(
+        claimed_update = con.execute(
             """UPDATE daily_task_progress SET claimed=1
             WHERE user_id=? AND task_date=? AND task_key=? AND claimed=0""",
             (user["user_id"], today, task_key)
         )
+        if claimed_update.rowcount != 1:
+            raise HTTPException(400, "Награда уже получена")
         con.execute(
             "UPDATE users SET coins=coins+? WHERE user_id=?",
             (task["reward"], user["user_id"])

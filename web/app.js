@@ -11,6 +11,14 @@ if (tg) {
 const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };
 
+let marketCache = [];
+let marketFavorites = new Set();
+try {
+    marketFavorites = new Set(JSON.parse(localStorage.getItem("numberRushMarketFavorites") || "[]").map(String));
+} catch (_) {
+    marketFavorites = new Set();
+}
+
 if (initData) {
     headers.Authorization = "tma " + initData;
 }
@@ -343,6 +351,83 @@ function createMiniPlate(number) {
 
 
 // =========================================================
+// ФИЛЬТРЫ И ИЗБРАННОЕ РЫНКА
+// =========================================================
+
+function renderMarket() {
+    const root = $("market-items");
+    if (!root) return;
+
+    const query = ($("market-search")?.value || "").trim().toLowerCase();
+    const rarity = $("market-rarity")?.value || "all";
+    const sort = $("market-sort")?.value || "newest";
+    const favoritesOnly = $("market-favorites-only")?.classList.contains("active");
+
+    let rows = marketCache.filter(p => {
+        const matchesSearch = !query ||
+            String(p.number).toLowerCase().includes(query) ||
+            String(p.rarity_ru || p.rarity).toLowerCase().includes(query) ||
+            (p.tags || []).some(tag => String(tag).toLowerCase().includes(query));
+        const matchesRarity = rarity === "all" || p.rarity === rarity;
+        const matchesFavorite = !favoritesOnly || marketFavorites.has(String(p.listing_id));
+        return matchesSearch && matchesRarity && matchesFavorite;
+    });
+
+    if (sort === "cheap") rows.sort((a,b) => a.price - b.price);
+    if (sort === "expensive") rows.sort((a,b) => b.price - a.price);
+    if (sort === "rarity") {
+        const rank = {Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:5};
+        rows.sort((a,b) => (rank[b.rarity] || 0) - (rank[a.rarity] || 0));
+    }
+
+    const count = $("market-count");
+    if (count) count.textContent = rows.length + " предложений";
+
+    root.innerHTML = rows.length
+        ? rows.map(p => {
+            const favorite = marketFavorites.has(String(p.listing_id));
+            return `
+                <div class="item market-item">
+                    <div class="market-item-info">
+                        <div class="market-plate-wrap">${createMiniPlate(p.number)}</div>
+                        <div class="market-meta">
+                            <span class="market-rarity" data-rarity="${escapeHtml(p.rarity)}">${escapeHtml(rarityNames[p.rarity] || p.rarity)}</span>
+                            ${renderTags(p.tags)}
+                        </div>
+                    </div>
+                    <div class="market-price">
+                        <strong>${Number(p.price).toLocaleString("ru-RU")} 🪙</strong>
+                        <button class="market-action favorite ${favorite ? "is-favorite" : ""}" data-favorite-listing="${p.listing_id}" aria-label="Избранное">${favorite ? "★" : "☆"}</button>
+                        ${p.is_mine
+                            ? `<button class="market-action cancel" data-cancel-listing="${p.listing_id}">СНЯТЬ</button>`
+                            : `<button class="market-action" data-buy-listing="${p.listing_id}">КУПИТЬ</button>`}
+                    </div>
+                </div>
+            `;
+        }).join("")
+        : '<div class="empty">Ничего не найдено. Измени фильтры или поисковый запрос.</div>';
+}
+
+function toggleMarketFavorite(id) {
+    const key = String(id);
+    if (marketFavorites.has(key)) marketFavorites.delete(key);
+    else marketFavorites.add(key);
+    try {
+        localStorage.setItem("numberRushMarketFavorites", JSON.stringify([...marketFavorites]));
+    } catch (_) {}
+    renderMarket();
+}
+
+["market-search", "market-rarity", "market-sort"].forEach(id => {
+    $(id)?.addEventListener("input", renderMarket);
+    $(id)?.addEventListener("change", renderMarket);
+});
+$("market-favorites-only")?.addEventListener("click", () => {
+    $("market-favorites-only").classList.toggle("active");
+    renderMarket();
+});
+
+// =========================================================
 // ДЕЙСТВИЯ НА РЫНКЕ
 // =========================================================
 
@@ -482,30 +567,8 @@ async function refresh() {
     }
 
     // РЫНОК
-    const market = await api("/api/market");
-    const marketElement = $("market-items");
-
-    if (marketElement) {
-        marketElement.innerHTML = market.length
-            ? market.map(p => `
-                <div class="item">
-                    <div>
-                        <div class="market-plate-wrap">${createMiniPlate(p.number)}</div>
-                        <small>${escapeHtml(p.rarity)}</small>
-                        ${renderTags(p.tags)}
-                    </div>
-                    <div class="market-price">
-                        <strong>${Number(p.price).toLocaleString("ru-RU")} 🪙</strong>
-                        ${
-                            p.is_mine
-                                ? `<button class="market-action cancel" data-cancel-listing="${p.listing_id}">СНЯТЬ</button>`
-                                : `<button class="market-action" data-buy-listing="${p.listing_id}">КУПИТЬ</button>`
-                        }
-                    </div>
-                </div>
-            `).join("")
-            : '<div class="empty">На рынке пока пусто.</div>';
-    }
+    marketCache = await api("/api/market");
+    renderMarket();
 }
 
 // =========================================================

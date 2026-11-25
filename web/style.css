@@ -1179,3 +1179,15 @@ footer {
         font-size: clamp(30px, 8vw, 40px) !important;
     }
 }
+
+
+/* Профиль: укоротить саму табличку, не меняя размер букв и цифр */
+.profile-rarest-plate {
+    width: 100%;
+    max-width: 270px;
+}
+.profile-rarest-plate .mini-plate {
+    width: 100% !important;
+    min-height: 0 !important;
+    aspect-ratio: 520 / 112;
+}

@@ -93,9 +93,10 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
 async function rollSlot(element, finalChar, options = {}) {
     const {
-        duration = 1800,
+        duration = 2200,
         extraTurns = 0,
         dramatic = false
     } = options;
@@ -104,68 +105,65 @@ async function rollSlot(element, finalChar, options = {}) {
         ? plateLetters
         : plateDigits;
 
-    const strip = document.createElement("span");
-    strip.className = "slot-strip";
+    const fontSize = parseFloat(
+        getComputedStyle(element.parentElement).fontSize
+    ) || 30;
+
+    const rowHeight = fontSize * 1.15;
+    const totalSymbols = 28 + extraTurns * 8;
 
     const windowElement = document.createElement("span");
     windowElement.className = "slot-window";
 
-    const rowHeight = element.getBoundingClientRect().height || 36;
-    const symbols = [];
-
-    const totalSymbols = 24 + extraTurns * 8;
+    const strip = document.createElement("span");
+    strip.className = "slot-strip";
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
         symbol.className = "slot-symbol";
-        symbol.textContent = randomSymbol(finalChar);
-        symbols.push(symbol);
+        symbol.textContent =
+            alphabet[Math.floor(Math.random() * alphabet.length)];
+
+        symbol.style.height = `${rowHeight}px`;
+        symbol.style.lineHeight = `${rowHeight}px`;
         strip.appendChild(symbol);
     }
 
     const finalSymbol = document.createElement("span");
     finalSymbol.className = "slot-symbol";
     finalSymbol.textContent = finalChar;
+    finalSymbol.style.height = `${rowHeight}px`;
+    finalSymbol.style.lineHeight = `${rowHeight}px`;
     strip.appendChild(finalSymbol);
 
-    windowElement.appendChild(strip);
+    windowElement.style.display = "inline-block";
+    windowElement.style.height = `${rowHeight}px`;
+    windowElement.style.overflow = "hidden";
+    windowElement.style.verticalAlign = "middle";
 
-    element.replaceChildren(windowElement);
-
+    strip.style.display = "block";
     strip.style.transform = "translateY(0)";
     strip.style.transition = "none";
 
-    const targetIndex = totalSymbols;
-    const targetPosition = targetIndex * rowHeight;
+    windowElement.appendChild(strip);
+    element.replaceChildren(windowElement);
 
-    const start = performance.now();
-    const startDuration = duration;
+    // Даём браузеру отобразить начальное положение барабана.
+    await new Promise(resolve =>
+        requestAnimationFrame(() =>
+            requestAnimationFrame(resolve)
+        )
+    );
 
-    while (performance.now() - start < startDuration) {
-        const progress = Math.min(
-            1,
-            (performance.now() - start) / startDuration
-        );
+    const targetPosition = totalSymbols * rowHeight;
 
-        const eased = 1 - Math.pow(1 - progress, 2.4);
-        const position = targetPosition * eased;
+    strip.style.transition =
+        `transform ${duration}ms cubic-bezier(.08,.72,.12,1)`;
 
-        strip.style.transform = `translateY(-${position}px)`;
+    strip.style.transform =
+        `translateY(-${targetPosition}px)`;
 
-        if (dramatic && progress > 0.72) {
-            await sleep(75 + progress * 65);
-        } else {
-            await sleep(32);
-        }
-    }
-
-    strip.style.transition = dramatic
-        ? "transform 1.5s cubic-bezier(.12,.75,.18,1)"
-        : "transform .65s cubic-bezier(.12,.75,.18,1)";
-
-    strip.style.transform = `translateY(-${targetPosition}px)`;
-
-    await sleep(dramatic ? 1600 : 700);
+    await sleep(duration + 100);
 
     element.textContent = finalChar;
 }
@@ -178,24 +176,20 @@ async function animatePlate(finalPlate, rarity) {
     const mainFinal = parts[0];
     const regionFinal = parts[1] || "77";
 
-    const mainChars = Array.from(mainFinal);
-    const regionChars = Array.from(regionFinal);
-
     const color = rarityColors[rarity] || rarityColors.Common;
-
     $("plate").style.setProperty("--rarity-color", color);
 
     main.replaceChildren();
     region.replaceChildren();
 
-    const mainSlots = mainChars.map(() => {
+    const mainSlots = Array.from(mainFinal, () => {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
         main.appendChild(slot);
         return slot;
     });
 
-    const regionSlots = regionChars.map(() => {
+    const regionSlots = Array.from(regionFinal, () => {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
         region.appendChild(slot);
@@ -206,11 +200,11 @@ async function animatePlate(finalPlate, rarity) {
     const epic = rarity === "Epic";
 
     const allSlots = [
-        ...mainChars.map((char, index) => ({
+        ...Array.from(mainFinal, (char, index) => ({
             element: mainSlots[index],
             char
         })),
-        ...regionChars.map((char, index) => ({
+        ...Array.from(regionFinal, (char, index) => ({
             element: regionSlots[index],
             char
         }))
@@ -222,10 +216,11 @@ async function animatePlate(finalPlate, rarity) {
 
         await rollSlot(slot.element, slot.char, {
             duration: isLast
-                ? (rare ? 4200 : epic ? 3400 : 2600)
-                : 1700 + i * 280,
-            extraTurns: isLast ? (rare ? 5 : epic ? 3 : 1) : 0,
-            dramatic: isLast
+                ? (rare ? 4200 : epic ? 3400 : 2400)
+                : 1100 + i * 180,
+            extraTurns: isLast
+                ? (rare ? 7 : epic ? 4 : 2)
+                : 0
         });
     }
 
@@ -235,6 +230,7 @@ async function animatePlate(finalPlate, rarity) {
     setRarityEffect(rarity);
     await sleep(rarity === "Mythic" ? 1300 : 550);
 }
+
 
 let freeSpinTimer = null;
 let freeSpinSeconds = 0;

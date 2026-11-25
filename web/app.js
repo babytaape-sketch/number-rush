@@ -213,29 +213,20 @@ async function animatePlate(finalPlate, rarity) {
         return;
     }
 
-    const parts = finalPlate.trim().split(/\s+/);
+    const parts = finalPlate.trim().split(/\\s+/);
     const mainFinal = parts[0];
     const regionFinal = parts[1] || "77";
 
     main.replaceChildren();
     region.replaceChildren();
 
-    const slots = [];
+    const mainSlots = [];
+    const regionSlots = [];
 
     main.style.justifyContent = "center";
     main.style.gap = "0.02em";
     region.style.justifyContent = "center";
     region.style.gap = "0.02em";
-
-    for (const char of mainFinal) {
-        const cell = document.createElement("span");
-        cell.className = "slot-cell";
-        cell.style.flex = "1 1 0";
-        cell.style.width = "0";
-        main.appendChild(cell);
-
-        slots.push({ element: cell, char });
-    }
 
     for (const char of regionFinal) {
         const cell = document.createElement("span");
@@ -244,27 +235,42 @@ async function animatePlate(finalPlate, rarity) {
         cell.style.width = "0";
         region.appendChild(cell);
 
-        slots.push({ element: cell, char });
+        regionSlots.push({ element: cell, char });
     }
 
+    for (const char of mainFinal) {
+        const cell = document.createElement("span");
+        cell.className = "slot-cell";
+        cell.style.flex = "1 1 0";
+        cell.style.width = "0";
+        main.appendChild(cell);
+
+        mainSlots.push({ element: cell, char });
+    }
+
+    // Сначала быстро останавливается регион.
+    await Promise.all(
+        regionSlots.map(slot =>
+            rollSlot(slot.element, slot.char, { duration: 650 })
+        )
+    );
+
+    // Затем прокручивается основной номер.
     const rare = rarity === "Legendary" || rarity === "Mythic";
     const epic = rarity === "Epic";
 
     await Promise.all(
-        slots.map((slot, index) => {
-            const isLast = index === slots.length - 1;
-
-            return rollSlot(slot.element, slot.char, {
-                duration: isLast
+        mainSlots.map((slot, index) =>
+            rollSlot(slot.element, slot.char, {
+                duration: index === mainSlots.length - 1
                     ? (rare ? 5200 : epic ? 4200 : 3200)
                     : 2300 + index * 250,
                 delay: index * 180
-            });
-        })
+            })
+        )
     );
 
     setRarityEffect(rarity);
-
     await sleep(500);
 }
 

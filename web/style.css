@@ -1287,3 +1287,21 @@ footer {
         padding: 2px 0 4px !important;
     }
 }
+
+
+/* Последняя коррекция: сжимаем глифы по вертикали, не меняя ширину номера */
+.profile-rarest-plate .mini-plate-main {
+    font-size: 43px !important;
+    line-height: 1 !important;
+    transform: scaleY(.68) !important;
+    transform-origin: center center !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    top: 0 !important;
+}
+@media (max-width: 520px) {
+    .profile-rarest-plate .mini-plate-main {
+        font-size: 38px !important;
+        transform: scaleY(.68) !important;
+    }
+}

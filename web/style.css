@@ -86,15 +86,47 @@ h1 span {
     color: var(--blue);
 }
 
-/* Основной номерной знак */
+/* Номерной знак */
+
+.plate,
+.mini-plate {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    overflow: hidden;
+    aspect-ratio: 520 / 112;
+    background: linear-gradient(180deg, #fff, #e5e8eb);
+    border: 3px solid #d9e0e8;
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,.8),
+        0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
+        inset 0 2px 5px rgba(255,255,255,.9),
+        inset 0 -3px 5px rgba(0,0,0,.18);
+}
+
+.plate {
+    --rarity-color: #b9c3d0;
+    width: min(100%, 380px);
+    margin: 0 auto;
+}
+
+.mini-plate {
+    --rarity-color: #b9c3d0;
+    width: min(190px, 48vw);
+    flex: 0 0 auto;
+    border-width: 2px;
+    border-radius: 5px;
+}
 
 .plate-main,
 .mini-plate-main {
-    flex: 1 1 82%;
+    flex: 0 0 82%;
     min-width: 0;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     padding: 0 1%;
     overflow: hidden;
     color: #101318;
@@ -103,11 +135,13 @@ h1 span {
     white-space: nowrap;
     letter-spacing: -1px;
     line-height: 1;
+    writing-mode: horizontal-tb;
 }
 
 .plate-main {
     font-size: clamp(31px, 9vw, 49px);
 }
+
 .plate-region,
 .mini-plate-region {
     flex: 0 0 18%;
@@ -123,8 +157,15 @@ h1 span {
 
 .region-code,
 .mini-region-code {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
     font-weight: 900;
     line-height: 1;
+    white-space: nowrap;
+    writing-mode: horizontal-tb;
 }
 
 .region-code {
@@ -277,19 +318,12 @@ nav {
     min-width: 0;
 }
 
-/* Тот же знак, только уменьшенный */
-
-.mini-plate {
-    --rarity-color: #b9c3d0;
-    width: min(190px, 48vw);
-    flex: 0 0 auto;
-    border-width: 2px;
-    border-radius: 5px;
-}
+/* Уменьшенный номер в коллекции */
 
 .mini-plate-main {
     font-size: clamp(13px, 3.5vw, 20px);
-    padding: 0 2%;
+    letter-spacing: -0.5px;
+    padding: 0 1%;
 }
 
 .mini-plate-region {
@@ -329,23 +363,25 @@ nav {
     text-align: center;
 }
 
-/* Прокрутка символов */
+/* Анимация прокрутки символов */
 
 .slot-cell {
     display: flex;
     flex: 1 1 0;
+    width: 0;
     min-width: 0;
     height: 100%;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     line-height: 1;
+    writing-mode: horizontal-tb;
 }
 
 .slot-window {
     display: block;
     width: 100%;
-    height: 100%;
     overflow: hidden;
     line-height: 1;
 }
@@ -368,17 +404,7 @@ nav {
     line-height: 1;
 }
 
-.slot-symbol {
-    display: flex;
-    flex: 0 0 1em;
-    width: 100%;
-    height: 1em;
-    align-items: center;
-    justify-content: center;
-    color: inherit;
-    font: inherit;
-    line-height: 1;
-}
+/* Эффекты редкости */
 
 .plate.rarity-flash {
     animation: rarityFlash .8s ease-out;
@@ -396,6 +422,8 @@ nav {
 .plate[data-rarity="Legendary"] { --rarity-color: #ffc247; }
 .plate[data-rarity="Mythic"] { --rarity-color: #ff563f; }
 
+/* Подвал */
+
 footer {
     padding: 22px 0 8px;
     border-top: 1px solid rgba(255,255,255,.1);
@@ -408,6 +436,8 @@ footer {
 footer span {
     color: var(--blue);
 }
+
+/* Маленькие экраны */
 
 @media (max-width: 380px) {
     .app {
@@ -426,36 +456,4 @@ footer span {
     .item {
         padding: 10px;
     }
-}
-
-/* Исправление горизонтального расположения номера */
-
-.plate-main,
-.mini-plate-main,
-.region-code,
-.mini-region-code {
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    white-space: nowrap !important;
-}
-
-.plate-main,
-.mini-plate-main {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    min-width: 0;
-}
-
-.slot-cell {
-    display: flex !important;
-    flex-direction: row !important;
-    flex: 1 1 0 !important;
-    width: 0;
-    min-width: 0;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    writing-mode: horizontal-tb !important;
 }

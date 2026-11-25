@@ -1000,3 +1000,24 @@ footer {
         margin-right: -2px;
     }
 }
+.region-country {
+    justify-self: end;
+    margin-right: 2px;
+    font-size: 18px;
+}
+
+.region-flag {
+    justify-self: start;
+    margin-left: 2px;
+}
+
+@media (max-width: 520px) {
+    .region-country {
+        margin-right: 2px;
+        font-size: 16px;
+    }
+
+    .region-flag {
+        margin-left: 2px;
+    }
+}

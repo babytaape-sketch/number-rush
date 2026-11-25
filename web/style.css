@@ -842,3 +842,62 @@ footer {
         font-size: clamp(16px, 4.5vw, 22px);
     }
 }
+/* Увеличиваем и поднимаем правую секцию номера */
+
+.plate-region {
+    padding: 3px 8px 10px;
+    grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.region-code {
+    font-size: clamp(34px, 5.8vw, 62px);
+}
+
+.region-country {
+    font-size: clamp(11px, 1.5vw, 18px);
+    align-self: center;
+}
+
+.region-flag {
+    width: clamp(25px, 3.5vw, 44px);
+    height: clamp(16px, 2.2vw, 28px);
+    align-self: center;
+}
+
+/* Компактные таблички коллекции */
+
+.mini-plate-region {
+    padding: 2px 4px 5px;
+}
+
+.mini-region-code {
+    font-size: clamp(19px, 2.5vw, 28px);
+}
+
+.mini-region-country {
+    font-size: clamp(7px, .9vw, 11px);
+}
+
+.mini-region-flag {
+    width: clamp(15px, 1.8vw, 22px);
+    height: clamp(10px, 1.2vw, 14px);
+}
+
+@media (max-width: 520px) {
+    .plate-region {
+        padding: 2px 4px 7px;
+    }
+
+    .region-code {
+        font-size: clamp(30px, 8vw, 40px);
+    }
+
+    .region-country {
+        font-size: 9px;
+    }
+
+    .region-flag {
+        width: 21px;
+        height: 14px;
+    }
+}

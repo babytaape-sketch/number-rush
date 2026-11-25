@@ -183,21 +183,15 @@ def update_daily_task(con, uid, task_key, now=None):
         (uid, today, task_key)
     ).fetchone()
 
-    if row["claimed"]:
+    if row["claimed"] or row["progress"] >= task["target"]:
         return
 
     progress = min(task["target"], row["progress"] + 1)
-    claimed = int(progress >= task["target"])
     con.execute(
-        """UPDATE daily_task_progress SET progress=?, claimed=?
+        """UPDATE daily_task_progress SET progress=?
         WHERE user_id=? AND task_date=? AND task_key=?""",
-        (progress, claimed, uid, today, task_key)
+        (progress, uid, today, task_key)
     )
-    if claimed:
-        con.execute(
-            "UPDATE users SET coins=coins+? WHERE user_id=?",
-            (task["reward"], uid)
-        )
 
 
 @app.get("/api/daily-tasks")
@@ -226,11 +220,45 @@ def get_daily_tasks(authorization: str | None = Header(default=None)):
             {
                 **task,
                 "progress": progress[task["key"]]["progress"],
-                "completed": bool(progress[task["key"]]["claimed"]),
+                "completed": int(progress[task["key"]]["progress"]) >= task["target"],
+                "claimed": bool(progress[task["key"]]["claimed"]),
             }
             for task in DAILY_TASKS
         ]
     }
+
+
+@app.post("/api/daily-tasks/{task_key}/claim")
+def claim_daily_task(task_key: str, authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    task = next((item for item in DAILY_TASKS if item["key"] == task_key), None)
+    if not task:
+        raise HTTPException(404, "Задание не найдено")
+
+    today = daily_task_date()
+    with db() as con:
+        row = con.execute(
+            """SELECT progress, claimed FROM daily_task_progress
+            WHERE user_id=? AND task_date=? AND task_key=?""",
+            (user["user_id"], today, task_key)
+        ).fetchone()
+
+        if not row or row["progress"] < task["target"]:
+            raise HTTPException(400, "Сначала выполни задание")
+        if row["claimed"]:
+            raise HTTPException(400, "Награда уже получена")
+
+        con.execute(
+            """UPDATE daily_task_progress SET claimed=1
+            WHERE user_id=? AND task_date=? AND task_key=? AND claimed=0""",
+            (user["user_id"], today, task_key)
+        )
+        con.execute(
+            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            (task["reward"], user["user_id"])
+        )
+
+    return {"ok": True, "reward": task["reward"]}
 
 
 # =========================================================

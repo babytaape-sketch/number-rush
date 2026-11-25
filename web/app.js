@@ -547,7 +547,6 @@ function renderCollection() {
     const query = ($("collection-search")?.value || "").trim().toLowerCase();
     const rarity = $("collection-rarity")?.value || "all";
     const sort = $("collection-sort")?.value || "newest";
-    const status = $("collection-status")?.value || "all";
 
     let rows = collectionCache.filter(p => {
         const matchesSearch = !query ||
@@ -555,9 +554,7 @@ function renderCollection() {
             String(rarityNames[p.rarity] || p.rarity).toLowerCase().includes(query) ||
             (p.tags || []).some(tag => String(tag).toLowerCase().includes(query));
         const matchesRarity = rarity === "all" || p.rarity === rarity;
-        const matchesStatus = status === "all" ||
-            (status === "listed" ? !!p.is_listed : !p.is_listed);
-        return matchesSearch && matchesRarity && matchesStatus;
+        return matchesSearch && matchesRarity;
     });
 
     if (sort === "cheap") rows.sort((a,b) => Number(a.market_value || 0) - Number(b.market_value || 0));
@@ -592,7 +589,7 @@ function renderCollection() {
         : '<div class="empty">По этим фильтрам номеров нет.</div>';
 }
 
-["collection-search", "collection-rarity", "collection-sort", "collection-status"].forEach(id => {
+["collection-search", "collection-rarity", "collection-sort"].forEach(id => {
     $(id)?.addEventListener("input", renderCollection);
     $(id)?.addEventListener("change", renderCollection);
 });

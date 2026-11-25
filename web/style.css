@@ -91,107 +91,38 @@ h1 span {
 
 
 .plate,
+
 .mini-plate {
-    display: flex;
-    align-items: stretch;
-    overflow: hidden;
+    width: min(190px, 48vw);
+    flex: 0 0 auto;
     aspect-ratio: 520 / 112;
-    background: linear-gradient(180deg, #fff 0%, #e5e8eb 100%);
-    border: 3px solid #d9e0e8;
-    border-radius: 9px;
-    box-shadow:
-        0 0 0 2px rgba(0,0,0,.8),
-        0 0 18px color-mix(in srgb, var(--rarity-color, #b9c3d0) 65%, transparent),
-        inset 0 2px 5px rgba(255,255,255,.9),
-        inset 0 -3px 5px rgba(0,0,0,.18);
+    border-width: 2px;
+    border-radius: 5px;
 }
 
-.plate {
-    width: min(100%, 380px);
-    margin: 0 auto;
-    position: relative;
-    --rarity-color: #b9c3d0;
-}
-
-.plate-main,
 .mini-plate-main {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 9px;
-    color: #101318;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-    white-space: nowrap;
-    letter-spacing: .015em;
-    text-shadow: 0 1px 0 rgba(255,255,255,.8);
+    font-size: clamp(13px, 6.5vw, 25px);
+    padding: 0 5px;
 }
 
-.plate-main {
-    font-size: clamp(27px, 8vw, 44px);
-}
-
-.plate-region,
 .mini-plate-region {
-    flex: 0 0 18%;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-left: 2px solid #252a30;
-    color: #11151a;
-    background: linear-gradient(180deg, #fff, #e3e7eb);
+    flex-basis: 18%;
+    border-left-width: 1px;
 }
 
-.region-code,
 .mini-region-code {
-    font-weight: 900;
-    line-height: 1;
+    font-size: clamp(9px, 3.5vw, 14px);
 }
 
-.region-code {
-    font-size: clamp(17px, 5vw, 25px);
-}
-
-.region-country,
 .mini-region-country {
-    font-size: 8px;
-    font-weight: 900;
-    line-height: 1.2;
+    font-size: 5px;
 }
 
-.region-flag,
 .mini-region-flag {
-    display: flex;
-    flex-direction: column;
-    width: 23px;
-    height: 12px;
-    border: 1px solid #999;
-    overflow: hidden;
+    width: 14px;
+    height: 7px;
 }
 
-.region-flag span,
-.mini-region-flag span {
-    flex: 1;
-}
-
-.region-flag span:nth-child(1),
-.mini-region-flag span:nth-child(1) {
-    background: #fff;
-}
-
-.region-flag span:nth-child(2),
-.mini-region-flag span:nth-child(2) {
-    background: #1746a2;
-}
-
-.region-flag span:nth-child(3),
-.mini-region-flag span:nth-child(3) {
-    background: #d52b35;
-}
 
 
 .rarity {

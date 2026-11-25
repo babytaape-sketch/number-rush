@@ -479,10 +479,10 @@ def spin(authorization: str | None = Header(default=None)):
                 "Not enough coins. One spin costs 100 coins."
             )
 
-        rarity = weighted_rarity()
+        plate_data = generate_plate_details()
+        number = plate_data["number"]
+        rarity = plate_data["rarity"]
         reward = next(r for n, c, r in RARITIES if n == rarity)
-        number = generate_plate()
-
         con.execute(
             "UPDATE users SET coins=coins+? WHERE user_id=?",
             (reward, uid)

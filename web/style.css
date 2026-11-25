@@ -2,29 +2,26 @@
 :root {
     color-scheme: dark;
     --bg: #080b10;
-    --panel: rgba(10, 17, 26, .94);
     --text: #f4f7fb;
     --muted: #94a3b8;
     --blue: #168cff;
-    --rarity-color: #b9c3d0;
 }
 
 * {
     box-sizing: border-box;
 }
 
-html {
+html, body {
+    margin: 0;
     min-height: 100%;
     background: var(--bg);
 }
 
 body {
-    margin: 0;
-    min-height: 100vh;
     color: var(--text);
     font-family: Arial, Helvetica, sans-serif;
     background:
-        linear-gradient(180deg, rgba(3, 8, 14, .76), rgba(3, 8, 14, .94)),
+        linear-gradient(180deg, rgba(3,8,14,.76), rgba(3,8,14,.96)),
         url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=85")
         center / cover fixed;
 }
@@ -37,8 +34,8 @@ button {
     width: min(100%, 560px);
     min-height: 100vh;
     margin: 0 auto;
-    padding: 18px 18px 24px;
-    background: linear-gradient(180deg, rgba(5, 10, 17, .82), rgba(5, 10, 17, .96));
+    padding: 18px;
+    background: rgba(5,10,17,.82);
 }
 
 header {
@@ -62,7 +59,7 @@ header {
     padding: 10px 14px;
     border: 1px solid rgba(255,255,255,.12);
     border-radius: 12px;
-    background: rgba(12, 21, 32, .85);
+    background: rgba(12,21,32,.85);
 }
 
 .hero {
@@ -89,45 +86,118 @@ h1 span {
     color: var(--blue);
 }
 
+/* Основной номерной знак */
 
 .plate,
-
 .mini-plate {
-    width: min(190px, 48vw);
-    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    overflow: hidden;
     aspect-ratio: 520 / 112;
-    border-width: 2px;
-    border-radius: 5px;
+    background: linear-gradient(180deg, #fff, #e5e8eb);
+    border: 3px solid #d9e0e8;
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,.8),
+        0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
+        inset 0 2px 5px rgba(255,255,255,.9),
+        inset 0 -3px 5px rgba(0,0,0,.18);
 }
 
+.plate {
+    --rarity-color: #b9c3d0;
+    width: min(100%, 380px);
+    margin: 0 auto;
+}
+
+.plate-main,
 .mini-plate-main {
-    font-size: clamp(13px, 6.5vw, 25px);
-    padding: 0 5px;
+    flex: 1 1 82%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 2%;
+    overflow: hidden;
+    color: #101318;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+    white-space: nowrap;
+    letter-spacing: 0;
+    line-height: 1;
 }
 
+.plate-main {
+    font-size: clamp(27px, 8vw, 43px);
+}
+
+.plate-region,
 .mini-plate-region {
-    flex-basis: 18%;
-    border-left-width: 1px;
+    flex: 0 0 18%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-left: 2px solid #252a30;
+    color: #11151a;
+    background: linear-gradient(180deg, #fff, #e3e7eb);
 }
 
+.region-code,
 .mini-region-code {
-    font-size: clamp(9px, 3.5vw, 14px);
+    font-weight: 900;
+    line-height: 1;
 }
 
+.region-code {
+    font-size: clamp(17px, 5vw, 25px);
+}
+
+.region-country,
 .mini-region-country {
-    font-size: 5px;
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1.2;
 }
 
+.region-flag,
 .mini-region-flag {
-    width: 14px;
-    height: 7px;
+    display: flex;
+    flex-direction: column;
+    width: 23px;
+    height: 12px;
+    border: 1px solid #999;
+    overflow: hidden;
 }
 
+.region-flag span,
+.mini-region-flag span {
+    display: block;
+    flex: 1;
+}
 
+.region-flag span:nth-child(1),
+.mini-region-flag span:nth-child(1) {
+    background: #fff;
+}
+
+.region-flag span:nth-child(2),
+.mini-region-flag span:nth-child(2) {
+    background: #1746a2;
+}
+
+.region-flag span:nth-child(3),
+.mini-region-flag span:nth-child(3) {
+    background: #d52b35;
+}
+
+/* Редкость и кнопка */
 
 .rarity {
     margin: 22px 0;
-    color: var(--rarity-color);
+    color: var(--rarity-color, #b9c3d0);
     font-size: 14px;
     font-weight: 900;
     letter-spacing: 1.5px;
@@ -141,7 +211,7 @@ h1 span {
     border-radius: 13px;
     color: white;
     background: linear-gradient(135deg, #168cff, #0754bd);
-    box-shadow: 0 8px 24px rgba(0, 112, 255, .25);
+    box-shadow: 0 8px 24px rgba(0,112,255,.25);
     font-size: 15px;
     font-weight: 900;
     letter-spacing: 1px;
@@ -158,6 +228,8 @@ h1 span {
     font-size: 13px;
 }
 
+/* Вкладки */
+
 nav {
     display: flex;
     gap: 8px;
@@ -165,7 +237,7 @@ nav {
     padding: 5px;
     border: 1px solid rgba(255,255,255,.1);
     border-radius: 13px;
-    background: rgba(10, 17, 26, .9);
+    background: rgba(10,17,26,.9);
 }
 
 .tab {
@@ -197,6 +269,8 @@ nav {
     display: none !important;
 }
 
+/* Коллекция и рынок */
+
 .items {
     display: flex;
     flex-direction: column;
@@ -212,7 +286,7 @@ nav {
     padding: 13px;
     border: 1px solid rgba(255,255,255,.1);
     border-radius: 13px;
-    background: rgba(10, 18, 28, .92);
+    background: rgba(10,18,28,.92);
 }
 
 .collection-item {
@@ -227,17 +301,19 @@ nav {
     min-width: 0;
 }
 
+/* Тот же знак, только уменьшенный */
+
 .mini-plate {
+    --rarity-color: #b9c3d0;
     width: min(190px, 48vw);
+    flex: 0 0 auto;
     border-width: 2px;
     border-radius: 5px;
-    box-shadow:
-        0 0 0 1px rgba(0,0,0,.8),
-        0 0 10px color-mix(in srgb, var(--rarity-color) 55%, transparent);
 }
 
 .mini-plate-main {
-    font-size: clamp(12px, 3.4vw, 20px);
+    font-size: clamp(13px, 3.5vw, 20px);
+    padding: 0 2%;
 }
 
 .mini-plate-region {
@@ -277,6 +353,61 @@ nav {
     text-align: center;
 }
 
+/* Прокрутка символов */
+
+.slot-cell {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    height: 1em;
+    line-height: 1;
+}
+
+.slot-window {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    line-height: 1;
+}
+
+.slot-strip {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    will-change: transform;
+}
+
+.slot-symbol {
+    display: flex;
+    flex: 0 0 1em;
+    width: 100%;
+    height: 1em;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    font: inherit;
+    line-height: 1;
+}
+
+.plate.rarity-flash {
+    animation: rarityFlash .8s ease-out;
+}
+
+@keyframes rarityFlash {
+    0% { transform: scale(1); filter: brightness(1); }
+    35% { transform: scale(1.035); filter: brightness(1.65); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+.plate[data-rarity="Uncommon"] { --rarity-color: #36d477; }
+.plate[data-rarity="Rare"] { --rarity-color: #3294ff; }
+.plate[data-rarity="Epic"] { --rarity-color: #ae63ff; }
+.plate[data-rarity="Legendary"] { --rarity-color: #ffc247; }
+.plate[data-rarity="Mythic"] { --rarity-color: #ff563f; }
+
 footer {
     padding: 22px 0 8px;
     border-top: 1px solid rgba(255,255,255,.1);
@@ -288,81 +419,6 @@ footer {
 
 footer span {
     color: var(--blue);
-}
-
-/* Анимация прокрутки символов */
-
-.slot-cell {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 0;
-    overflow: hidden;
-    height: 1.15em;
-    vertical-align: middle;
-}
-
-.slot-window {
-    display: block;
-    height: 1em;
-    overflow: hidden;
-    line-height: 1;
-}
-
-.slot-strip {
-    display: flex;
-    flex-direction: column;
-    will-change: transform;
-}
-
-.slot-symbol {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 1em;
-    height: 1em;
-    line-height: 1;
-    font: inherit;
-    color: inherit;
-}
-
-.plate.rarity-flash {
-    animation: rarityFlash .8s ease-out;
-}
-
-@keyframes rarityFlash {
-    0% {
-        transform: scale(1);
-        filter: brightness(1);
-    }
-    35% {
-        transform: scale(1.035);
-        filter: brightness(1.65);
-    }
-    100% {
-        transform: scale(1);
-        filter: brightness(1);
-    }
-}
-
-.plate[data-rarity="Uncommon"] {
-    --rarity-color: #36d477;
-}
-
-.plate[data-rarity="Rare"] {
-    --rarity-color: #3294ff;
-}
-
-.plate[data-rarity="Epic"] {
-    --rarity-color: #ae63ff;
-}
-
-.plate[data-rarity="Legendary"] {
-    --rarity-color: #ffc247;
-}
-
-.plate[data-rarity="Mythic"] {
-    --rarity-color: #ff563f;
 }
 
 @media (max-width: 380px) {
@@ -383,123 +439,3 @@ footer span {
         padding: 10px;
     }
 }
-
-
-/* FIX: единая пропорциональная конструкция номера */
-
-#plate {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: stretch !important;
-    width: 100% !important;
-    max-width: 380px !important;
-    aspect-ratio: 520 / 112 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-    background: linear-gradient(180deg, #fff, #e5e8eb) !important;
-    border: 3px solid #d9e0e8 !important;
-    border-radius: 9px !important;
-}
-
-#plate .plate-main {
-    display: flex !important;
-    flex: 1 1 82% !important;
-    min-width: 0 !important;
-    height: 100% !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    padding: 0 3% !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    color: #101318 !important;
-    font-size: clamp(20px, 7vw, 42px) !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-}
-
-#plate .plate-region {
-    display: flex !important;
-    flex: 0 0 18% !important;
-    min-width: 0 !important;
-    height: 100% !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-left: 2px solid #252a30 !important;
-    background: linear-gradient(180deg, #fff, #e3e7eb) !important;
-    color: #111 !important;
-}
-
-#plate .region-code {
-    font-size: clamp(15px, 4.5vw, 24px) !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-}
-
-#plate .region-country {
-    font-size: 8px !important;
-    line-height: 1.2 !important;
-}
-
-#plate .region-flag {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 23px !important;
-    height: 12px !important;
-    overflow: hidden !important;
-}
-
-#plate .region-flag span {
-    display: block !important;
-    flex: 1 !important;
-}
-
-#plate .region-flag span:nth-child(1) { background: #fff !important; }
-#plate .region-flag span:nth-child(2) { background: #1746a2 !important; }
-#plate .region-flag span:nth-child(3) { background: #d52b35 !important; }
-
-/* Уменьшенная копия номера в коллекции */
-
-.mini-plate {
-    display: flex !important;
-    flex-direction: row !important;
-    width: 190px !important;
-    max-width: 48vw !important;
-    aspect-ratio: 520 / 112 !important;
-    height: auto !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-    background: linear-gradient(180deg, #fff, #e5e8eb) !important;
-}
-
-.mini-plate-main {
-    display: flex !important;
-    flex: 1 1 82% !important;
-    min-width: 0 !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    padding: 0 2% !important;
-    white-space: nowrap !important;
-    color: #101318 !important;
-    font-size: 20px !important;
-    font-weight: 900 !important;
-    line-height: 1 !important;
-}
-
-.mini-plate-region {
-    display: flex !important;
-    flex: 0 0 18% !important;
-    min-width: 0 !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-left: 1px solid #252a30 !important;
-}
-
-.mini-region-code { font-size: 12px !important; }
-.mini-region-country { font-size: 5px !important; }
-.mini-region-flag { width: 14px !important; height: 7px !important; }

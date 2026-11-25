@@ -413,6 +413,7 @@ async function refresh() {
         spinsElement.textContent = me.spins;
     }
 
+   
     // КОЛЛЕКЦИЯ
     const plates = await api("/api/collection");
     const itemsElement = $("items");
@@ -427,6 +428,12 @@ async function refresh() {
                         ${renderTags(p.tags)}
                     </div>
                     <strong>#${p.id}</strong>
+                    <button
+                        class="market-action"
+                        data-list-plate="${p.id}"
+                    >
+                        ВЫСТАВИТЬ
+                    </button>
                 </div>
             `).join("")
             : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';
@@ -445,12 +452,18 @@ async function refresh() {
                         <small>${escapeHtml(p.rarity)}</small>
                         ${renderTags(p.tags)}
                     </div>
-                    <strong>${p.price} 🪙</strong>
+                    <div class="market-price">
+                        <strong>${Number(p.price).toLocaleString("ru-RU")} 🪙</strong>
+                        ${
+                            p.is_mine
+                                ? `<button class="market-action cancel" data-cancel-listing="${p.listing_id}">СНЯТЬ</button>`
+                                : `<button class="market-action" data-buy-listing="${p.listing_id}">КУПИТЬ</button>`
+                        }
+                    </div>
                 </div>
             `).join("")
             : '<div class="empty">На рынке пока пусто.</div>';
     }
-}
 
 
 // =========================================================

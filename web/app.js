@@ -132,7 +132,7 @@ async function rollSlot(element, finalChar, options = {}) {
     windowElement.style.height = `${symbolHeight}px`;
     windowElement.style.overflow = "hidden";
 
-    const totalSymbols = options.totalSymbols || 30;
+    const totalSymbols = options.totalSymbols || 22;
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
@@ -161,15 +161,14 @@ async function rollSlot(element, finalChar, options = {}) {
     const distance = totalSymbols * symbolHeight;
 
     if (strip.animate) {
-        const cruiseDistance = distance * 0.88;
         const animation = strip.animate(
             [
-                { transform: "translateY(0)", easing: "linear" },
-                { transform: `translateY(-${cruiseDistance}px)`, easing: "cubic-bezier(.18,.72,.25,1)" },
-                { transform: `translateY(-${distance}px)` }
+                { transform: "translate3d(0, 0, 0)" },
+                { transform: `translate3d(0, -${distance}px, 0)` }
             ],
             {
                 duration,
+                easing: "cubic-bezier(.22,.61,.36,1)",
                 fill: "forwards"
             }
         );
@@ -181,24 +180,11 @@ async function rollSlot(element, finalChar, options = {}) {
 
         await new Promise(resolve => {
             function frame(now) {
-                const progress = Math.min(
-                    1,
-                    (now - start) / duration
-                );
-
-                const cruiseProgress = 0.88;
-                let easedProgress;
-
-                if (progress < cruiseProgress) {
-                    easedProgress = progress;
-                } else {
-                    const tail = (progress - cruiseProgress) / (1 - cruiseProgress);
-                    easedProgress = cruiseProgress + (1 - cruiseProgress) *
-                        (1 - Math.pow(1 - tail, 3));
-                }
+                const progress = Math.min(1, (now - start) / duration);
+                const eased = 1 - Math.pow(1 - progress, 3);
 
                 strip.style.transform =
-                    `translateY(-${distance * easedProgress}px)`;
+                    `translate3d(0, -${distance * eased}px, 0)`;
 
                 if (progress < 1) {
                     requestAnimationFrame(frame);
@@ -244,7 +230,7 @@ async function animatePlate(finalPlate, rarity) {
         regionSlots.map((slot, index) =>
             rollSlot(slot, regionChars[index], {
                 duration: 1350,
-                totalSymbols: 26
+                totalSymbols: 22
             })
         )
     );
@@ -290,9 +276,7 @@ async function animatePlate(finalPlate, rarity) {
             return rollSlot(slot, mainChars[index], {
                 duration: baseDuration + index * stopInterval +
                     (isSuspense ? suspenseExtra + randomExtra : 0),
-                totalSymbols: 26 + (isSuspense
-                    ? 10 + rarityLevel * 3 + Math.floor(Math.random() * 8)
-                    : 0)
+                totalSymbols: 22
             });
         })
     );

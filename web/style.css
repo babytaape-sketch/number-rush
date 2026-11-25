@@ -1076,3 +1076,24 @@ footer {
 .mini-plate-main {
     padding-top: .06em;
 }
+
+
+/* Полные таблички номеров на рынке и в профиле */
+.market-plate-wrap,
+.profile-rarest-plate {
+    width: min(100%, 360px);
+    margin: 8px 0;
+}
+
+.market-plate-wrap .mini-plate,
+.profile-rarest-plate .mini-plate {
+    width: 100%;
+    align-self: stretch;
+}
+
+.profile-rarest-plate > small {
+    display: block;
+    margin-top: 6px;
+    color: #9baac1;
+    font-size: 12px;
+}

@@ -901,3 +901,46 @@ footer {
         height: 14px;
     }
 }
+/* Финальная настройка правой секции */
+
+.plate-region,
+.mini-plate-region {
+    grid-template-columns: auto auto;
+    justify-content: center;
+    column-gap: 3px;
+}
+
+.region-country,
+.mini-region-country {
+    justify-self: end;
+}
+
+.region-flag,
+.mini-region-flag {
+    justify-self: start;
+    margin-left: 0;
+}
+
+/* Код региона в коллекции чуть меньше */
+
+.mini-region-code {
+    font-size: clamp(17px, 2.2vw, 25px);
+}
+
+@media (max-width: 520px) {
+    .mini-region-code {
+        font-size: clamp(14px, 3.8vw, 19px);
+    }
+}
+
+/* Чуть более узкие таблички коллекции */
+
+.mini-plate {
+    width: 88%;
+}
+
+@media (max-width: 520px) {
+    .mini-plate {
+        width: 90%;
+    }
+}

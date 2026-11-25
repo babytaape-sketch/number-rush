@@ -475,7 +475,6 @@ async function quickSellPlate(plateId) {
         const result = await api(`/api/plates/${plateId}/quick-sell`, {
             method: "POST"
         });
-        alert(`Номер продан за ${Number(result.price).toLocaleString("ru-RU")} 🪙!`);
         await refresh();
     } catch (e) {
         alert(e.message);

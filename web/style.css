@@ -802,3 +802,43 @@ footer {
     font-weight: 400;
     letter-spacing: 0;
 }
+/* Размер кода региона — ближе к оригинальным номерам */
+.region-code {
+    font-size: clamp(32px, 5.5vw, 62px);
+}
+
+.mini-region-code {
+    font-size: clamp(19px, 2.4vw, 28px);
+}
+
+/* Настройка на мобильных устройствах */
+@media (max-width: 520px) {
+    .region-code {
+        font-size: clamp(28px, 8vw, 38px);
+    }
+
+    .mini-region-code {
+        font-size: clamp(16px, 5vw, 22px);
+    }
+}
+
+/* Компактные таблички в коллекции */
+.mini-plate {
+    width: 90%;
+    align-self: center;
+    aspect-ratio: 520 / 112;
+}
+
+.mini-plate-main {
+    font-size: clamp(18px, 2.5vw, 30px);
+}
+
+@media (max-width: 520px) {
+    .mini-plate {
+        width: 94%;
+    }
+
+    .mini-plate-main {
+        font-size: clamp(16px, 4.5vw, 22px);
+    }
+}

@@ -587,3 +587,181 @@ footer span {
         grid-template-columns: 1fr;
     }
 }
+
+/* NUMBER RUSH — финальные пропорции и спокойная палитра */
+
+:root {
+    --lime: #7898e8;
+    --blue: #7898e8;
+    --panel: #101d31;
+    --panel-border: #293d59;
+    --muted: #9baac1;
+}
+
+/* Спокойные сине-фиолетовые акценты */
+
+body {
+    background:
+        radial-gradient(ellipse at 50% 25%, #172b49 0%, #0c1729 48%, #070c16 100%);
+}
+
+.wallet {
+    border-color: rgba(120,152,232,.38);
+    background: #111e32;
+}
+
+#spin {
+    background: linear-gradient(110deg, #587bd0, #7898e8);
+    color: #fff;
+    box-shadow: 0 8px 25px rgba(90,125,215,.2);
+}
+
+nav {
+    border-color: #293d59;
+    background: #111e32;
+}
+
+.tab.active {
+    color: #91adff;
+    background: #091323;
+    box-shadow: inset 0 0 0 1px #405985;
+}
+
+.rarity {
+    color: var(--rarity-color, #91adff);
+}
+
+/* Главная табличка */
+
+.plate {
+    width: min(100%, 700px);
+    border-radius: 12px;
+}
+
+.plate-main {
+    font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+    font-size: clamp(44px, 12.5vw, 62px);
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    font-stretch: condensed;
+}
+
+/* Одинаковый принцип ширины символов, без наложения */
+
+.plate-main > .slot-cell {
+    flex: 0 0 .78em !important;
+    width: .78em !important;
+    min-width: .78em !important;
+    margin: 0;
+    padding: 0;
+}
+
+.region-code {
+    font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+    font-size: clamp(22px, 6vw, 34px);
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.region-code > .slot-cell {
+    flex: 0 0 .78em !important;
+    width: .78em !important;
+    min-width: .78em !important;
+    margin: 0;
+    padding: 0;
+}
+
+.plate-region {
+    padding: 4px 6px;
+}
+
+/* Карточки коллекции */
+
+#collection.panel,
+#market.panel {
+    padding: 18px;
+    border: 1px solid #293d59;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #112139, #0a1526);
+}
+
+.collection-item {
+    min-height: 0;
+    padding: 12px;
+    border: 1px solid #304765;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #142640, #0c192b);
+    gap: 12px;
+}
+
+.collection-plate-wrap {
+    gap: 10px;
+}
+
+.mini-plate {
+    width: 100%;
+    aspect-ratio: 520 / 112;
+    border-width: 2px;
+    border-radius: 7px;
+}
+
+.mini-plate-main {
+    font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+    font-size: clamp(17px, 4vw, 26px);
+    font-weight: 500;
+    letter-spacing: -0.5px;
+}
+
+.mini-region-code {
+    font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+    font-size: clamp(14px, 3vw, 21px);
+    font-weight: 500;
+}
+
+.collection-item > strong {
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    color: #91adff;
+    font-size: 15px;
+}
+
+.collection-plate-wrap small,
+.item small {
+    color: #9baac1;
+}
+
+footer {
+    border-color: #293d59;
+}
+
+@media (max-width: 520px) {
+    .plate-main {
+        font-size: clamp(44px, 12.5vw, 54px);
+    }
+
+    .plate-main > .slot-cell {
+        flex-basis: .78em !important;
+        width: .78em !important;
+        min-width: .78em !important;
+    }
+
+    .region-code {
+        font-size: clamp(22px, 6vw, 28px);
+    }
+
+    .region-code > .slot-cell {
+        flex-basis: .78em !important;
+        width: .78em !important;
+        min-width: .78em !important;
+    }
+
+    #collection.panel,
+    #market.panel {
+        padding: 12px;
+    }
+
+    .collection-item {
+        padding: 9px;
+    }
+}

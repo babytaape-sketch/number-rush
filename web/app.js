@@ -389,8 +389,29 @@ $("market-items").addEventListener("click", event => {
 // ОБНОВЛЕНИЕ ИГРЫ
 // =========================================================
 
+function renderProfile(me) {
+    const root = $("profile-content");
+    if (!root) return;
+    const u = tg?.initDataUnsafe?.user || {};
+    const name = u.first_name ? [u.first_name, u.last_name].filter(Boolean).join(" ") : me.username;
+    const avatar = u.photo_url
+        ? '<img class="profile-avatar" src="' + escapeHtml(u.photo_url) + '" alt="">'
+        : '<div class="profile-avatar profile-avatar-placeholder">👤</div>';
+    const date = me.created_at ? new Date(me.created_at * 1000).toLocaleDateString("ru-RU") : "—";
+    const rarest = me.rarest_plate ? escapeHtml(me.rarest_plate.number) + " · " + escapeHtml(me.rarest_plate.rarity) : "Пока нет номеров";
+    root.innerHTML = '<div class="profile-heading">' + avatar + '<div><strong>' + escapeHtml(name || "Игрок") + '</strong><small>ID: ' + escapeHtml(me.id) + '</small></div></div>' +
+      '<div class="profile-stats">' +
+      '<div><small>Монеты</small><b>' + Number(me.coins).toLocaleString("ru-RU") + ' 🪙</b></div>' +
+      '<div><small>Номеров сейчас</small><b>' + me.collection_count + '</b></div>' +
+      '<div><small>Всего спинов</small><b>' + me.total_spins + '</b></div>' +
+      '<div><small>Покупки</small><b>' + me.purchases_count + '</b></div>' +
+      '<div><small>Продажи</small><b>' + me.sales_count + '</b></div>' +
+      '<div><small>В игре с</small><b>' + date + '</b></div></div>' +
+      '<div class="profile-rarest"><small>Самый редкий номер</small><b>' + rarest + '</b></div>';
+}
 async function refresh() {
     const me = await api("/api/me");
+    renderProfile(me);
 
     freeSpinSeconds = Number(me.free_spin_seconds ?? 0);
 
@@ -532,6 +553,10 @@ document.querySelectorAll(".tab").forEach(btn => {
         $("market").classList.toggle(
             "hidden",
             btn.dataset.tab !== "market"
+        );
+        $("profile").classList.toggle(
+            "hidden",
+            btn.dataset.tab !== "profile"
         );
     });
 });

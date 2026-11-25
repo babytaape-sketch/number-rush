@@ -88,36 +88,6 @@ h1 span {
 
 /* Номерной знак */
 
-.plate,
-.mini-plate {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    overflow: hidden;
-    aspect-ratio: 520 / 112;
-    background: linear-gradient(180deg, #fff, #e5e8eb);
-    border: 3px solid #d9e0e8;
-    border-radius: 8px;
-    box-shadow:
-        0 0 0 2px rgba(0,0,0,.8),
-        0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
-        inset 0 2px 5px rgba(255,255,255,.9),
-        inset 0 -3px 5px rgba(0,0,0,.18);
-}
-
-.plate {
-    --rarity-color: #b9c3d0;
-    width: min(100%, 380px);
-    margin: 0 auto;
-}
-
-.mini-plate {
-    --rarity-color: #b9c3d0;
-    width: min(190px, 48vw);
-    flex: 0 0 auto;
-    border-width: 2px;
-    border-radius: 5px;
-}
 
 .plate-main,
 .mini-plate-main {
@@ -126,8 +96,8 @@ h1 span {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
-    padding: 0 1%;
+    justify-content: center;
+    padding: 0;
     overflow: hidden;
     color: #101318;
     font-family: Arial, Helvetica, sans-serif;
@@ -141,6 +111,7 @@ h1 span {
 .plate-main {
     font-size: clamp(31px, 9vw, 49px);
 }
+
 
 .plate-region,
 .mini-plate-region {
@@ -365,6 +336,7 @@ nav {
 
 /* Анимация прокрутки символов */
 
+
 .slot-cell {
     display: flex;
     flex: 1 1 0;
@@ -378,6 +350,7 @@ nav {
     line-height: 1;
     writing-mode: horizontal-tb;
 }
+
 
 .slot-window {
     display: block;

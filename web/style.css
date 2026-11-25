@@ -1305,3 +1305,93 @@ footer {
         transform: scaleY(.68) !important;
     }
 }
+
+
+/* Рынок NUMBER RUSH — поиск, фильтры и избранное */
+.market-tools {
+    display: grid;
+    gap: 10px;
+    margin: 14px 0 18px;
+    padding: 14px;
+    border: 1px solid #293d59;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #112139, #0a1526);
+}
+.market-search, .market-select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 12px 13px;
+    border: 1px solid #304765;
+    border-radius: 10px;
+    outline: none;
+    background: #0b1728;
+    color: #eef4ff;
+    font: inherit;
+    font-size: 13px;
+}
+.market-search:focus, .market-select:focus {
+    border-color: #ffc247;
+    box-shadow: 0 0 0 2px rgba(255,194,71,.12);
+}
+.market-search::placeholder { color: #71839d; }
+.market-filter-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.market-tools-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: #91a2bb;
+    font-size: 11px;
+}
+.market-favorites-only {
+    padding: 8px 11px;
+    border: 1px solid #304765;
+    border-radius: 9px;
+    background: #142640;
+    color: #c5d2e5;
+    font-size: 11px;
+    font-weight: 800;
+}
+.market-favorites-only.active {
+    border-color: #ffc247;
+    background: rgba(255,194,71,.14);
+    color: #ffc247;
+}
+.market-item { align-items: center; gap: 10px; }
+.market-item-info { min-width: 0; flex: 1; }
+.market-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.market-rarity {
+    color: #b9c3d0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .06em;
+}
+.market-rarity[data-rarity="Uncommon"] { color: #36d477; }
+.market-rarity[data-rarity="Rare"] { color: #3294ff; }
+.market-rarity[data-rarity="Epic"] { color: #ae63ff; }
+.market-rarity[data-rarity="Legendary"] { color: #ffc247; }
+.market-rarity[data-rarity="Mythic"] { color: #ff563f; }
+.market-price { flex: 0 0 auto; }
+.market-action.favorite {
+    min-width: 38px;
+    padding: 8px;
+    border: 1px solid #304765;
+    background: #142640;
+    color: #aebbd0;
+    font-size: 18px;
+}
+.market-action.favorite.is-favorite {
+    border-color: #ffc247;
+    color: #ffc247;
+    background: rgba(255,194,71,.13);
+}
+@media (max-width: 390px) {
+    .market-filter-row { grid-template-columns: 1fr; }
+    .market-item { align-items: flex-start; }
+    .market-plate-wrap { max-width: 230px; }
+}

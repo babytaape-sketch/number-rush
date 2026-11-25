@@ -225,14 +225,14 @@ async function animatePlate(finalPlate, rarity) {
     }
 
     for (const char of regionFinal) {
-        const cell = document.createElement("span");
-        cell.className = "slot-cell";
-        cell.style.flex = "0 0 0.72em";
-        cell.style.width = "0.72em";
-        region.appendChild(cell);
+    const cell = document.createElement("span");
+    cell.className = "slot-cell";
+    cell.style.flex = "1 1 0";
+    cell.style.width = "0";
+    region.appendChild(cell);
 
-        slots.push({ element: cell, char });
-    }
+    slots.push({ element: cell, char });
+}
 
     const rare = rarity === "Legendary" || rarity === "Mythic";
     const epic = rarity === "Epic";

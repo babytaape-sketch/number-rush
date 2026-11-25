@@ -204,17 +204,48 @@ async function rollSlot(element, finalChar, options = {}) {
     element.textContent = finalChar;
 }
 
-function animatePlate(finalPlate, rarity) {
+async function animatePlate(finalPlate, rarity) {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
 
     if (!main || !region) return;
 
-    const parts = finalPlate.trim().split(/\\s+/);
-    main.textContent = parts[0] || "";
-    region.textContent = parts[1] || "77";
+    const parts = finalPlate.trim().split(/\s+/);
+    const mainChars = Array.from(parts[0] || "");
+    const regionChars = Array.from(parts[1] || "77");
+
+    const mainSlots = mainChars.map(() => {
+        const slot = document.createElement("span");
+        slot.className = "slot-cell";
+        main.appendChild(slot);
+        return slot;
+    });
+
+    const regionSlots = regionChars.map(() => {
+        const slot = document.createElement("span");
+        slot.className = "slot-cell";
+        region.appendChild(slot);
+        return slot;
+    });
+
+    main.replaceChildren(...mainSlots);
+    region.replaceChildren(...regionSlots);
+
+    const duration = rarity === "Epic" ? 4200
+        : ["Rare", "Legendary", "Mythic"].includes(rarity) ? 5200
+        : 3200;
+
+    await Promise.all([
+        ...mainSlots.map((slot, index) =>
+            rollSlot(slot, mainChars[index], { duration })
+        ),
+        ...regionSlots.map((slot, index) =>
+            rollSlot(slot, regionChars[index], { duration })
+        )
+    ]);
 
     setRarityEffect(rarity);
+    await sleep(500);
 }
 
 // =========================================================

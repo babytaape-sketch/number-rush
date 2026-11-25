@@ -787,3 +787,18 @@ footer {
     font-weight: 500;
     letter-spacing: -1px;
 }
+@font-face {
+    font-family: "GOSTPlate";
+    src: url("/static/GOST-R-50577-93.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+.plate-main,
+.mini-plate-main,
+.region-code,
+.mini-region-code {
+    font-family: "GOSTPlate", Arial, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0;
+}

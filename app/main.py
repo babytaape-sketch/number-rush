@@ -965,6 +965,43 @@ def buy_listing(
         con.commit()
 
     return {"ok": True}
+    
+@app.post("/api/market/{listing_id}/cancel")
+def cancel_listing(
+    listing_id: int,
+    authorization: str | None = Header(default=None)
+):
+    user = current_user(authorization)
+    uid = user["user_id"]
+
+    with db() as con:
+        con.execute("BEGIN IMMEDIATE")
+
+        listing = con.execute(
+            "SELECT * FROM listings WHERE id=?",
+            (listing_id,)
+        ).fetchone()
+
+        if not listing:
+            con.rollback()
+            raise HTTPException(404, "Listing not found")
+
+        if listing["seller_id"] != uid:
+            con.rollback()
+            raise HTTPException(
+                403,
+                "You can cancel only your own listing"
+            )
+
+        con.execute(
+            "DELETE FROM listings WHERE id=?",
+            (listing_id,)
+        )
+
+        con.commit()
+
+    return {"ok": True}
+
 
 
 # =========================================================

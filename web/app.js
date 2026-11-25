@@ -618,6 +618,31 @@ function renderProfile(me) {
       '<div><small>В игре с</small><b>' + date + '</b></div></div>' +
       '<div class="profile-rarest"><small>Самый редкий номер</small><div class="profile-rarest-plate">' + rarest + '</div></div>';
 }
+function renderDailyTasks(data) {
+    const root = $("daily-task-list");
+    if (!root) return;
+    root.innerHTML = (data.tasks || []).map(task => {
+        const progress = Math.min(Number(task.progress || 0), Number(task.target || 1));
+        const percent = Math.round(progress / Math.max(1, Number(task.target)) * 100);
+        return `
+            <article class="daily-task-card ${task.completed ? "is-completed" : ""}">
+                <div class="daily-task-top">
+                    <div>
+                        <strong>${escapeHtml(task.title)}</strong>
+                        <p>${escapeHtml(task.description)}</p>
+                    </div>
+                    <span class="daily-task-reward">+${Number(task.reward).toLocaleString("ru-RU")} 🪙</span>
+                </div>
+                <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
+                <div class="daily-task-bottom">
+                    <small>${progress} / ${task.target}</small>
+                    <b>${task.completed ? "ВЫПОЛНЕНО" : "В ПРОЦЕССЕ"}</b>
+                </div>
+            </article>
+        `;
+    }).join("");
+}
+
 async function refresh() {
     const me = await api("/api/me");
     renderProfile(me);
@@ -651,6 +676,9 @@ async function refresh() {
     // РЫНОК
     marketCache = await api("/api/market");
     renderMarket();
+
+    const dailyTasks = await api("/api/daily-tasks");
+    renderDailyTasks(dailyTasks);
 }
 
 // =========================================================
@@ -710,19 +738,9 @@ document.querySelectorAll(".tab").forEach(btn => {
             b.classList.toggle("active", b === btn)
         );
 
-        $("collection").classList.toggle(
-            "hidden",
-            btn.dataset.tab !== "collection"
-        );
-
-        $("market").classList.toggle(
-            "hidden",
-            btn.dataset.tab !== "market"
-        );
-        $("profile").classList.toggle(
-            "hidden",
-            btn.dataset.tab !== "profile"
-        );
+        ["collection", "market", "daily-tasks", "profile"].forEach(id => {
+            $(id).classList.toggle("hidden", btn.dataset.tab !== id);
+        });
     });
 });
 

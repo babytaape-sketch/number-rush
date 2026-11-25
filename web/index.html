@@ -54,6 +54,30 @@
 
     <section id="market" class="panel hidden">
       <h2>Рынок игроков</h2>
+      <div class="market-tools">
+        <input id="market-search" class="market-search" type="search" placeholder="Поиск номера или особенности...">
+        <div class="market-filter-row">
+          <select id="market-rarity" class="market-select">
+            <option value="all">Любая редкость</option>
+            <option value="Common">Обычный</option>
+            <option value="Uncommon">Необычный</option>
+            <option value="Rare">Редкий</option>
+            <option value="Epic">Эпический</option>
+            <option value="Legendary">Легендарный</option>
+            <option value="Mythic">Мифический</option>
+          </select>
+          <select id="market-sort" class="market-select">
+            <option value="newest">Сначала новые</option>
+            <option value="cheap">Сначала дешевле</option>
+            <option value="expensive">Сначала дороже</option>
+            <option value="rarity">По редкости</option>
+          </select>
+        </div>
+        <div class="market-tools-bottom">
+          <button id="market-favorites-only" class="market-favorites-only">☆ Избранное</button>
+          <span id="market-count">0 предложений</span>
+        </div>
+      </div>
       <div id="market-items" class="items">Загрузка...</div>
     </section>
 

@@ -812,10 +812,14 @@ def collection(authorization: str | None = Header(default=None)):
     with db() as con:
         rows = con.execute(
             """
-            SELECT id, number, rarity, created_at
-            FROM plates
-            WHERE owner_id=?
-            ORDER BY id DESC
+            SELECT
+                p.id, p.number, p.rarity, p.created_at,
+                EXISTS(
+                    SELECT 1 FROM listings l WHERE l.plate_id=p.id
+                ) AS is_listed
+            FROM plates p
+            WHERE p.owner_id=?
+            ORDER BY p.id DESC
             """,
             (user["user_id"],)
         ).fetchall()

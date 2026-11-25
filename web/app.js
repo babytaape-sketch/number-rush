@@ -1,4 +1,3 @@
-
 const tg = window.Telegram?.WebApp;
 
 if (tg) {
@@ -208,9 +207,18 @@ async function animatePlate(finalPlate, rarity) {
 
     const slots = [];
 
+    // Keep every character in a compact, fixed-width cell.
+    // This prevents flexbox from spreading characters across the whole plate.
+    main.style.justifyContent = "center";
+    main.style.gap = "0.02em";
+    region.style.justifyContent = "center";
+    region.style.gap = "0.02em";
+
     for (const char of mainFinal) {
         const cell = document.createElement("span");
         cell.className = "slot-cell";
+        cell.style.flex = "0 0 0.72em";
+        cell.style.width = "0.72em";
         main.appendChild(cell);
 
         slots.push({ element: cell, char });
@@ -219,6 +227,8 @@ async function animatePlate(finalPlate, rarity) {
     for (const char of regionFinal) {
         const cell = document.createElement("span");
         cell.className = "slot-cell";
+        cell.style.flex = "0 0 0.72em";
+        cell.style.width = "0.72em";
         region.appendChild(cell);
 
         slots.push({ element: cell, char });

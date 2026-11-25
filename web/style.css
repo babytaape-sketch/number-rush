@@ -427,3 +427,35 @@ footer span {
         padding: 10px;
     }
 }
+
+/* Исправление горизонтального расположения номера */
+
+.plate-main,
+.mini-plate-main,
+.region-code,
+.mini-region-code {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: nowrap !important;
+}
+
+.plate-main,
+.mini-plate-main {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    min-width: 0;
+}
+
+.slot-cell {
+    display: flex !important;
+    flex-direction: row !important;
+    flex: 1 1 0 !important;
+    width: 0;
+    min-width: 0;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    writing-mode: horizontal-tb !important;
+}

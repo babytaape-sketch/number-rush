@@ -621,6 +621,12 @@ function renderProfile(me) {
 function renderDailyTasks(data) {
     const root = $("daily-task-list");
     if (!root) return;
+    const readyCount = (data.tasks || []).filter(task => task.completed && !task.claimed).length;
+    const badge = $("daily-task-badge");
+    if (badge) {
+        badge.textContent = readyCount > 9 ? "9+" : String(readyCount);
+        badge.hidden = readyCount === 0;
+    }
     root.innerHTML = (data.tasks || []).map(task => {
         const progress = Math.min(Number(task.progress || 0), Number(task.target || 1));
         const percent = Math.round(progress / Math.max(1, Number(task.target)) * 100);

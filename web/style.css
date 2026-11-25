@@ -1512,3 +1512,83 @@ footer {
     font-size: 12px;
     font-weight: 900;
 }
+
+
+/* Ежедневные задания */
+.daily-tasks-note {
+    margin: -5px 0 16px;
+    color: #91a2bb;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.daily-task-list {
+    display: grid;
+    gap: 12px;
+}
+.daily-task-card {
+    padding: 16px;
+    border: 1px solid #304765;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #172943, #0c1728);
+}
+.daily-task-card.is-completed {
+    border-color: rgba(54, 212, 119, .55);
+    background: linear-gradient(145deg, #173329, #0c1d20);
+}
+.daily-task-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+.daily-task-top strong {
+    color: #f2f6ff;
+    font-size: 14px;
+}
+.daily-task-top p {
+    margin: 6px 0 0;
+    color: #91a2bb;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.daily-task-reward {
+    flex: 0 0 auto;
+    color: #ffc247;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+.daily-task-progress {
+    height: 8px;
+    margin: 14px 0 9px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: #081321;
+}
+.daily-task-progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ffc247, #36d477);
+    transition: width .25s ease;
+}
+.daily-task-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.daily-task-bottom small {
+    color: #91a2bb;
+    font-size: 11px;
+}
+.daily-task-bottom b {
+    color: #ffc247;
+    font-size: 10px;
+    letter-spacing: .06em;
+}
+.daily-task-card.is-completed .daily-task-bottom b {
+    color: #36d477;
+}
+@media (max-width: 430px) {
+    .daily-task-top { flex-direction: column; }
+}

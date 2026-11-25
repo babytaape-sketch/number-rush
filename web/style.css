@@ -86,30 +86,38 @@ h1 span {
     color: var(--blue);
 }
 
-/* Номерной знак */
 
-
-.plate-main,
-.mini-plate-main {
-    flex: 0 0 82%;
-    min-width: 0;
+.plate,
+.mini-plate {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+    aspect-ratio: 520 / 112;
     overflow: hidden;
-    color: #101318;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-    white-space: nowrap;
-    letter-spacing: -1px;
-    line-height: 1;
-    writing-mode: horizontal-tb;
+    background: linear-gradient(180deg, #ffffff, #e5e8eb);
+    border: 3px solid #d9e0e8;
+    border-radius: 8px;
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,.8),
+        0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
+        inset 0 2px 5px rgba(255,255,255,.9),
+        inset 0 -3px 5px rgba(0,0,0,.18);
 }
 
-.plate-main {
-    font-size: clamp(31px, 9vw, 49px);
+.plate {
+    --rarity-color: #b9c3d0;
+    max-width: 380px;
+    margin: 0 auto;
+}
+
+.mini-plate {
+    --rarity-color: #b9c3d0;
+    width: min(190px, 48vw);
+    flex: 0 0 auto;
+    border-width: 2px;
+    border-radius: 5px;
 }
 
 

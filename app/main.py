@@ -810,15 +810,18 @@ def collection(authorization: str | None = Header(default=None)):
 # РЫНОК
 # =========================================================
 
+
 @app.get("/api/market")
 def market(authorization: str | None = Header(default=None)):
-    current_user(authorization)
+    user = current_user(authorization)
+    uid = user["user_id"]
 
     with db() as con:
         rows = con.execute(
             """
             SELECT
                 l.id AS listing_id,
+                l.seller_id,
                 l.price,
                 p.number,
                 p.rarity,
@@ -833,6 +836,7 @@ def market(authorization: str | None = Header(default=None)):
 
     for row in rows:
         item = dict(row)
+        item["is_mine"] = item["seller_id"] == uid
         item["rarity_ru"] = RARITY_NAMES.get(
             item["rarity"],
             item["rarity"]
@@ -842,10 +846,6 @@ def market(authorization: str | None = Header(default=None)):
 
     return result
 
-
-class ListingRequest(BaseModel):
-    plate_id: int
-    price: int
 
 
 @app.post("/api/market/list")

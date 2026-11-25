@@ -443,25 +443,59 @@ async function marketAction(action, listingId) {
     }
 }
 
+function askMarketPrice() {
+    return new Promise(resolve => {
+        let value = "";
+        const overlay = document.createElement("div");
+        overlay.className = "price-keypad-overlay";
+        overlay.innerHTML = `
+            <div class="price-keypad">
+                <div class="price-keypad-title">ЦЕНА НОМЕРА</div>
+                <div class="price-keypad-display">0 <span>🪙</span></div>
+                <div class="price-keypad-grid">
+                    ${[1,2,3,4,5,6,7,8,9].map(n => `<button type="button" data-digit="${n}">${n}</button>`).join("")}
+                    <button type="button" class="keypad-clear" data-clear="1">⌫</button>
+                    <button type="button" data-digit="0">0</button>
+                    <button type="button" class="keypad-cancel" data-cancel="1">ОТМЕНА</button>
+                </div>
+                <button type="button" class="price-keypad-submit" data-submit="1">ВЫСТАВИТЬ</button>
+            </div>`;
+        const display = overlay.querySelector(".price-keypad-display");
+        const finish = result => {
+            overlay.remove();
+            resolve(result);
+        };
+        overlay.addEventListener("click", event => {
+            if (event.target === overlay || event.target.closest("[data-cancel]")) {
+                finish(null);
+                return;
+            }
+            const digit = event.target.closest("[data-digit]");
+            if (digit) {
+                if (value.length < 7) value += digit.dataset.digit;
+                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span>🪙</span>`;
+            }
+            if (event.target.closest("[data-clear]")) {
+                value = value.slice(0, -1);
+                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span>🪙</span>`;
+            }
+            if (event.target.closest("[data-submit]")) {
+                const price = Number(value);
+                if (Number.isInteger(price) && price >= 1 && price <= 1000000) finish(price);
+            }
+        });
+        document.body.appendChild(overlay);
+    });
+}
+
 async function listPlate(plateId) {
-    const price = Number(
-        prompt("За сколько монет выставить номер?")
-    );
-
-    if (!Number.isInteger(price) || price < 1 || price > 1000000) {
-        return;
-    }
-
+    const price = await askMarketPrice();
+    if (price === null) return;
     try {
         await api("/api/market/list", {
             method: "POST",
-            body: JSON.stringify({
-                plate_id: plateId,
-                price: price
-            })
+            body: JSON.stringify({ plate_id: plateId, price })
         });
-
-        alert("Номер выставлен на рынок!");
         await refresh();
     } catch (e) {
         alert(e.message);

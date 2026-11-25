@@ -614,8 +614,7 @@ $("spin").addEventListener("click", async () => {
 
         const tags = result.plate.tags || [];
 
-        let message =
-            `${rarityText} • +${result.reward} COINS`;
+        let message = rarityText;
 
         if (tags.length > 0) {
             message += " • " + tags.join(" • ");

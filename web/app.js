@@ -12,6 +12,7 @@ const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };
 
 let marketCache = [];
+let collectionCache = [];
 let marketFavorites = new Set();
 try {
     marketFavorites = new Set(JSON.parse(localStorage.getItem("numberRushMarketFavorites") || "[]").map(String));
@@ -540,6 +541,62 @@ $("market-items").addEventListener("click", event => {
 });
 
 
+function renderCollection() {
+    const root = $("items");
+    if (!root) return;
+    const query = ($("collection-search")?.value || "").trim().toLowerCase();
+    const rarity = $("collection-rarity")?.value || "all";
+    const sort = $("collection-sort")?.value || "newest";
+    const status = $("collection-status")?.value || "all";
+
+    let rows = collectionCache.filter(p => {
+        const matchesSearch = !query ||
+            String(p.number).toLowerCase().includes(query) ||
+            String(rarityNames[p.rarity] || p.rarity).toLowerCase().includes(query) ||
+            (p.tags || []).some(tag => String(tag).toLowerCase().includes(query));
+        const matchesRarity = rarity === "all" || p.rarity === rarity;
+        const matchesStatus = status === "all" ||
+            (status === "listed" ? !!p.is_listed : !p.is_listed);
+        return matchesSearch && matchesRarity && matchesStatus;
+    });
+
+    if (sort === "cheap") rows.sort((a,b) => Number(a.market_value || 0) - Number(b.market_value || 0));
+    if (sort === "expensive") rows.sort((a,b) => Number(b.market_value || 0) - Number(a.market_value || 0));
+    if (sort === "rarity") {
+        const rank = {Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:5};
+        rows.sort((a,b) => (rank[b.rarity] || 0) - (rank[a.rarity] || 0));
+    }
+    if (sort === "newest") rows.sort((a,b) => Number(b.id) - Number(a.id));
+
+    const count = $("collection-count");
+    if (count) count.textContent = rows.length + " из " + collectionCache.length + " номеров";
+
+    root.innerHTML = rows.length
+        ? rows.map(p => `
+            <div class="item collection-item">
+                <div class="collection-plate-wrap">
+                    ${createMiniPlate(p.number)}
+                    <small>${escapeHtml(p.rarity)}</small>
+                    ${renderTags(p.tags)}
+                </div>
+                <strong>#${p.id}</strong>
+                <small class="collection-value">Оценка: ${Number(p.market_value || 0).toLocaleString("ru-RU")} 🪙</small>
+                ${p.is_listed
+                    ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
+                    : `<div class="collection-actions">
+                        <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${Number(p.quick_sell_price || 0).toLocaleString("ru-RU")} 🪙</button>
+                        <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>
+                      </div>`}
+            </div>
+        `).join("")
+        : '<div class="empty">По этим фильтрам номеров нет.</div>';
+}
+
+["collection-search", "collection-rarity", "collection-sort", "collection-status"].forEach(id => {
+    $(id)?.addEventListener("input", renderCollection);
+    $(id)?.addEventListener("change", renderCollection);
+});
+
 // =========================================================
 // ОБНОВЛЕНИЕ ИГРЫ
 // =========================================================
@@ -591,30 +648,8 @@ async function refresh() {
 
    
     // КОЛЛЕКЦИЯ
-    const plates = await api("/api/collection");
-    const itemsElement = $("items");
-
-    if (itemsElement) {
-        itemsElement.innerHTML = plates.length
-            ? plates.map(p => `
-                <div class="item collection-item">
-                    <div class="collection-plate-wrap">
-                        ${createMiniPlate(p.number)}
-                        <small>${escapeHtml(p.rarity)}</small>
-                        ${renderTags(p.tags)}
-                    </div>
-                    <strong>#${p.id}</strong>
-                    <small class="collection-value">Оценка: ${Number(p.market_value || 0).toLocaleString("ru-RU")} 🪙</small>
-                    ${p.is_listed
-                        ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
-                        : `<div class="collection-actions">
-                            <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${Number(p.quick_sell_price || 0).toLocaleString("ru-RU")} 🪙</button>
-                            <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>
-                          </div>`}
-                </div>
-            `).join("")
-            : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';
-    }
+    collectionCache = await api("/api/collection");
+    renderCollection();
 
     // РЫНОК
     marketCache = await api("/api/market");

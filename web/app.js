@@ -132,7 +132,7 @@ async function rollSlot(element, finalChar, options = {}) {
     windowElement.style.height = `${symbolHeight}px`;
     windowElement.style.overflow = "hidden";
 
-    const totalSymbols = 42;
+    const totalSymbols = options.totalSymbols || 30;
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
@@ -161,14 +161,15 @@ async function rollSlot(element, finalChar, options = {}) {
     const distance = totalSymbols * symbolHeight;
 
     if (strip.animate) {
+        const cruiseDistance = distance * 0.88;
         const animation = strip.animate(
             [
-                { transform: "translateY(0)" },
+                { transform: "translateY(0)", easing: "linear" },
+                { transform: `translateY(-${cruiseDistance}px)`, easing: "cubic-bezier(.18,.72,.25,1)" },
                 { transform: `translateY(-${distance}px)` }
             ],
             {
                 duration,
-                easing: "cubic-bezier(.16,1,.3,1)",
                 fill: "forwards"
             }
         );
@@ -185,10 +186,19 @@ async function rollSlot(element, finalChar, options = {}) {
                     (now - start) / duration
                 );
 
-                const eased = 1 - Math.pow(1 - progress, 3);
+                const cruiseProgress = 0.88;
+                let easedProgress;
+
+                if (progress < cruiseProgress) {
+                    easedProgress = progress;
+                } else {
+                    const tail = (progress - cruiseProgress) / (1 - cruiseProgress);
+                    easedProgress = cruiseProgress + (1 - cruiseProgress) *
+                        (1 - Math.pow(1 - tail, 3));
+                }
 
                 strip.style.transform =
-                    `translateY(-${distance * eased}px)`;
+                    `translateY(-${distance * easedProgress}px)`;
 
                 if (progress < 1) {
                     requestAnimationFrame(frame);
@@ -229,27 +239,62 @@ async function animatePlate(finalPlate, rarity) {
     main.replaceChildren(...mainSlots);
     region.replaceChildren(...regionSlots);
 
-    // Регион прокручивается первым, плавно и одновременно.
+    // Регион всегда останавливается первым.
     await Promise.all(
         regionSlots.map((slot, index) =>
-            rollSlot(slot, regionChars[index], { duration: 1250 })
+            rollSlot(slot, regionChars[index], {
+                duration: 1350,
+                totalSymbols: 26
+            })
         )
     );
 
-    // Все символы номера начинают вращаться одновременно,
-    // но каждый следующий останавливается немного позже предыдущего.
-    const firstStopDuration = ["Rare", "Legendary", "Mythic"].includes(rarity)
-        ? 1550
-        : rarity === "Epic" ? 1400 : 1250;
-    const stopInterval = 260;
+    // Выбираем случайную букву и случайную цифру для дополнительной интриги.
+    const letterIndexes = mainChars
+        .map((char, index) => plateLetters.includes(char) ? index : -1)
+        .filter(index => index >= 0);
+    const digitIndexes = mainChars
+        .map((char, index) => plateDigits.includes(char) ? index : -1)
+        .filter(index => index >= 0);
 
+    const suspenseLetter = letterIndexes.length
+        ? letterIndexes[Math.floor(Math.random() * letterIndexes.length)]
+        : -1;
+    const suspenseDigit = digitIndexes.length
+        ? digitIndexes[Math.floor(Math.random() * digitIndexes.length)]
+        : -1;
+
+    const rarityLevel = {
+        Common: 0,
+        Uncommon: 1,
+        Rare: 2,
+        Epic: 3,
+        Legendary: 4,
+        Mythic: 5
+    }[rarity] ?? 0;
+
+    const baseDuration = 1500 + rarityLevel * 130;
+    const stopInterval = 230 + rarityLevel * 25;
+    const suspenseExtra = 650 + rarityLevel * 260;
+
+    // Все символы начинают вращаться одновременно.
+    // Обычные останавливаются по очереди, выбранные буква и цифра
+    // получают случайное дополнительное вращение и задерживают развязку.
     await Promise.all(
-        mainSlots.map((slot, index) =>
-            rollSlot(slot, mainChars[index], {
-                duration: firstStopDuration + index * stopInterval,
-                delay: 0
-            })
-        )
+        mainSlots.map((slot, index) => {
+            const isSuspense = index === suspenseLetter || index === suspenseDigit;
+            const randomExtra = isSuspense
+                ? Math.floor(Math.random() * 500)
+                : 0;
+
+            return rollSlot(slot, mainChars[index], {
+                duration: baseDuration + index * stopInterval +
+                    (isSuspense ? suspenseExtra + randomExtra : 0),
+                totalSymbols: 26 + (isSuspense
+                    ? 10 + rarityLevel * 3 + Math.floor(Math.random() * 8)
+                    : 0)
+            });
+        })
     );
 
     setRarityEffect(rarity);

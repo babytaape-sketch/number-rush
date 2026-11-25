@@ -88,50 +88,26 @@ h1 span {
 
 /* Основной номерной знак */
 
-.plate,
-.mini-plate {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    overflow: hidden;
-    aspect-ratio: 520 / 112;
-    background: linear-gradient(180deg, #fff, #e5e8eb);
-    border: 3px solid #d9e0e8;
-    border-radius: 8px;
-    box-shadow:
-        0 0 0 2px rgba(0,0,0,.8),
-        0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
-        inset 0 2px 5px rgba(255,255,255,.9),
-        inset 0 -3px 5px rgba(0,0,0,.18);
-}
-
-.plate {
-    --rarity-color: #b9c3d0;
-    width: min(100%, 380px);
-    margin: 0 auto;
-}
-
 .plate-main,
 .mini-plate-main {
     flex: 1 1 82%;
     min-width: 0;
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    padding: 0 2%;
+    justify-content: space-between;
+    padding: 0 1%;
     overflow: hidden;
     color: #101318;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 900;
     white-space: nowrap;
-    letter-spacing: 0;
+    letter-spacing: -1px;
     line-height: 1;
 }
 
 .plate-main {
-    font-size: clamp(27px, 8vw, 43px);
+    font-size: clamp(31px, 9vw, 49px);
 }
-
 .plate-region,
 .mini-plate-region {
     flex: 0 0 18%;

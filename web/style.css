@@ -89,6 +89,7 @@ h1 span {
     color: var(--blue);
 }
 
+
 .plate,
 .mini-plate {
     display: flex;
@@ -100,14 +101,13 @@ h1 span {
     border-radius: 9px;
     box-shadow:
         0 0 0 2px rgba(0,0,0,.8),
-        0 0 18px color-mix(in srgb, var(--rarity-color) 65%, transparent),
-        0 0 38px color-mix(in srgb, var(--rarity-color) 30%, transparent),
+        0 0 18px color-mix(in srgb, var(--rarity-color, #b9c3d0) 65%, transparent),
         inset 0 2px 5px rgba(255,255,255,.9),
         inset 0 -3px 5px rgba(0,0,0,.18);
 }
 
 .plate {
-    width: min(100%, 340px);
+    width: min(100%, 380px);
     margin: 0 auto;
     position: relative;
     --rarity-color: #b9c3d0;
@@ -119,17 +119,18 @@ h1 span {
     min-width: 0;
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    padding: 0 9px;
     color: #101318;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 900;
     white-space: nowrap;
-    letter-spacing: .025em;
+    letter-spacing: .015em;
     text-shadow: 0 1px 0 rgba(255,255,255,.8);
 }
 
 .plate-main {
-    font-size: clamp(23px, 7vw, 39px);
+    font-size: clamp(27px, 8vw, 44px);
 }
 
 .plate-region,
@@ -191,6 +192,7 @@ h1 span {
 .mini-region-flag span:nth-child(3) {
     background: #d52b35;
 }
+
 
 .rarity {
     margin: 22px 0;

@@ -86,7 +86,7 @@ def init_db():
             user_id TEXT PRIMARY KEY,
             username TEXT NOT NULL DEFAULT 'Player',
             coins INTEGER NOT NULL DEFAULT 100,
-            spins INTEGER NOT NULL DEFAULT 5,
+            spins INTEGER NOT NULL DEFAULT 0,
             created_at INTEGER NOT NULL,
             last_free_spin_at INTEGER NOT NULL DEFAULT 0,
             total_spins INTEGER NOT NULL DEFAULT 0
@@ -138,6 +138,11 @@ with db() as con:
             "ALTER TABLE users ADD COLUMN total_spins "
             "INTEGER NOT NULL DEFAULT 0"
         )
+
+    con.execute("""CREATE TABLE IF NOT EXISTS app_migrations (migration_id TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)""")
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", ("remove_initial_five_spins",)).fetchone():
+        con.execute("UPDATE users SET spins=0")
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", ("remove_initial_five_spins", int(time.time())))
 
 
 # =========================================================
@@ -210,7 +215,7 @@ def current_user(authorization: str | None):
             (user_id, username, coins, spins, created_at)
             VALUES (?, ?, ?, ?, ?)
             """,
-            (uid, username, 100, 5, int(time.time()))
+            (uid, username, 100, 0, int(time.time()))
         )
 
         con.execute(
@@ -798,12 +803,7 @@ def spin(authorization: str | None = Header(default=None)):
 
         number = plate_data["number"]
         rarity = plate_data["rarity"]
-        reward = RARITY_REWARDS[rarity]
-
-        con.execute(
-            "UPDATE users SET coins=coins+? WHERE user_id=?",
-            (reward, uid)
-        )
+        reward = 0  # За выпадение номера монеты не начисляются.
 
         con.execute(
             "UPDATE users SET total_spins=total_spins+1 WHERE user_id=?",

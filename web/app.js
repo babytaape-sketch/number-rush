@@ -369,13 +369,12 @@ $("spin").addEventListener("click", async () => {
             method: "POST"
         });
 
-        // Сервер уже сохранил номер. Обновляем коллекцию сразу.
-        await refresh();
-
-        await animatePlate(
+               await animatePlate(
             result.plate.number,
             result.plate.rarity
         );
+
+        await refresh();
 
         $("rarity").textContent =
             (rarityNames[result.plate.rarity] ||

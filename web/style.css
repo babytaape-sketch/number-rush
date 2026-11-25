@@ -1097,3 +1097,11 @@ footer {
     color: #9baac1;
     font-size: 12px;
 }
+
+
+/* Вертикальное центрирование букв и цифр в мини-табличках рынка и профиля */
+.mini-plate-main,
+.mini-region-code {
+    position: relative;
+    top: .08em;
+}

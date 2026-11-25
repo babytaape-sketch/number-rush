@@ -1021,3 +1021,9 @@ footer {
         margin-left: 2px;
     }
 }
+/* Уменьшаем белые боковые поля номеров в коллекции */
+.mini-plate {
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
+}

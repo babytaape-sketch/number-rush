@@ -191,7 +191,7 @@ async function refresh() {
 
 $("spin").addEventListener("click", async () => {
     $("spin").disabled = true;
-    $(").textContent = "🎰 Крутим номер...";
+    $("hint").textContent = "🎰 Крутим номер...";
 
     try {
         const result = await api("/api/spin", {
@@ -233,4 +233,4 @@ document.querySelectorAll(".tab").forEach(btn => {
 refresh().catch(e => {
     $("items").textContent = e.message;
     $("hint").textContent = e.message;
-});"hint
+});

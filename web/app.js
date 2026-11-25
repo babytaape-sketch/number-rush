@@ -1,51 +1,11 @@
+
 const tg = window.Telegram?.WebApp;
-
-console.log("Telegram theme:", tg?.colorScheme);
-console.log("Background:", tg?.backgroundColor);
-console.log("Version:", tg?.version);
-
-function forceLightTheme() {
-    document.documentElement.style.setProperty(
-        "color-scheme", "light", "important"
-    );
-
-    document.documentElement.style.setProperty(
-        "background", "#f3f6fc", "important"
-    );
-
-    document.body.style.setProperty(
-        "background", "#f3f6fc", "important"
-    );
-
-    document.body.style.setProperty(
-        "color", "#18243a", "important"
-    );
-
-    const app = document.querySelector(".app");
-
-    if (app) {
-        app.style.setProperty(
-            "background", "#f3f6fc", "important"
-        );
-        app.style.setProperty(
-            "color", "#18243a", "important"
-        );
-    }
-
-    if (tg) {
-        tg.setHeaderColor("#f3f6fc");
-        tg.setBackgroundColor("#f3f6fc");
-    }
-}
 
 if (tg) {
     tg.ready();
     tg.expand();
-    forceLightTheme();
-
-    tg.onEvent("themeChanged", forceLightTheme);
-} else {
-    forceLightTheme();
+    tg.setHeaderColor("#080b10");
+    tg.setBackgroundColor("#080b10");
 }
 
 const initData = tg?.initData || "";
@@ -80,29 +40,137 @@ function escapeHtml(s) {
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "'"
+        "'": "&#39;"
     }[c]));
 }
 
 const plateLetters = "АВЕКМНОРСТУХ";
 const plateDigits = "0123456789";
 
-function randomPlateFrame(finalPlate) {
-    return Array.from(finalPlate, char => {
-        if (plateLetters.includes(char)) {
-            return plateLetters[Math.floor(Math.random() * plateLetters.length)];
-        }
+const rarityColors = {
+    Common: "#b9c3d0",
+    Uncommon: "#36d477",
+    Rare: "#3294ff",
+    Epic: "#ae63ff",
+    Legendary: "#ffc247",
+    Mythic: "#ff563f"
+};
 
-        if (plateDigits.includes(char)) {
-            return plateDigits[Math.floor(Math.random() * plateDigits.length)];
-        }
+const rarityNames = {
+    Common: "ОБЫЧНЫЙ",
+    Uncommon: "НЕОБЫЧНЫЙ",
+    Rare: "РЕДКИЙ",
+    Epic: "ЭПИЧЕСКИЙ",
+    Legendary: "ЛЕГЕНДАРНЫЙ",
+    Mythic: "МИФИЧЕСКИЙ"
+};
 
-        return char;
-    }).join("");
+function setRarityEffect(rarity) {
+    const plate = $("plate");
+    const rarityLabel = $("rarity");
+    const color = rarityColors[rarity] || rarityColors.Common;
+
+    plate.style.setProperty("--rarity-color", color);
+    plate.dataset.rarity = rarity;
+
+    plate.classList.remove("rarity-flash");
+    void plate.offsetWidth;
+    plate.classList.add("rarity-flash");
+
+    rarityLabel.style.color = color;
+    rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
 }
 
+function randomSymbol(finalChar) {
+    const alphabet = plateLetters.includes(finalChar)
+        ? plateLetters
+        : plateDigits;
 
-async function animatePlate(finalPlate) {
+    return alphabet[Math.floor(Math.random() * alphabet.length)];
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function rollSlot(element, finalChar, options = {}) {
+    const {
+        duration = 1800,
+        extraTurns = 0,
+        dramatic = false
+    } = options;
+
+    const alphabet = plateLetters.includes(finalChar)
+        ? plateLetters
+        : plateDigits;
+
+    const strip = document.createElement("span");
+    strip.className = "slot-strip";
+
+    const windowElement = document.createElement("span");
+    windowElement.className = "slot-window";
+
+    const rowHeight = element.getBoundingClientRect().height || 36;
+    const symbols = [];
+
+    const totalSymbols = 24 + extraTurns * 8;
+
+    for (let i = 0; i < totalSymbols; i++) {
+        const symbol = document.createElement("span");
+        symbol.className = "slot-symbol";
+        symbol.textContent = randomSymbol(finalChar);
+        symbols.push(symbol);
+        strip.appendChild(symbol);
+    }
+
+    const finalSymbol = document.createElement("span");
+    finalSymbol.className = "slot-symbol";
+    finalSymbol.textContent = finalChar;
+    strip.appendChild(finalSymbol);
+
+    windowElement.appendChild(strip);
+
+    element.replaceChildren(windowElement);
+
+    strip.style.transform = "translateY(0)";
+    strip.style.transition = "none";
+
+    const targetIndex = totalSymbols;
+    const targetPosition = targetIndex * rowHeight;
+
+    const start = performance.now();
+    const startDuration = duration;
+
+    while (performance.now() - start < startDuration) {
+        const progress = Math.min(
+            1,
+            (performance.now() - start) / startDuration
+        );
+
+        const eased = 1 - Math.pow(1 - progress, 2.4);
+        const position = targetPosition * eased;
+
+        strip.style.transform = `translateY(-${position}px)`;
+
+        if (dramatic && progress > 0.72) {
+            await sleep(75 + progress * 65);
+        } else {
+            await sleep(32);
+        }
+    }
+
+    strip.style.transition = dramatic
+        ? "transform 1.5s cubic-bezier(.12,.75,.18,1)"
+        : "transform .65s cubic-bezier(.12,.75,.18,1)";
+
+    strip.style.transform = `translateY(-${targetPosition}px)`;
+
+    await sleep(dramatic ? 1600 : 700);
+
+    element.textContent = finalChar;
+}
+
+async function animatePlate(finalPlate, rarity) {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
 
@@ -110,67 +178,62 @@ async function animatePlate(finalPlate) {
     const mainFinal = parts[0];
     const regionFinal = parts[1] || "77";
 
-    const letters = "АВЕКМНОРСТУХ";
-    const digits = "0123456789";
+    const mainChars = Array.from(mainFinal);
+    const regionChars = Array.from(regionFinal);
 
-    const sleep = ms =>
-        new Promise(resolve => setTimeout(resolve, ms));
+    const color = rarityColors[rarity] || rarityColors.Common;
 
-    async function rollText(element, finalText, baseDuration) {
-        const chars = Array.from(finalText);
-        const slots = chars.map(() => {
-            const span = document.createElement("span");
-
-            span.style.display = "inline-block";
-            span.style.transition = "transform 70ms ease, opacity 70ms ease";
-            span.style.willChange = "transform";
-
-            element.appendChild(span);
-            return span;
-        });
-
-        await Promise.all(chars.map(async (finalChar, index) => {
-            const alphabet = letters.includes(finalChar)
-                ? letters
-                : digits;
-
-            const duration = baseDuration + index * 150;
-            const start = Date.now();
-
-            while (Date.now() - start < duration) {
-                slots[index].textContent =
-                    alphabet[Math.floor(Math.random() * alphabet.length)];
-
-                slots[index].style.transform = "translateY(-5px)";
-                slots[index].style.opacity = "0.45";
-
-                await sleep(65);
-
-                slots[index].style.transform = "translateY(0)";
-                slots[index].style.opacity = "1";
-
-                const progress = Math.min(
-                    1,
-                    (Date.now() - start) / duration
-                );
-
-                await sleep(35 + progress * 100);
-            }
-
-            slots[index].textContent = finalChar;
-            slots[index].style.transform = "translateY(0)";
-            slots[index].style.opacity = "1";
-        }));
-    }
+    $("plate").style.setProperty("--rarity-color", color);
 
     main.replaceChildren();
     region.replaceChildren();
 
-    await rollText(main, mainFinal, 750);
-    await rollText(region, regionFinal, 350);
+    const mainSlots = mainChars.map(() => {
+        const slot = document.createElement("span");
+        slot.className = "slot-cell";
+        main.appendChild(slot);
+        return slot;
+    });
+
+    const regionSlots = regionChars.map(() => {
+        const slot = document.createElement("span");
+        slot.className = "slot-cell";
+        region.appendChild(slot);
+        return slot;
+    });
+
+    const rare = rarity === "Legendary" || rarity === "Mythic";
+    const epic = rarity === "Epic";
+
+    const allSlots = [
+        ...mainChars.map((char, index) => ({
+            element: mainSlots[index],
+            char
+        })),
+        ...regionChars.map((char, index) => ({
+            element: regionSlots[index],
+            char
+        }))
+    ];
+
+    for (let i = 0; i < allSlots.length; i++) {
+        const slot = allSlots[i];
+        const isLast = i === allSlots.length - 1;
+
+        await rollSlot(slot.element, slot.char, {
+            duration: isLast
+                ? (rare ? 4200 : epic ? 3400 : 2600)
+                : 1700 + i * 280,
+            extraTurns: isLast ? (rare ? 5 : epic ? 3 : 1) : 0,
+            dramatic: isLast
+        });
+    }
 
     main.textContent = mainFinal;
     region.textContent = regionFinal;
+
+    setRarityEffect(rarity);
+    await sleep(rarity === "Mythic" ? 1300 : 550);
 }
 
 let freeSpinTimer = null;
@@ -196,6 +259,25 @@ function updateFreeSpinTimer() {
     freeSpinSeconds--;
 }
 
+function createMiniPlate(number) {
+    const parts = String(number).split(" ");
+    const main = parts[0] || "";
+    const region = parts[1] || "";
+
+    return `
+        <div class="mini-plate">
+            <div class="mini-plate-main">${escapeHtml(main)}</div>
+            <div class="mini-plate-region">
+                <div class="mini-region-code">${escapeHtml(region)}</div>
+                <div class="mini-region-country">RUS</div>
+                <div class="mini-region-flag">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 async function refresh() {
     const me = await api("/api/me");
 
@@ -215,9 +297,9 @@ async function refresh() {
 
     $("items").innerHTML = plates.length
         ? plates.map(p => `
-            <div class="item">
-                <div>
-                    <b>${escapeHtml(p.number)}</b>
+            <div class="item collection-item">
+                <div class="collection-plate-wrap">
+                    ${createMiniPlate(p.number)}
                     <small>${escapeHtml(p.rarity)}</small>
                 </div>
                 <strong>#${p.id}</strong>
@@ -242,20 +324,25 @@ async function refresh() {
 
 $("spin").addEventListener("click", async () => {
     $("spin").disabled = true;
-    $("hint").textContent = "🎰 Крутим номер...";
+    $("hint").textContent = "🎰 Барабаны вращаются...";
 
     try {
         const result = await api("/api/spin", {
             method: "POST"
         });
 
-        await animatePlate(result.plate.number);
+        // Сервер уже сохранил номер. Обновляем коллекцию сразу.
+        await refresh();
+
+        await animatePlate(
+            result.plate.number,
+            result.plate.rarity
+        );
 
         $("rarity").textContent =
-            result.plate.rarity.toUpperCase() +
+            (rarityNames[result.plate.rarity] ||
+                result.plate.rarity.toUpperCase()) +
             " • +" + result.reward + " COINS";
-
-        await refresh();
 
         $("hint").textContent = "Номер добавлен в коллекцию!";
     } catch (e) {

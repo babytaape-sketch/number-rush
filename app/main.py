@@ -129,15 +129,10 @@ def generate_plate():
     digits = "".join(random.choice("0123456789") for _ in range(3))
     last_letters = "".join(random.choice(letters) for _ in range(2))
 
-    def generate_plate():
+  
+def generate_plate():
     letters = "АВЕКМНОРСТУХ"
 
-    first_letter = random.choice(letters)
-    digits = "".join(random.choice("0123456789") for _ in range(3))
-    last_letters = "".join(random.choice(letters) for _ in range(2))
-
-    def generate_plate():
-    letters = "АВЕКМНОРСТУХ"
     first = random.choice(letters)
     digits = "".join(random.choice("0123456789") for _ in range(3))
     last = "".join(random.choice(letters) for _ in range(2))
@@ -167,6 +162,7 @@ def generate_plate():
 
     region = random.choice(regions)
     return f"{first}{digits}{last} {region}"
+
 
     return f"{first_letter}{digits}{last_letters} {region}"
 @app.get("/")

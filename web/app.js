@@ -101,22 +101,73 @@ function randomPlateFrame(finalPlate) {
     }).join("");
 }
 
+
 async function animatePlate(finalPlate) {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
+
     const parts = finalPlate.split(" ");
     const mainFinal = parts[0];
     const regionFinal = parts[1] || "77";
 
-    const frames = 28;
+    const letters = "АВЕКМНОРСТУХ";
+    const digits = "0123456789";
 
-    for (let i = 0; i < frames; i++) {
-        main.textContent = randomPlateFrame(mainFinal);
-        region.textContent = randomPlateFrame(regionFinal);
+    const sleep = ms =>
+        new Promise(resolve => setTimeout(resolve, ms));
 
-        const delay = 35 + i * 7;
-        await new Promise(resolve => setTimeout(resolve, delay));
+    async function rollText(element, finalText, baseDuration) {
+        const chars = Array.from(finalText);
+        const slots = chars.map(() => {
+            const span = document.createElement("span");
+
+            span.style.display = "inline-block";
+            span.style.transition = "transform 70ms ease, opacity 70ms ease";
+            span.style.willChange = "transform";
+
+            element.appendChild(span);
+            return span;
+        });
+
+        await Promise.all(chars.map(async (finalChar, index) => {
+            const alphabet = letters.includes(finalChar)
+                ? letters
+                : digits;
+
+            const duration = baseDuration + index * 150;
+            const start = Date.now();
+
+            while (Date.now() - start < duration) {
+                slots[index].textContent =
+                    alphabet[Math.floor(Math.random() * alphabet.length)];
+
+                slots[index].style.transform = "translateY(-5px)";
+                slots[index].style.opacity = "0.45";
+
+                await sleep(65);
+
+                slots[index].style.transform = "translateY(0)";
+                slots[index].style.opacity = "1";
+
+                const progress = Math.min(
+                    1,
+                    (Date.now() - start) / duration
+                );
+
+                await sleep(35 + progress * 100);
+            }
+
+            slots[index].textContent = finalChar;
+            slots[index].style.transform = "translateY(0)";
+            slots[index].style.opacity = "1";
+        }));
     }
+
+    main.replaceChildren();
+    region.replaceChildren();
+
+    await rollText(main, mainFinal, 750);
+    await rollText(region, regionFinal, 350);
 
     main.textContent = mainFinal;
     region.textContent = regionFinal;

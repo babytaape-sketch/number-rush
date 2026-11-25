@@ -235,6 +235,54 @@ h1 span {
     background: #d52b35;
 }
 
+
+.region-code {
+    font-size: clamp(19px, 5.2vw, 27px);
+    letter-spacing: 1px;
+}
+
+.region-country,
+.mini-region-country {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.region-flag,
+.mini-region-flag {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    width: 25px;
+    height: 14px;
+    border: 1px solid #777;
+    overflow: hidden;
+}
+
+.region-flag span,
+.mini-region-flag span {
+    display: block;
+    flex: 1;
+}
+
+.region-flag span:nth-child(1),
+.mini-region-flag span:nth-child(1) {
+    background: #fff;
+}
+
+.region-flag span:nth-child(2),
+.mini-region-flag span:nth-child(2) {
+    background: #1746a2;
+}
+
+.region-flag span:nth-child(3),
+.mini-region-flag span:nth-child(3) {
+    background: #d52b35;
+}
+
 /* Редкость и кнопка */
 
 .rarity {

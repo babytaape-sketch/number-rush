@@ -1265,3 +1265,25 @@ footer {
 #collection .collection-item small {
     font-size: 9px !important;
 }
+
+
+/* Исправляем обрезание символов в табличке редчайшего номера профиля */
+.profile-rarest-plate .mini-plate {
+    overflow: visible !important;
+    align-items: stretch !important;
+}
+.profile-rarest-plate .mini-plate-main {
+    font-size: 34px !important;
+    line-height: 1.15 !important;
+    padding: 2px 0 4px !important;
+    overflow: visible !important;
+    transform: none !important;
+    top: 0 !important;
+}
+@media (max-width: 520px) {
+    .profile-rarest-plate .mini-plate-main {
+        font-size: 30px !important;
+        line-height: 1.15 !important;
+        padding: 2px 0 4px !important;
+    }
+}

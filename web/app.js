@@ -217,32 +217,35 @@ async function animatePlate(finalPlate, rarity) {
     const mainSlots = mainChars.map(() => {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
-        main.appendChild(slot);
         return slot;
     });
 
     const regionSlots = regionChars.map(() => {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
-        region.appendChild(slot);
         return slot;
     });
 
     main.replaceChildren(...mainSlots);
     region.replaceChildren(...regionSlots);
 
-    const duration = rarity === "Epic" ? 4200
-        : ["Rare", "Legendary", "Mythic"].includes(rarity) ? 5200
-        : 3200;
-
-    await Promise.all([
-        ...mainSlots.map((slot, index) =>
-            rollSlot(slot, mainChars[index], { duration })
-        ),
-        ...regionSlots.map((slot, index) =>
-            rollSlot(slot, regionChars[index], { duration })
+    // Сначала одновременно останавливаем цифры региона.
+    await Promise.all(
+        regionSlots.map((slot, index) =>
+            rollSlot(slot, regionChars[index], { duration: 700 })
         )
-    ]);
+    );
+
+    // Затем по очереди прокручиваем символы основного номера.
+    const symbolDuration = ["Rare", "Legendary", "Mythic"].includes(rarity)
+        ? 700
+        : rarity === "Epic" ? 600 : 500;
+
+    for (let index = 0; index < mainSlots.length; index++) {
+        await rollSlot(mainSlots[index], mainChars[index], {
+            duration: symbolDuration
+        });
+    }
 
     setRarityEffect(rarity);
     await sleep(500);

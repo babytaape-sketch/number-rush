@@ -524,6 +524,61 @@ def get_number_features(number):
         return []
 
 
+def calculate_plate_value(number, rarity):
+    """Детерминированная оценка с учётом редкости и особенностей номера."""
+    base_values = {
+        "Common": 90, "Uncommon": 180, "Rare": 360,
+        "Epic": 750, "Legendary": 1600, "Mythic": 3500
+    }
+    parts = str(number).strip().split()
+    if len(parts) != 2 or len(parts[0]) != 6:
+        return base_values.get(rarity, 90)
+    body, region = parts
+    letters = body[0] + body[4:6]
+    digits = body[1:4]
+    value = float(base_values.get(rarity, 90))
+    tags = get_plate_tags(letters, digits, region)
+
+    if len(set(digits)) == 1:
+        value *= 2.8
+    elif digits in SPECIAL_DIGITS:
+        value *= 2.2
+    elif digits in LADDER_DIGITS:
+        value *= 1.9
+    elif digits[0] == digits[2]:
+        value *= 1.55
+    elif digits[0] == digits[1] or digits[1] == digits[2]:
+        value *= 1.25
+    if digits in {"000", "007", "100", "777", "888", "999"}:
+        value *= 1.35
+
+    if letters in SPECIAL_SERIES and region in SPECIAL_SERIES[letters]:
+        value *= 2.4
+    elif letters in GOLD_SERIES:
+        value *= 1.8
+    elif letters in WORD_SERIES:
+        value *= 1.45
+    elif len(set(letters)) == 1:
+        value *= 1.6
+    elif letters[0] == letters[1] or letters[1] == letters[2]:
+        value *= 1.2
+
+    region_name = next((name for name, codes in REGIONS.items() if region in codes), "")
+    region_weight = REGION_WEIGHTS.get(region_name, 1)
+    value *= 1 + min(region_weight, 12) * 0.025
+    if len(region) == 3:
+        value *= 1.12
+    if region in {"77", "97", "99", "177", "197", "199", "777", "799"}:
+        value *= 1.2
+
+    value *= 1 + min(len(tags), 5) * 0.08
+    return max(10, int(round(value / 5) * 5))
+
+
+def calculate_quick_sell_price(number, rarity):
+    return max(5, int(calculate_plate_value(number, rarity) * 0.70))
+
+
 # =========================================================
 # ГЕНЕРАЦИЯ НОМЕРОВ ПОД КОНКРЕТНУЮ РЕДКОСТЬ
 # =========================================================
@@ -833,9 +888,52 @@ def collection(authorization: str | None = Header(default=None)):
             item["rarity"]
         )
         item["tags"] = get_number_features(item["number"])
+        item["market_value"] = calculate_plate_value(item["number"], item["rarity"])
+        item["quick_sell_price"] = calculate_quick_sell_price(item["number"], item["rarity"])
         result.append(item)
 
     return result
+
+
+@app.post("/api/plates/{plate_id}/quick-sell")
+def quick_sell_plate(
+    plate_id: int,
+    authorization: str | None = Header(default=None)
+):
+    user = current_user(authorization)
+    uid = user["user_id"]
+
+    with db() as con:
+        con.execute("BEGIN IMMEDIATE")
+        plate = con.execute(
+            "SELECT id, number, rarity FROM plates WHERE id=? AND owner_id=?",
+            (plate_id, uid)
+        ).fetchone()
+        if not plate:
+            con.rollback()
+            raise HTTPException(404, "Номер не найден в коллекции")
+
+        listed = con.execute(
+            "SELECT 1 FROM listings WHERE plate_id=?",
+            (plate_id,)
+        ).fetchone()
+        if listed:
+            con.rollback()
+            raise HTTPException(409, "Сначала снимите номер с рынка")
+
+        price = calculate_quick_sell_price(plate["number"], plate["rarity"])
+        now = int(time.time())
+        con.execute("UPDATE users SET coins=coins+? WHERE user_id=?", (price, uid))
+        con.execute(
+            """INSERT INTO market_transactions
+            (plate_id, buyer_id, seller_id, price, created_at)
+            VALUES (?, 'INSTANT_SALE', ?, ?, ?)""",
+            (plate_id, uid, price, now)
+        )
+        con.execute("DELETE FROM plates WHERE id=?", (plate_id,))
+        con.commit()
+
+    return {"ok": True, "price": price}
 
 
 # =========================================================

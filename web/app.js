@@ -398,7 +398,7 @@ function renderProfile(me) {
         ? '<img class="profile-avatar" src="' + escapeHtml(u.photo_url) + '" alt="">'
         : '<div class="profile-avatar profile-avatar-placeholder">👤</div>';
     const date = me.created_at ? new Date(me.created_at * 1000).toLocaleDateString("ru-RU") : "—";
-    const rarest = me.rarest_plate ? escapeHtml(me.rarest_plate.number) + " · " + escapeHtml(me.rarest_plate.rarity) : "Пока нет номеров";
+    const rarest = me.rarest_plate ? createMiniPlate(me.rarest_plate.number) + '<small>' + escapeHtml(me.rarest_plate.rarity) + '</small>' : '<small>Пока нет номеров</small>';
     root.innerHTML = '<div class="profile-heading">' + avatar + '<div><strong>' + escapeHtml(name || "Игрок") + '</strong><small>ID: ' + escapeHtml(me.id) + '</small></div></div>' +
       '<div class="profile-stats">' +
       '<div><small>Монеты</small><b>' + Number(me.coins).toLocaleString("ru-RU") + ' 🪙</b></div>' +
@@ -407,7 +407,7 @@ function renderProfile(me) {
       '<div><small>Покупки</small><b>' + me.purchases_count + '</b></div>' +
       '<div><small>Продажи</small><b>' + me.sales_count + '</b></div>' +
       '<div><small>В игре с</small><b>' + date + '</b></div></div>' +
-      '<div class="profile-rarest"><small>Самый редкий номер</small><b>' + rarest + '</b></div>';
+      '<div class="profile-rarest"><small>Самый редкий номер</small><div class="profile-rarest-plate">' + rarest + '</div></div>';
 }
 async function refresh() {
     const me = await api("/api/me");
@@ -469,7 +469,7 @@ async function refresh() {
             ? market.map(p => `
                 <div class="item">
                     <div>
-                        <b>${escapeHtml(p.number)}</b>
+                        <div class="market-plate-wrap">${createMiniPlate(p.number)}</div>
                         <small>${escapeHtml(p.rarity)}</small>
                         ${renderTags(p.tags)}
                     </div>

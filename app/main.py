@@ -113,58 +113,282 @@ def current_user(authorization: str | None):
         row = con.execute("SELECT * FROM users WHERE user_id=?", (uid,)).fetchone()
     return row
 
-def weighted_rarity():
-    roll = random.random() * 100
-    total = 0
-    for name, chance, reward in RARITIES:
-        total += chance
-        if roll <= total:
-            return name
+LETTERS = "АВЕКМНОРСТУХ"
+
+RARITIES = [
+    ("Common", 60.0, 10),
+    ("Uncommon", 25.0, 25),
+    ("Rare", 10.0, 60),
+    ("Epic", 4.0, 150),
+    ("Legendary", 0.9, 500),
+    ("Mythic", 0.1, 2000),
+]
+
+RARITY_NAMES = {
+    "Common": "Обычная",
+    "Uncommon": "Необычная",
+    "Rare": "Редкая",
+    "Epic": "Эпическая",
+    "Legendary": "Легендарная",
+    "Mythic": "Мифическая",
+}
+
+REGIONS = {
+    "Москва": ["77", "97", "99", "177", "197", "199", "777", "797", "799"],
+    "Московская область": ["50", "90", "150", "190", "750", "790"],
+    "Санкт-Петербург": ["78", "98", "178", "198"],
+    "Ленинградская область": ["47", "147"],
+    "Татарстан": ["16", "116", "716"],
+    "Краснодарский край": ["23", "93", "123", "193"],
+    "Свердловская область": ["66", "96", "196"],
+    "Ростовская область": ["61", "161"],
+    "Нижегородская область": ["52", "152"],
+    "Самарская область": ["63", "163"],
+    "Челябинская область": ["74", "174"],
+    "Башкортостан": ["02", "102"],
+    "Пермский край": ["59", "159"],
+    "Красноярский край": ["24", "84", "124"],
+    "Новосибирская область": ["54", "154"],
+    "Омская область": ["55", "155"],
+    "Воронежская область": ["36", "136"],
+    "Волгоградская область": ["34", "134"],
+    "Саратовская область": ["64", "164"],
+    "Тюменская область": ["72", "172"],
+    "Приморский край": ["25", "125"],
+    "Иркутская область": ["38", "85", "138"],
+    "Ханты-Мансийский АО": ["86", "186"],
+    "Ямало-Ненецкий АО": ["89"],
+    "Кемеровская область": ["42", "142"],
+    "Алтайский край": ["22", "122"],
+    "Оренбургская область": ["56", "156"],
+    "Тульская область": ["71", "171"],
+    "Тверская область": ["69", "169"],
+    "Ярославская область": ["76", "176"],
+    "Рязанская область": ["62", "162"],
+    "Калужская область": ["40", "140"],
+    "Белгородская область": ["31", "131"],
+    "Курская область": ["46", "146"],
+    "Орловская область": ["57", "157"],
+    "Липецкая область": ["48", "148"],
+    "Тамбовская область": ["68", "168"],
+    "Пензенская область": ["58", "158"],
+    "Ульяновская область": ["73", "173"],
+    "Кировская область": ["43", "143"],
+    "Удмуртия": ["18", "118"],
+    "Чувашия": ["21", "121"],
+    "Марий Эл": ["12", "112"],
+    "Мордовия": ["13", "113"],
+    "Карелия": ["10", "110"],
+    "Архангельская область": ["29", "129"],
+    "Вологодская область": ["35", "135"],
+    "Мурманская область": ["51", "151"],
+    "Новгородская область": ["53", "153"],
+    "Псковская область": ["60", "160"],
+    "Калининградская область": ["39", "91"],
+    "Курганская область": ["45", "145"],
+    "Омская область": ["55", "155"],
+    "Хабаровский край": ["27", "127"],
+    "Амурская область": ["28", "128"],
+    "Камчатский край": ["41", "82"],
+    "Сахалинская область": ["65", "165"],
+    "Якутия": ["14", "114"],
+    "Бурятия": ["03", "103"],
+    "Забайкальский край": ["75", "80"],
+    "Крым": ["82", "777"],
+    "Севастополь": ["92"],
+}
+
+REGION_WEIGHTS = {
+    "Москва": 12,
+    "Московская область": 10,
+    "Санкт-Петербург": 8,
+    "Краснодарский край": 7,
+    "Татарстан": 6,
+    "Свердловская область": 5,
+    "Ростовская область": 5,
+    "Нижегородская область": 4,
+    "Самарская область": 4,
+    "Челябинская область": 4,
+    "Башкортостан": 4,
+    "Красноярский край": 3,
+    "Новосибирская область": 3,
+    "Приморский край": 3,
+    "Другие регионы": 22,
+}
+
+GOLD_SERIES = [
+    "ААА", "ВВВ", "ЕЕЕ", "ККК", "МММ", "ННН",
+    "ООО", "РРР", "ССС", "ТТТ", "УУУ", "ХХХ"
+]
+
+GOV_SERIES = [
+    "АМР", "АКР", "АОО", "ВОО", "МОС", "ВМР",
+    "ВОР", "ЕКХ", "ЕКР", "ЕРР", "КОО", "ККР",
+    "ММР", "НАА", "НКХ", "НРС", "АММ", "МРС"
+]
+
+WORD_SERIES = [
+    "ВАМ", "ВАУ", "ХАМ", "УХА", "ЕДА",
+    "НОТ", "ВОТ", "ТАМ", "ОСА", "ЕЖА"
+]
+
+
+def pick_region():
+    regions = []
+    weights = []
+
+    for name, codes in REGIONS.items():
+        weight = REGION_WEIGHTS.get(name, 1)
+        for code in codes:
+            regions.append((code, name))
+            weights.append(weight / len(codes))
+
+    return random.choices(regions, weights=weights, k=1)[0]
+
+
+def generate_letters():
+    chance = random.random()
+
+    if chance < 0.005:
+        return random.choice(GOV_SERIES)
+
+    if chance < 0.019:
+        return random.choice(GOLD_SERIES)
+
+    if chance < 0.075:
+        letter = random.choice(LETTERS)
+        return random.choice(LETTERS) + letter + letter
+
+    if chance < 0.085:
+        return random.choice(WORD_SERIES)
+
+    return "".join(random.choices(LETTERS, k=3))
+
+
+def generate_digits():
+    chance = random.random()
+
+    if chance < 0.55:
+        return "".join(random.choices("0123456789", k=3))
+
+    if chance < 0.72:
+        return "".join(random.choices("067895", k=3))
+
+    if chance < 0.80:
+        digit = random.choice("0123456789")
+        return digit * 2 + random.choice("0123456789")
+
+    if chance < 0.86:
+        digit = random.choice("0123456789")
+        return digit + random.choice("0123456789") + digit
+
+    if chance < 0.895:
+        start = random.randint(1, 7)
+        return str(start) + str(start + 1) + str(start + 2)
+
+    if chance < 0.93:
+        digit = random.choice("0123456789")
+        return digit * 3
+
+    if chance < 0.955:
+        return "00" + random.choice("123456789")
+
+    if chance < 0.985:
+        return random.choice("123456789") + "00"
+
+    return random.choice(["007", "100", "200", "300", "500", "700", "800", "900"])
+
+
+def get_plate_tags(letters, digits):
+    points = 0
+    tags = []
+
+    if digits == "000":
+        points += 110
+        tags.append("Три нуля")
+
+    if len(set(digits)) == 1:
+        points += 100
+        tags.append("Три одинаковые цифры")
+    elif digits[0] == digits[2]:
+        points += 45
+        tags.append("Зеркальные цифры")
+
+    if digits in ["123", "234", "345", "456", "567", "678", "789"]:
+        points += 35
+        tags.append("Цифровая лесенка")
+
+    if digits in ["007", "077", "100", "200", "300", "500", "700", "800", "900"]:
+        points += 90
+        tags.append("Особая комбинация")
+
+    if digits.endswith("00") or digits.startswith("00"):
+        points += 45
+        tags.append("Круглые цифры")
+
+    if digits[0] == digits[1] or digits[1] == digits[2]:
+        points += 22
+        tags.append("Парные цифры")
+
+    for digit in digits:
+        if digit in "0689":
+            points += 7
+
+    if letters in GOLD_SERIES:
+        points += 95
+        tags.append("Золотая серия")
+    elif letters in GOV_SERIES:
+        points += 210
+        tags.append("Государственная серия")
+    elif letters in WORD_SERIES:
+        points += 60
+        tags.append("Словесная серия")
+    elif letters[0] == letters[1] or letters[1] == letters[2]:
+        points += 25
+        tags.append("Повтор букв")
+
+    return points, tags
+
+
+def get_rarity(points):
+    if points >= 250:
+        return "Mythic"
+    if points >= 150:
+        return "Legendary"
+    if points >= 95:
+        return "Epic"
+    if points >= 45:
+        return "Rare"
+    if points >= 22:
+        return "Uncommon"
     return "Common"
 
+
+def generate_plate_details():
+    letters = generate_letters()
+    digits = generate_digits()
+    region_code, region_name = pick_region()
+
+    points, tags = get_plate_tags(letters, digits)
+    rarity = get_rarity(points)
+
+    base_price = random.randint(70, 140)
+    price = base_price * (3 if points >= 250 else 1)
+
+    return {
+        "number": f"{letters[0]}{digits}{letters[1:]} {region_code}",
+        "rarity": rarity,
+        "rarity_ru": RARITY_NAMES[rarity],
+        "points": points,
+        "tags": tags,
+        "price": price,
+        "region": region_code,
+        "region_name": region_name,
+    }
+
+
 def generate_plate():
-    letters = "АВЕКМНОРСТУХ"
-
-    first_letter = random.choice(letters)
-    digits = "".join(random.choice("0123456789") for _ in range(3))
-    last_letters = "".join(random.choice(letters) for _ in range(2))
-
-  
-def generate_plate():
-    letters = "АВЕКМНОРСТУХ"
-
-    first = random.choice(letters)
-    digits = "".join(random.choice("0123456789") for _ in range(3))
-    last = "".join(random.choice(letters) for _ in range(2))
-
-    regions = [
-        "01", "02", "03", "04", "05", "06", "07", "08", "09",
-        "10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-        "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
-        "31", "32", "33", "34", "35", "36", "37", "38", "39", "40",
-        "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
-        "51", "52", "53", "54", "55", "56", "57", "58", "59", "60",
-        "61", "62", "63", "64", "65", "66", "67", "68", "69", "70",
-        "71", "72", "73", "74", "75", "76", "77", "78", "79", "80",
-        "81", "82", "83", "84", "85", "86", "87", "88", "89",
-        "90", "91", "92", "94", "95", "96", "97", "98", "99",
-        "101", "102", "103", "105", "109", "111", "113", "115",
-        "116", "118", "121", "122", "123", "124", "125", "126",
-        "127", "130", "131", "133", "134", "136", "138", "142",
-        "147", "150", "152", "154", "155", "156", "158", "159",
-        "161", "163", "164", "166", "169", "172", "173", "174",
-        "177", "178", "180", "181", "182", "184", "185", "186",
-        "190", "192", "193", "196", "197", "198", "199",
-        "222", "224", "250", "252", "277", "299", "323", "550",
-        "702", "716", "725", "750", "754", "761", "763", "764",
-        "774", "777", "778", "790", "797", "799", "977"
-    ]
-
-    region = random.choice(regions)
-    return f"{first}{digits}{last} {region}"
-
-
-    return f"{first_letter}{digits}{last_letters} {region}"
+    return generate_plate_details()["number"]
 @app.get("/")
 def home():
     return FileResponse(WEB_DIR / "index.html")

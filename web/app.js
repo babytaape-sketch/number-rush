@@ -132,7 +132,7 @@ async function rollSlot(element, finalChar, options = {}) {
     windowElement.style.height = `${symbolHeight}px`;
     windowElement.style.overflow = "hidden";
 
-    const totalSymbols = 30;
+    const totalSymbols = 42;
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
@@ -168,7 +168,7 @@ async function rollSlot(element, finalChar, options = {}) {
             ],
             {
                 duration,
-                easing: "cubic-bezier(.12,.72,.16,1)",
+                easing: "cubic-bezier(.16,1,.3,1)",
                 fill: "forwards"
             }
         );
@@ -229,23 +229,27 @@ async function animatePlate(finalPlate, rarity) {
     main.replaceChildren(...mainSlots);
     region.replaceChildren(...regionSlots);
 
-    // Сначала одновременно останавливаем цифры региона.
+    // Регион прокручивается первым, плавно и одновременно.
     await Promise.all(
         regionSlots.map((slot, index) =>
-            rollSlot(slot, regionChars[index], { duration: 700 })
+            rollSlot(slot, regionChars[index], { duration: 1250 })
         )
     );
 
-    // Затем по очереди прокручиваем символы основного номера.
+    // Символы номера стартуют с небольшим интервалом,
+    // поэтому вращаются одновременно, а останавливаются по очереди.
     const symbolDuration = ["Rare", "Legendary", "Mythic"].includes(rarity)
-        ? 700
-        : rarity === "Epic" ? 600 : 500;
+        ? 1850
+        : rarity === "Epic" ? 1700 : 1550;
 
-    for (let index = 0; index < mainSlots.length; index++) {
-        await rollSlot(mainSlots[index], mainChars[index], {
-            duration: symbolDuration
-        });
-    }
+    await Promise.all(
+        mainSlots.map((slot, index) =>
+            rollSlot(slot, mainChars[index], {
+                duration: symbolDuration,
+                delay: index * 170
+            })
+        )
+    );
 
     setRarityEffect(rarity);
     await sleep(500);

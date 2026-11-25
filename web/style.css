@@ -517,9 +517,11 @@ footer span {
         border-radius: 9px;
     }
 
-    .plate-main {
-        font-size: clamp(36px, 10vw, 48px);
-    }
+   .plate-main {
+    font-size: clamp(44px, 12vw, 58px);
+    font-weight: 500;
+    letter-spacing: -1px;
+}
 
     .plate-main > .slot-cell {
         flex-basis: .60em !important;

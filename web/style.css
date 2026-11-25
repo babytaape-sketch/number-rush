@@ -1,10 +1,13 @@
 
 :root {
     color-scheme: dark;
-    --bg: #080b10;
-    --text: #f4f7fb;
-    --muted: #94a3b8;
-    --blue: #168cff;
+    --bg: #050505;
+    --panel: #111111;
+    --panel-border: #343434;
+    --text: #f5f5f5;
+    --muted: #999999;
+    --lime: #c8ff00;
+    --blue: #c8ff00;
 }
 
 * {
@@ -14,16 +17,14 @@
 html, body {
     margin: 0;
     min-height: 100%;
-    background: var(--bg);
+    background: #050505;
 }
 
 body {
     color: var(--text);
     font-family: Arial, Helvetica, sans-serif;
     background:
-        linear-gradient(180deg, rgba(3,8,14,.76), rgba(3,8,14,.96)),
-        url("https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=85")
-        center / cover fixed;
+        radial-gradient(ellipse at 50% 28%, #151515 0%, #080808 48%, #000 100%);
 }
 
 button {
@@ -31,62 +32,68 @@ button {
 }
 
 .app {
-    width: min(100%, 560px);
+    width: min(100%, 1200px);
     min-height: 100vh;
     margin: 0 auto;
-    padding: 18px;
-    background: rgba(5,10,17,.82);
+    padding: clamp(14px, 2.2vw, 28px);
+    background: transparent;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 34px;
+    margin-bottom: clamp(24px, 4vw, 44px);
 }
 
 .brand {
-    font-size: 23px;
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: .9;
     font-weight: 900;
-    letter-spacing: -1px;
+    font-style: italic;
+    letter-spacing: -1.5px;
 }
 
 .brand span {
-    color: var(--blue);
+    display: block;
+    color: var(--lime);
+    font-size: 1.15em;
 }
 
 .wallet {
-    padding: 10px 14px;
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 12px;
-    background: rgba(12,21,32,.85);
+    padding: 10px 18px;
+    border: 1px solid rgba(200,255,0,.3);
+    border-radius: 30px;
+    background: #101010;
+    font-size: clamp(16px, 2vw, 24px);
+    font-weight: 800;
 }
 
 .hero {
     text-align: center;
-    padding: 12px 0 28px;
+    padding: 0 0 24px;
 }
 
 .eyebrow {
-    color: #8ba2bc;
-    font-size: 11px;
-    letter-spacing: 3px;
-    font-weight: 700;
+    color: var(--lime);
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 800;
 }
 
 h1 {
-    margin: 14px 0 34px;
-    font-size: clamp(27px, 7vw, 39px);
-    line-height: 1.12;
+    margin: 12px 0 28px;
+    font-size: clamp(27px, 5vw, 46px);
+    line-height: 1.08;
     letter-spacing: -1.5px;
 }
 
 h1 span {
     display: block;
-    color: var(--blue);
+    color: var(--lime);
 }
 
-/* Номерной знак */
+/* Большой российский номер */
 
 .plate,
 .mini-plate {
@@ -95,101 +102,106 @@ h1 span {
     flex-wrap: nowrap;
     align-items: stretch;
     justify-content: flex-start;
-    width: 100%;
     aspect-ratio: 520 / 112;
     overflow: hidden;
-    background: linear-gradient(180deg, #ffffff, #e5e8eb);
-    border: 3px solid #15191e;
-    border-radius: 8px;
+    background: linear-gradient(180deg, #fff 0%, #f5f5f5 55%, #dedede 100%);
+    border: 5px solid #17191b;
+    border-radius: 15px;
     box-shadow:
-        0 0 0 2px #d9e0e8,
-        0 0 0 4px rgba(0,0,0,.9),
-        0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
-        inset 0 2px 5px rgba(255,255,255,.9),
-        inset 0 -3px 5px rgba(0,0,0,.18);
+        0 0 0 2px #777,
+        0 0 0 5px #080808,
+        0 12px 30px rgba(0,0,0,.65),
+        inset 0 2px 5px #fff,
+        inset 0 -3px 5px rgba(0,0,0,.2);
 }
 
 .plate {
     --rarity-color: #b9c3d0;
-    max-width: 380px;
+    width: 100%;
+    max-width: 760px;
     margin: 0 auto;
 }
 
-.mini-plate {
-    --rarity-color: #b9c3d0;
-    width: min(190px, 48vw);
-    flex: 0 0 auto;
-    border-width: 2px;
-    border-radius: 5px;
-}
-
-/* Основная часть — символы почти от края до края */
-
 .plate-main,
 .mini-plate-main {
-    font-size: clamp(23px, 7.5vw, 32px);
-    letter-spacing: -2px;
+    display: flex;
+    flex: 0 0 75%;
+    width: 75%;
+    min-width: 0;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #080808;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
 }
 
 .plate-main {
-    font-size: clamp(46px, 15vw, 64px);
+    font-size: clamp(38px, 8.5vw, 94px);
 }
-
-/* Правая часть — регион */
 
 .plate-region,
 .mini-plate-region {
+    display: grid;
     flex: 0 0 25%;
     width: 25%;
     min-width: 0;
     height: 100%;
-    display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: 1fr auto;
     align-items: center;
     justify-items: center;
-    column-gap: 3px;
-    padding: 3px 5px;
+    column-gap: 5px;
+    padding: 5px 8px;
     overflow: hidden;
-    border-left: 3px solid #15191e;
-    color: #080a0d;
-    background: linear-gradient(180deg, #fff, #e3e7eb);
+    border-left: 3px solid #171717;
+    color: #080808;
+    background: linear-gradient(180deg, #fff, #e5e5e5);
 }
-
-/* Цифры региона — крупнее */
 
 .region-code,
 .mini-region-code {
-    font-size: clamp(16px, 5.2vw, 21px);
-    letter-spacing: -1px;
+    display: flex;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    color: #080808;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: nowrap;
+    gap: 0;
 }
 
 .region-code {
-    font-size: clamp(29px, 8.5vw, 40px);
-    letter-spacing: -1px;
+    font-size: clamp(25px, 4.5vw, 54px);
 }
-
-/* RUS */
 
 .region-country,
 .mini-region-country {
     grid-column: 1;
     grid-row: 2;
-    font-size: 11px;
-    font-weight: 900;
+    font-size: clamp(9px, 1.2vw, 16px);
+    font-weight: 800;
     line-height: 1;
 }
 
-/* Флаг */
-
 .region-flag,
 .mini-region-flag {
+    display: flex;
     grid-column: 2;
     grid-row: 2;
-    display: flex;
     flex-direction: column;
-    width: 25px;
-    height: 14px;
+    width: clamp(20px, 3vw, 42px);
+    height: clamp(12px, 1.8vw, 24px);
     border: 1px solid #777;
     overflow: hidden;
 }
@@ -215,26 +227,32 @@ h1 span {
     background: #d52b35;
 }
 
-/* Редкость и кнопка */
+/* Редкость и генерация */
 
 .rarity {
-    margin: 22px 0;
-    color: var(--rarity-color, #b9c3d0);
-    font-size: 14px;
+    display: inline-block;
+    margin: 18px 0 22px;
+    padding: 8px 24px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    color: var(--rarity-color, #c8ff00);
+    background: rgba(0,0,0,.65);
+    font-size: 15px;
     font-weight: 900;
     letter-spacing: 1.5px;
 }
 
 #spin {
-    width: 100%;
-    max-width: 340px;
-    padding: 17px 20px;
-    border: 1px solid #43a5ff;
-    border-radius: 13px;
-    color: white;
-    background: linear-gradient(135deg, #168cff, #0754bd);
-    box-shadow: 0 8px 24px rgba(0,112,255,.25);
-    font-size: 15px;
+    display: block;
+    width: min(100%, 720px);
+    margin: 0 auto;
+    padding: 20px;
+    border: 0;
+    border-radius: 18px;
+    color: #080808;
+    background: linear-gradient(110deg, #baff00, #e1ff32);
+    box-shadow: 0 8px 28px rgba(200,255,0,.16);
+    font-size: clamp(16px, 2vw, 24px);
     font-weight: 900;
     letter-spacing: 1px;
     cursor: pointer;
@@ -246,129 +264,165 @@ h1 span {
 }
 
 .hint {
-    color: #aab7c6;
-    font-size: 13px;
+    color: #d0d0d0;
+    font-size: 14px;
+}
+
+#free-spin-status {
+    color: var(--lime);
 }
 
 /* Вкладки */
 
 nav {
     display: flex;
-    gap: 8px;
-    margin: 12px 0 24px;
+    gap: 5px;
+    margin: 12px 0 26px;
     padding: 5px;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 13px;
-    background: rgba(10,17,26,.9);
+    border: 1px solid #333;
+    border-radius: 18px;
+    background: #151515;
 }
 
 .tab {
     flex: 1;
-    padding: 13px 8px;
+    padding: 15px 8px;
     border: 0;
-    border-radius: 9px;
-    color: #aab7c6;
+    border-radius: 12px;
+    color: #aaa;
     background: transparent;
     font-weight: 800;
     cursor: pointer;
 }
 
 .tab.active {
-    color: white;
-    background: linear-gradient(135deg, #147fe9, #064da9);
+    color: var(--lime);
+    background: #050505;
+    box-shadow: inset 0 0 0 1px #282828;
 }
 
 .panel {
-    margin-bottom: 26px;
+    margin-bottom: 30px;
 }
 
 .panel h2 {
     margin: 0 0 16px;
-    font-size: 20px;
+    font-size: clamp(19px, 2.5vw, 27px);
 }
 
 .hidden {
     display: none !important;
 }
 
-/* Коллекция и рынок */
+/* Коллекция — карточки */
 
 .items {
-    display: flex;
-    flex-direction: column;
-    gap: 11px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+    gap: 14px;
 }
 
 .item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
     min-width: 0;
-    padding: 13px;
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 13px;
-    background: rgba(10,18,28,.92);
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    background: linear-gradient(145deg, #171717, #090909);
+    box-shadow: 0 8px 20px rgba(0,0,0,.25);
 }
 
 .collection-item {
-    min-height: 86px;
+    min-height: 145px;
 }
 
 .collection-plate-wrap {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    width: 100%;
     min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
 }
 
-/* Маленький номер в коллекции */
+.mini-plate {
+    --rarity-color: #b9c3d0;
+    width: 100%;
+    flex: 0 0 auto;
+    border-width: 2px;
+    border-radius: 6px;
+    box-shadow:
+        0 0 0 1px #777,
+        0 0 0 2px #080808,
+        inset 0 1px 3px #fff;
+}
 
 .mini-plate-main {
-    font-size: clamp(21px, 7.2vw, 30px);
-    letter-spacing: -1.5px;
+    font-size: clamp(19px, 2.8vw, 34px);
+    letter-spacing: 0;
 }
 
 .mini-plate-region {
     border-left-width: 2px;
-    padding: 2px 3px;
+    padding: 2px 4px;
+    column-gap: 2px;
 }
 
 .mini-region-code {
-    font-size: clamp(14px, 4.8vw, 18px);
-    letter-spacing: 0;
+    font-size: clamp(15px, 1.8vw, 23px);
 }
 
 .mini-region-country {
-    font-size: 6px;
+    font-size: clamp(6px, .8vw, 10px);
 }
 
 .mini-region-flag {
-    width: 14px;
-    height: 8px;
+    width: clamp(13px, 1.5vw, 20px);
+    height: clamp(8px, .9vw, 12px);
 }
 
 .collection-plate-wrap small,
 .item small {
     color: var(--muted);
     font-size: 11px;
+    font-weight: 800;
 }
 
-.item strong {
-    color: #dce8f5;
+.collection-item > strong {
+    align-self: flex-end;
+    color: #ddd;
+    font-size: 13px;
+}
+
+.item > div {
+    min-width: 0;
+}
+
+.item > div b {
+    display: block;
+    overflow-wrap: anywhere;
+    font-size: 16px;
+}
+
+.item > strong {
+    color: var(--lime);
     white-space: nowrap;
 }
 
 .empty {
-    padding: 22px;
-    border: 1px dashed rgba(255,255,255,.16);
-    border-radius: 12px;
+    grid-column: 1 / -1;
+    padding: 24px;
+    border: 1px dashed #444;
+    border-radius: 14px;
     color: var(--muted);
     text-align: center;
 }
 
-/* Анимация символов */
+/* Барабаны анимации */
 
 .slot-cell {
     display: flex;
@@ -376,12 +430,10 @@ nav {
     width: 0;
     min-width: 0;
     height: 100%;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     line-height: 1;
-    writing-mode: horizontal-tb;
 }
 
 .slot-window {
@@ -416,149 +468,93 @@ nav {
 }
 
 @keyframes rarityFlash {
-    0% {
-        transform: scale(1);
-        filter: brightness(1);
-    }
-
-    35% {
-        transform: scale(1.035);
-        filter: brightness(1.65);
-    }
-
-    100% {
-        transform: scale(1);
-        filter: brightness(1);
-    }
+    0% { transform: scale(1); filter: brightness(1); }
+    35% { transform: scale(1.025); filter: brightness(1.5); }
+    100% { transform: scale(1); filter: brightness(1); }
 }
 
-.plate[data-rarity="Uncommon"] {
-    --rarity-color: #36d477;
-}
-
-.plate[data-rarity="Rare"] {
-    --rarity-color: #3294ff;
-}
-
-.plate[data-rarity="Epic"] {
-    --rarity-color: #ae63ff;
-}
-
-.plate[data-rarity="Legendary"] {
-    --rarity-color: #ffc247;
-}
-
-.plate[data-rarity="Mythic"] {
-    --rarity-color: #ff563f;
-}
-
-/* Подвал */
+.plate[data-rarity="Uncommon"] { --rarity-color: #36d477; }
+.plate[data-rarity="Rare"] { --rarity-color: #3294ff; }
+.plate[data-rarity="Epic"] { --rarity-color: #ae63ff; }
+.plate[data-rarity="Legendary"] { --rarity-color: #ffc247; }
+.plate[data-rarity="Mythic"] { --rarity-color: #ff563f; }
 
 footer {
-    padding: 22px 0 8px;
-    border-top: 1px solid rgba(255,255,255,.1);
-    color: #8292a5;
+    padding: 24px 0 10px;
+    border-top: 1px solid #222;
+    color: #777;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 2px;
 }
 
 footer span {
-    color: var(--blue);
+    color: var(--lime);
 }
 
-/* Маленькие экраны */
-
-@media (max-width: 380px) {
+@media (max-width: 520px) {
     .app {
-        padding-right: 13px;
-        padding-left: 13px;
+        padding: 14px;
     }
 
     .plate {
-        width: 100%;
-    }
-
-    .mini-plate {
-        width: min(165px, 46vw);
-    }
-
-    .item {
-        padding: 10px;
+        border-width: 3px;
+        border-radius: 9px;
     }
 
     .plate-main {
-        font-size: clamp(42px, 14vw, 54px);
+        font-size: clamp(36px, 10vw, 48px);
     }
 
     .region-code {
-        font-size: clamp(23px, 8vw, 29px);
+        font-size: clamp(23px, 7vw, 32px);
+    }
+
+    .plate-region {
+        padding: 3px 4px;
+        column-gap: 2px;
+        border-left-width: 2px;
+    }
+
+    .region-country {
+        font-size: 8px;
+    }
+
+    .region-flag {
+        width: 19px;
+        height: 12px;
+    }
+
+    .items {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .item {
+        padding: 9px;
+        border-radius: 13px;
     }
 
     .mini-plate-main {
-        font-size: clamp(20px, 7vw, 25px);
+        font-size: clamp(16px, 5vw, 23px);
     }
 
     .mini-region-code {
-        font-size: clamp(13px, 4.5vw, 16px);
+        font-size: clamp(13px, 4vw, 18px);
+    }
+
+    .mini-region-country {
+        font-size: 6px;
+    }
+
+    .mini-region-flag {
+        width: 13px;
+        height: 8px;
     }
 }
-/* Исправленная геометрия номерных знаков */
 
-.plate-main,
-.mini-plate-main {
-    display: flex;
-    flex: 0 0 75%;
-    width: 75%;
-    min-width: 0;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    white-space: nowrap;
-    color: #080a0d;
-    font-weight: 900;
-    line-height: 1;
-}
-
-.plate-main {
-    font-size: clamp(42px, 14vw, 64px);
-    letter-spacing: -2px;
-}
-
-.mini-plate-main {
-    font-size: clamp(20px, 7vw, 30px);
-    letter-spacing: -1.5px;
-}
-
-.plate-region,
-.mini-plate-region {
-    flex: 0 0 25%;
-    width: 25%;
-    min-width: 0;
-}
-
-.region-code,
-.mini-region-code {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    min-width: 0;
-    white-space: nowrap;
-    font-weight: 900;
-    line-height: 1;
-    gap: 0.02em;
-}
-
-.region-code {
-    font-size: clamp(25px, 8vw, 40px);
-    letter-spacing: -1px;
-}
-
-.mini-region-code {
-    font-size: clamp(13px, 4.5vw, 18px);
-    letter-spacing: 0;
+@media (max-width: 350px) {
+    .items {
+        grid-template-columns: 1fr;
+    }
 }

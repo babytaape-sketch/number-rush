@@ -88,7 +88,8 @@ def init_db():
             coins INTEGER NOT NULL DEFAULT 100,
             spins INTEGER NOT NULL DEFAULT 5,
             created_at INTEGER NOT NULL,
-            last_free_spin_at INTEGER NOT NULL DEFAULT 0
+            last_free_spin_at INTEGER NOT NULL DEFAULT 0,
+            total_spins INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS plates (
@@ -102,6 +103,15 @@ def init_db():
         CREATE TABLE IF NOT EXISTS listings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             plate_id INTEGER NOT NULL UNIQUE,
+            seller_id TEXT NOT NULL,
+            price INTEGER NOT NULL,
+            created_at INTEGER NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS market_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            plate_id INTEGER NOT NULL,
+            buyer_id TEXT NOT NULL,
             seller_id TEXT NOT NULL,
             price INTEGER NOT NULL,
             created_at INTEGER NOT NULL
@@ -120,6 +130,12 @@ with db() as con:
     if "last_free_spin_at" not in columns:
         con.execute(
             "ALTER TABLE users ADD COLUMN last_free_spin_at "
+            "INTEGER NOT NULL DEFAULT 0"
+        )
+
+    if "total_spins" not in columns:
+        con.execute(
+            "ALTER TABLE users ADD COLUMN total_spins "
             "INTEGER NOT NULL DEFAULT 0"
         )
 
@@ -630,29 +646,36 @@ app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 def me(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     now = int(time.time())
+    uid = user["user_id"]
 
     with db() as con:
         count = con.execute(
-            "SELECT COUNT(*) n FROM plates WHERE owner_id=?",
-            (user["user_id"],)
+            "SELECT COUNT(*) n FROM plates WHERE owner_id=?", (uid,)
         ).fetchone()["n"]
-
+        rarest = con.execute(
+            """SELECT number, rarity FROM plates WHERE owner_id=?
+            ORDER BY CASE rarity WHEN 'Mythic' THEN 6
+            WHEN 'Legendary' THEN 5 WHEN 'Epic' THEN 4
+            WHEN 'Rare' THEN 3 WHEN 'Uncommon' THEN 2 ELSE 1 END DESC,
+            id DESC LIMIT 1""", (uid,)
+        ).fetchone()
+        sales = con.execute(
+            "SELECT COUNT(*) n FROM market_transactions WHERE seller_id=?", (uid,)
+        ).fetchone()["n"]
+        purchases = con.execute(
+            "SELECT COUNT(*) n FROM market_transactions WHERE buyer_id=?", (uid,)
+        ).fetchone()["n"]
         row = con.execute(
-            "SELECT last_free_spin_at FROM users WHERE user_id=?",
-            (user["user_id"],)
+            "SELECT last_free_spin_at, total_spins FROM users WHERE user_id=?", (uid,)
         ).fetchone()
 
-    seconds_left = max(
-        0,
-        86400 - (now - row["last_free_spin_at"])
-    )
-
+    seconds_left = max(0, 86400 - (now - row["last_free_spin_at"]))
     return {
-        "id": user["user_id"],
-        "username": user["username"],
-        "coins": user["coins"],
-        "spins": user["spins"],
-        "collection_count": count,
+        "id": uid, "username": user["username"], "coins": user["coins"],
+        "spins": user["spins"], "total_spins": row["total_spins"],
+        "collection_count": count, "created_at": user["created_at"],
+        "rarest_plate": dict(rarest) if rarest else None,
+        "purchases_count": purchases, "sales_count": sales,
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left
     }
@@ -725,6 +748,11 @@ def spin(authorization: str | None = Header(default=None)):
         con.execute(
             "UPDATE users SET coins=coins+? WHERE user_id=?",
             (reward, uid)
+        )
+
+        con.execute(
+            "UPDATE users SET total_spins=total_spins+1 WHERE user_id=?",
+            (uid,)
         )
 
         cur = con.execute(
@@ -958,6 +986,14 @@ def buy_listing(
         con.execute(
             "UPDATE plates SET owner_id=? WHERE id=?",
             (uid, listing["plate_id"])
+        )
+
+        con.execute(
+            """INSERT INTO market_transactions
+            (plate_id, buyer_id, seller_id, price, created_at)
+            VALUES (?, ?, ?, ?, ?)""",
+            (listing["plate_id"], uid, listing["seller_id"],
+             listing["price"], int(time.time()))
         )
 
         con.execute(

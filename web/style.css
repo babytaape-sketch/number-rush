@@ -99,10 +99,11 @@ h1 span {
     aspect-ratio: 520 / 112;
     overflow: hidden;
     background: linear-gradient(180deg, #ffffff, #e5e8eb);
-    border: 3px solid #d9e0e8;
-    border-radius: 8px;
+    border: 3px solid #15191e;
+    border-radius: 11px;
     box-shadow:
-        0 0 0 2px rgba(0,0,0,.8),
+        0 0 0 2px #d9e0e8,
+        0 0 0 4px rgba(0,0,0,.9),
         0 0 22px color-mix(in srgb, var(--rarity-color, #b9c3d0) 45%, transparent),
         inset 0 2px 5px rgba(255,255,255,.9),
         inset 0 -3px 5px rgba(0,0,0,.18);
@@ -119,15 +120,15 @@ h1 span {
     width: min(190px, 48vw);
     flex: 0 0 auto;
     border-width: 2px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 
-/* Основная часть номера — 82% */
+/* Основная часть — 75% */
 
 .plate-main,
 .mini-plate-main {
-    flex: 0 0 82%;
-    width: 82%;
+    flex: 0 0 75%;
+    width: 75%;
     min-width: 0;
     min-height: 0;
     height: 100%;
@@ -137,40 +138,44 @@ h1 span {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    color: #101318;
+    color: #080a0d;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 900;
     white-space: nowrap;
-    letter-spacing: -1px;
+    letter-spacing: -2px;
     line-height: 1;
     writing-mode: horizontal-tb;
 }
 
 .plate-main {
-    font-size: clamp(31px, 9vw, 49px);
+    font-size: clamp(34px, 10vw, 54px);
 }
 
-/* Регион — 18%, всегда справа */
+/* Регион — 25% */
 
 .plate-region,
 .mini-plate-region {
-    flex: 0 0 18%;
-    width: 18%;
+    flex: 0 0 25%;
+    width: 25%;
     min-width: 0;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 1fr auto;
     align-items: center;
-    justify-content: center;
+    justify-items: center;
+    column-gap: 3px;
+    padding: 3px 5px;
     overflow: hidden;
-    border-left: 2px solid #252a30;
-    color: #11151a;
+    border-left: 3px solid #15191e;
+    color: #080a0d;
     background: linear-gradient(180deg, #fff, #e3e7eb);
 }
 
 .region-code,
 .mini-region-code {
+    grid-column: 1 / -1;
+    grid-row: 1;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -184,23 +189,28 @@ h1 span {
 }
 
 .region-code {
-    font-size: clamp(17px, 5vw, 25px);
+    font-size: clamp(19px, 5.2vw, 27px);
+    letter-spacing: 1px;
 }
 
 .region-country,
 .mini-region-country {
-    font-size: 8px;
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 10px;
     font-weight: 900;
-    line-height: 1.2;
+    line-height: 1;
 }
 
 .region-flag,
 .mini-region-flag {
+    grid-column: 2;
+    grid-row: 2;
     display: flex;
     flex-direction: column;
-    width: 23px;
-    height: 12px;
-    border: 1px solid #999;
+    width: 25px;
+    height: 14px;
+    border: 1px solid #777;
     overflow: hidden;
 }
 
@@ -333,20 +343,21 @@ nav {
     min-width: 0;
 }
 
-/* Уменьшенный номер в коллекции */
+/* Маленький номер в коллекции */
 
 .mini-plate-main {
     font-size: clamp(13px, 3.5vw, 20px);
-    letter-spacing: -0.5px;
-    padding: 0 1%;
+    letter-spacing: -1px;
 }
 
 .mini-plate-region {
-    border-left-width: 1px;
+    border-left-width: 2px;
+    padding: 2px;
 }
 
 .mini-region-code {
     font-size: clamp(9px, 2.5vw, 13px);
+    letter-spacing: 0;
 }
 
 .mini-region-country {
@@ -355,7 +366,7 @@ nav {
 
 .mini-region-flag {
     width: 14px;
-    height: 7px;
+    height: 8px;
 }
 
 .collection-plate-wrap small,
@@ -377,7 +388,7 @@ nav {
     text-align: center;
 }
 
-/* Анимация прокрутки символов */
+/* Анимация символов */
 
 .slot-cell {
     display: flex;

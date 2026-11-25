@@ -236,17 +236,18 @@ async function animatePlate(finalPlate, rarity) {
         )
     );
 
-    // Символы номера стартуют с небольшим интервалом,
-    // поэтому вращаются одновременно, а останавливаются по очереди.
-    const symbolDuration = ["Rare", "Legendary", "Mythic"].includes(rarity)
-        ? 1850
-        : rarity === "Epic" ? 1700 : 1550;
+    // Все символы номера начинают вращаться одновременно,
+    // но каждый следующий останавливается немного позже предыдущего.
+    const firstStopDuration = ["Rare", "Legendary", "Mythic"].includes(rarity)
+        ? 1550
+        : rarity === "Epic" ? 1400 : 1250;
+    const stopInterval = 260;
 
     await Promise.all(
         mainSlots.map((slot, index) =>
             rollSlot(slot, mainChars[index], {
-                duration: symbolDuration,
-                delay: index * 170
+                duration: firstStopDuration + index * stopInterval,
+                delay: 0
             })
         )
     );

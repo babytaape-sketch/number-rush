@@ -306,38 +306,51 @@ async function refresh() {
     updateFreeSpinTimer();
     freeSpinTimer = setInterval(updateFreeSpinTimer, 1000);
 
-    $("coins").textContent = me.coins.toLocaleString("ru-RU");
-    $("spins").textContent = me.spins;
+    const coinsElement = $("coins");
+    const spinsElement = $("spins");
+
+    if (coinsElement) {
+        coinsElement.textContent = Number(me.coins).toLocaleString("ru-RU");
+    }
+
+    if (spinsElement) {
+        spinsElement.textContent = me.spins;
+    }
 
     const plates = await api("/api/collection");
+    const itemsElement = $("items");
 
-    $("items").innerHTML = plates.length
-        ? plates.map(p => `
-            <div class="item collection-item">
-                <div class="collection-plate-wrap">
-                    ${createMiniPlate(p.number)}
-                    <small>${escapeHtml(p.rarity)}</small>
+    if (itemsElement) {
+        itemsElement.innerHTML = plates.length
+            ? plates.map(p => `
+                <div class="item collection-item">
+                    <div class="collection-plate-wrap">
+                        ${createMiniPlate(p.number)}
+                        <small>${escapeHtml(p.rarity)}</small>
+                    </div>
+                    <strong>#${p.id}</strong>
                 </div>
-                <strong>#${p.id}</strong>
-            </div>
-        `).join("")
-        : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';
+            `).join("")
+            : '<div class="empty">Пока нет номеров. Сделай первый спин!</div>';
+    }
 
     const market = await api("/api/market");
+    const marketElement = $("market-items");
 
-    $("market-items").innerHTML = market.length
-        ? market.map(p => `
-            <div class="item">
-                <div>
-                    <b>${escapeHtml(p.number)}</b>
-                    <small>${escapeHtml(p.rarity)}</small>
+    if (marketElement) {
+        marketElement.innerHTML = market.length
+            ? market.map(p => `
+                <div class="item">
+                    <div>
+                        <b>${escapeHtml(p.number)}</b>
+                        <small>${escapeHtml(p.rarity)}</small>
+                    </div>
+                    <strong>${p.price} 🪙</strong>
                 </div>
-                <strong>${p.price} 🪙</strong>
-            </div>
-        `).join("")
-        : '<div class="empty">На рынке пока пусто.</div>';
+            `).join("")
+            : '<div class="empty">На рынке пока пусто.</div>';
+    }
 }
-
 $("spin").addEventListener("click", async () => {
     $("spin").disabled = true;
     $("hint").textContent = "🎰 Барабаны вращаются...";

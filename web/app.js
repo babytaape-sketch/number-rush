@@ -259,10 +259,16 @@ async function rollSlot(element, finalChar, options = {}) {
     
         if (strip.animate) {
             const animation = strip.animate(
-                [
-                    { transform: "translate3d(0, 0, 0)" },
-                    { transform: `translate3d(0, -${distance}px, 0)` }
-                ],
+                options.fastThenBrake
+                    ? [
+                        { transform: "translate3d(0, 0, 0)", offset: 0, easing: "linear" },
+                        { transform: `translate3d(0, -${distance * 0.88}px, 0)`, offset: 0.72, easing: "cubic-bezier(.12,.75,.22,1)" },
+                        { transform: `translate3d(0, -${distance}px, 0)`, offset: 1 }
+                    ]
+                    : [
+                        { transform: "translate3d(0, 0, 0)" },
+                        { transform: `translate3d(0, -${distance}px, 0)` }
+                    ],
                 {
                     duration,
                     easing: "cubic-bezier(.16,1,.3,1)",
@@ -385,7 +391,8 @@ async function animatePlate(finalPlate, rarity) {
                 duration: baseDuration + index * stopInterval +
                     (isSuspense ? suspenseExtra + randomExtra : 0) +
                     finalTwoExtra,
-                totalSymbols: 19
+                totalSymbols: 19,
+                fastThenBrake: isFinalTwo
             });
         })
     );

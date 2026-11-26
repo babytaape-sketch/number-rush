@@ -308,21 +308,20 @@ let freeSpinSeconds = 0;
 
 function updateFreeSpinTimer() {
     const status = $("free-spin-status");
-
-    if (!status) return;
+    const button = $("free-spin-button");
+    if (!status || !button) return;
 
     if (freeSpinSeconds <= 0) {
-        status.textContent = "🎁 Бесплатный спин доступен!";
+        status.textContent = "🎁 Бесплатный спин доступен — нажми кнопку!";
+        button.disabled = false;
         return;
     }
 
+    button.disabled = true;
     const hours = Math.floor(freeSpinSeconds / 3600);
     const minutes = Math.floor((freeSpinSeconds % 3600) / 60);
     const seconds = freeSpinSeconds % 60;
-
-    status.textContent =
-        `🎁 Бесплатный спин через ${hours}ч ${minutes}м ${seconds}с`;
-
+    status.textContent = `🎁 Бесплатный спин через ${hours}ч ${minutes}м ${seconds}с`;
     freeSpinSeconds--;
 }
 
@@ -708,53 +707,43 @@ async function refresh() {
 // КНОПКА СПИНА
 // =========================================================
 
-$("spin").addEventListener("click", async () => {
-    $("spin").disabled = true;
+async function runSpin(useFree) {
+    const spinButton = $("spin");
+    const freeButton = $("free-spin-button");
+    spinButton.disabled = true;
+    freeButton.disabled = true;
     $("hint").textContent = "🎰 Барабаны вращаются...";
 
     try {
-        const result = await api("/api/spin", {
+        const result = await api(useFree ? "/api/spin?free=true" : "/api/spin", {
             method: "POST"
         });
 
-        // Баланс меняется сразу после ответа сервера, до анимации.
         const coinsElement = $("coins");
         const spinsElement = $("spins");
         if (coinsElement) coinsElement.textContent = Number(result.coins).toLocaleString("ru-RU");
         if (spinsElement) spinsElement.textContent = result.spins;
 
-        await animatePlate(
-            result.plate.number,
-            result.plate.rarity
-        );
-
+        await animatePlate(result.plate.number, result.plate.rarity);
         await refresh();
 
-        const rarityText =
-            rarityNames[result.plate.rarity] ||
-            result.plate.rarity.toUpperCase();
-
+        const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
         const tags = result.plate.tags || [];
-
         let message = rarityText;
-
-        if (tags.length > 0) {
-            message += " • " + tags.join(" • ");
-        }
-
+        if (tags.length > 0) message += " • " + tags.join(" • ");
         $("rarity").textContent = message;
-
-        $("hint").textContent =
-            tags.length > 0
-                ? "✨ " + tags.join(" • ")
-                : "Номер добавлен в коллекцию!";
-
+        $("hint").textContent = tags.length > 0 ? "✨ " + tags.join(" • ") : "Номер добавлен в коллекцию!";
     } catch (e) {
         $("hint").textContent = e.message;
+        await refresh().catch(() => {});
     } finally {
-        $("spin").disabled = false;
+        spinButton.disabled = false;
+        updateFreeSpinTimer();
     }
-});
+}
+
+$("spin").addEventListener("click", () => runSpin(false));
+$("free-spin-button").addEventListener("click", () => runSpin(true));
 
 
 // =========================================================

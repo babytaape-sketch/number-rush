@@ -181,7 +181,7 @@ function renderPlateAnalysis(analysis) {
         if (category === "first_decade_001_010") return "Число из первой десятки";
         if (category === "word_KOT") return "Читаемое слово «КОТ»";
         if (category.endsWith("_digits")) return "Рыночная комбинация " + category.slice(0, -7);
-        if (category.endsWith("_letters")) return "Рыночная серия " + category.slice(0, -7);
+        if (category.endsWith("_letters")) return "Рыночная серия " + category.slice(0, -8);
         return "";
     };
     const market = (analysis.market_evidence || [])

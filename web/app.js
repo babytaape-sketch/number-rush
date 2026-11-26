@@ -72,6 +72,17 @@ function escapeHtml(s) {
     }[c]));
 }
 
+function formatRubles(value) {
+    const amount = Math.floor(Math.abs(Number(value) || 0));
+    const lastTwo = amount % 100;
+    const last = amount % 10;
+    const word = lastTwo >= 11 && lastTwo <= 14 ? "рублей"
+        : last === 1 ? "рубль"
+        : last >= 2 && last <= 4 ? "рубля"
+        : "рублей";
+    return amount.toLocaleString("ru-RU") + " " + word;
+}
+
 const plateLetters = "АВЕКМНОРСТУХ";
 const plateDigits = "0123456789";
 
@@ -415,7 +426,7 @@ function renderMarket() {
                         </div>
                     </div>
                     <div class="market-price">
-                        <strong>${Number(p.price).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></strong>
+                        <strong>${formatRubles(p.price)}</strong>
                         <button class="market-action favorite ${favorite ? "is-favorite" : ""}" data-favorite-listing="${p.listing_id}" aria-label="Избранное">${favorite ? "★" : "☆"}</button>
                         ${p.is_mine
                             ? `<button class="market-action cancel" data-cancel-listing="${p.listing_id}">СНЯТЬ</button>`
@@ -470,7 +481,7 @@ function askMarketPrice() {
         overlay.innerHTML = `
             <div class="price-keypad">
                 <div class="price-keypad-title">ЦЕНА НОМЕРА</div>
-                <div class="price-keypad-display">0 <span><span class="ruble-coin">₽</span></span></div>
+                <div class="price-keypad-display">${formatRubles(0)}</div>
                 <div class="price-keypad-grid">
                     ${[1,2,3,4,5,6,7,8,9].map(n => `<button type="button" data-digit="${n}">${n}</button>`).join("")}
                     <button type="button" class="keypad-clear" data-clear="1">⌫</button>
@@ -492,11 +503,11 @@ function askMarketPrice() {
             const digit = event.target.closest("[data-digit]");
             if (digit) {
                 if (value.length < 7) value += digit.dataset.digit;
-                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span><span class="ruble-coin">₽</span></span>`;
+                display.innerHTML = `${formatRubles(value || 0)}`;
             }
             if (event.target.closest("[data-clear]")) {
                 value = value.slice(0, -1);
-                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span><span class="ruble-coin">₽</span></span>`;
+                display.innerHTML = `${formatRubles(value || 0)}`;
             }
             if (event.target.closest("[data-submit]")) {
                 const price = Number(value);
@@ -595,11 +606,11 @@ function renderCollection() {
                     ${renderTags(p.tags)}
                 </div>
                 <strong>#${p.id}</strong>
-                <small class="collection-value">Оценка: ${Number(p.market_value || 0).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></small>
+                <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed
                     ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
                     : `<div class="collection-actions">
-                        <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${Number(p.quick_sell_price || 0).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></button>
+                        <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${formatRubles(p.quick_sell_price || 0)}</button>
                         <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>
                       </div>`}
             </div>
@@ -656,12 +667,12 @@ function renderDailyStreak(data) {
                     <div class="streak-day ${claimed && index + 1 === Number(data.streak) % 7 || claimed && Number(data.streak) % 7 === 0 && index === 6 ? "is-earned" : ""} ${!claimed && index + 1 === nextDay ? "is-next" : ""}">
                         <small>ДЕНЬ ${index + 1}</small>
                         <b>+${Number(reward).toLocaleString("ru-RU")}</b>
-                        <span><span class="ruble-coin">₽</span></span>
+                        <span>рублей</span>
                     </div>
                 `).join("")}
             </div>
             <button class="daily-task-claim streak-claim" id="claim-daily-streak" ${claimed ? "disabled" : ""}>
-                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + Number(data.reward).toLocaleString("ru-RU") + ' <span class="ruble-coin">₽</span>'}
+                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + formatRubles(data.reward)}
             </button>
             <small class="streak-footnote">${claimed ? "Возвращайся завтра за следующей наградой." : "Награда доступна один раз в день."}</small>
         </div>
@@ -698,7 +709,7 @@ function renderDailyTasks(data) {
                         <strong>${escapeHtml(task.title)}</strong>
                         <p>${escapeHtml(task.description)}</p>
                     </div>
-                    <span class="daily-task-reward">+${Number(task.reward).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></span>
+                    <span class="daily-task-reward">+${formatRubles(task.reward)}</span>
                 </div>
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
@@ -750,7 +761,7 @@ function renderAchievements(data) {
                         <strong>🏆 ${escapeHtml(item.title)}</strong>
                         <p>${escapeHtml(item.description)}</p>
                     </div>
-                    <span class="daily-task-reward">+${Number(item.reward).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></span>
+                    <span class="daily-task-reward">+${formatRubles(item.reward)}</span>
                 </div>
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
@@ -785,8 +796,8 @@ function renderShop(packages) {
     if (!root) return;
     root.innerHTML = (packages || []).map(pack => `
         <article class="shop-package">
-            <div class="shop-package-icon"><span class="ruble-coin">₽</span></div>
-            <strong>${Number(pack.coins).toLocaleString("ru-RU")} рублей</strong>
+            <div class="shop-package-icon">РУБЛИ</div>
+            <strong>${formatRubles(pack.coins)}</strong>
             <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
             <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ ЗА STARS</button>
         </article>
@@ -838,8 +849,7 @@ async function refresh() {
     const spinsElement = $("spins");
 
     if (coinsElement) {
-        coinsElement.textContent =
-            Number(me.coins).toLocaleString("ru-RU");
+        coinsElement.textContent = formatRubles(me.coins);
     }
 
     if (spinsElement) {
@@ -886,7 +896,7 @@ async function runSpin(useFree) {
 
         const coinsElement = $("coins");
         const spinsElement = $("spins");
-        if (coinsElement) coinsElement.textContent = Number(result.coins).toLocaleString("ru-RU");
+        if (coinsElement) coinsElement.textContent = formatRubles(result.coins);
         if (spinsElement) spinsElement.textContent = result.spins;
 
         await animatePlate(result.plate.number, result.plate.rarity);

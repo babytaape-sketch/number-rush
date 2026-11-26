@@ -2198,3 +2198,185 @@ header { margin-bottom: 8px; }
 .hero .free-spin-button {
     flex: 0 0 auto;
 }
+
+/* Сбалансированные номерные таблички в коллекции и на рынке */
+#collection .collection-item,
+#market .market-item {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 15px;
+    gap: 11px;
+}
+
+#collection .collection-plate-wrap,
+#market .market-plate-wrap {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+    gap: 8px;
+}
+
+#collection .mini-plate,
+#market .mini-plate {
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
+    aspect-ratio: 520 / 112;
+    padding: 0 3px;
+    border-width: 2px;
+    border-radius: 7px;
+    box-shadow: 0 0 0 1px #777, 0 0 0 2px #080808, inset 0 1px 3px #fff;
+}
+
+#collection .mini-plate-main,
+#market .mini-plate-main {
+    flex: 0 0 75%;
+    width: 75%;
+    min-width: 0;
+    font-size: clamp(18px, 3.2vw, 27px);
+    line-height: 1;
+    letter-spacing: 0;
+    padding: 0;
+    top: .04em;
+}
+
+#collection .mini-plate-region,
+#market .mini-plate-region {
+    flex: 0 0 25%;
+    width: 25%;
+    min-width: 0;
+    padding: 2px 3px 3px;
+    grid-template-columns: auto auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    justify-content: center;
+    column-gap: 2px;
+    border-left-width: 2px;
+}
+
+#collection .mini-region-code,
+#market .mini-region-code {
+    font-size: clamp(15px, 2.4vw, 21px);
+    line-height: 1;
+    top: .04em;
+}
+
+#collection .mini-region-country,
+#market .mini-region-country {
+    font-size: clamp(6px, .85vw, 9px);
+    line-height: 1;
+    margin: 0;
+}
+
+#collection .mini-region-flag,
+#market .mini-region-flag {
+    width: clamp(12px, 1.5vw, 17px);
+    height: clamp(8px, 1vw, 11px);
+    margin: 0;
+}
+
+#collection .collection-item {
+    justify-content: flex-start;
+}
+
+#collection .collection-plate-wrap small,
+#collection .collection-item small {
+    font-size: 10px !important;
+    line-height: 1.3;
+}
+
+#collection .collection-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    width: 100%;
+    margin-top: auto;
+}
+
+#collection .collection-actions .market-action {
+    min-width: 0;
+    margin: 0;
+    padding: 9px 6px;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+#market .market-item {
+    align-items: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#market .market-item-info {
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+#market .market-meta {
+    margin-top: 8px;
+    min-height: 18px;
+}
+
+#market .market-price {
+    display: flex;
+    width: 100%;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: auto;
+}
+
+#market .market-price > strong {
+    margin-right: auto;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+#market .market-price .market-action {
+    margin: 0;
+    padding: 9px 11px;
+    font-size: 10px;
+}
+
+#market .market-price .market-action.favorite {
+    min-width: 36px;
+    padding: 6px;
+    font-size: 17px;
+}
+
+@media (max-width: 520px) {
+    #collection .collection-item,
+    #market .market-item {
+        padding: 9px;
+        gap: 9px;
+    }
+
+    #collection .mini-plate-main,
+    #market .mini-plate-main {
+        font-size: clamp(16px, 4.6vw, 22px);
+    }
+
+    #collection .mini-region-code,
+    #market .mini-region-code {
+        font-size: clamp(13px, 3.6vw, 17px);
+    }
+
+    #collection .mini-region-country,
+    #market .mini-region-country {
+        font-size: 6px;
+    }
+
+    #collection .mini-region-flag,
+    #market .mini-region-flag {
+        width: 12px;
+        height: 8px;
+    }
+
+    #collection .collection-actions {
+        grid-template-columns: 1fr;
+    }
+}
+

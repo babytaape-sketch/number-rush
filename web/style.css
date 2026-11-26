@@ -2172,3 +2172,29 @@ header { margin-bottom: 8px; }
     .hero { padding-top: 22px; }
     .hero .plate { width: 80%; margin: 0 auto; }
 }
+
+/* Стабильная начальная раскладка главного экрана в Telegram Mini App */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.hero .plate {
+    position: static;
+    flex: 0 0 auto;
+    margin: 0 auto 22px;
+    transform: none;
+}
+.hero .rarity:not(:empty) {
+    flex: 0 0 auto;
+    margin: 0 0 16px;
+}
+.hero #spin {
+    position: relative;
+    flex: 0 0 auto;
+    margin: 0 auto;
+}
+.hero .hint,
+.hero .free-spin-button {
+    flex: 0 0 auto;
+}

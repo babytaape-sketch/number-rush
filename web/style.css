@@ -1917,3 +1917,104 @@ html, body, button, a, input, select, textarea {
 .leaderboard-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
 .leaderboard-score { flex: 0 0 auto; color: var(--lime, #c8ff50); font-size: 13px; text-align: right; }
 .leaderboard-score small { color: var(--muted, #91a0b5); font-size: 10px; font-weight: 500; }
+
+
+/* Обновлённый магазин Number Rush */
+.shop-hero {
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:18px 18px 20px; margin:0 0 16px; overflow:hidden;
+    border:1px solid rgba(219,171,76,.28); border-radius:18px;
+    background:radial-gradient(ellipse at 85% 20%,rgba(218,166,63,.18),transparent 42%),linear-gradient(135deg,#172231,#0b111b 72%);
+}
+.shop-eyebrow { color:#dcb65f; font-size:10px; font-weight:900; letter-spacing:2px; }
+.shop-hero h2 { margin:5px 0 4px; font-size:27px; letter-spacing:.4px; }
+.shop-hero p { margin:0; color:#aeb9c7; font-size:12px; line-height:1.45; }
+.shop-hero-mark {
+    flex:0 0 58px; width:58px; height:58px; display:grid; place-items:center;
+    border-radius:17px; color:#ffda7b; font-size:35px;
+    background:linear-gradient(145deg,#3b321f,#171b21); border:1px solid #94743b;
+    box-shadow:0 0 24px rgba(230,176,65,.16),inset 0 1px rgba(255,255,255,.12);
+}
+.shop-switch {
+    display:grid; grid-template-columns:1fr 1fr; gap:5px; padding:5px; margin-bottom:19px;
+    border:1px solid #303d4b; border-radius:14px; background:#0b121c;
+}
+.shop-switch-button {
+    min-width:0; border:1px solid transparent; border-radius:10px; padding:12px 7px;
+    background:transparent; color:#aeb9c7; font-size:12px; font-weight:850;
+}
+.shop-switch-button.active {
+    color:#ffe09a; border-color:#a77b32;
+    background:linear-gradient(180deg,#45371f,#292316);
+    box-shadow:0 3px 15px rgba(224,170,62,.12);
+}
+.shop-section-heading { margin:0 0 12px; }
+.shop-section-heading h3 { margin:0 0 4px; font-size:17px; color:#f3f5f8; }
+.shop-section-heading p { margin:0; color:#91a0b2; font-size:11px; line-height:1.45; }
+.shop-packages {
+    display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; margin-top:0;
+}
+.shop-package {
+    min-width:0; gap:9px; padding:12px 8px; border:1px solid #354454; border-radius:15px;
+    background:linear-gradient(155deg,#1a2938,#101923 75%); box-shadow:inset 0 1px rgba(255,255,255,.035);
+}
+.shop-ruble-art {
+    width:100%; height:76px; display:grid; place-items:center; border-radius:10px;
+    background:radial-gradient(ellipse,rgba(213,166,70,.2),transparent 68%),linear-gradient(145deg,#1c2c35,#101923);
+    border:1px solid rgba(216,177,99,.15);
+}
+.shop-ruble-art span {
+    color:#f2c66a; font-size:35px; font-weight:900; letter-spacing:-5px;
+    text-shadow:0 3px 16px rgba(244,190,76,.4);
+}
+.shop-package strong { font-size:clamp(13px,3.6vw,18px); white-space:nowrap; }
+.shop-package-price { font-size:12px; white-space:nowrap; }
+.shop-buy-button { min-height:39px; padding:10px 5px; font-size:12px; }
+.shop-plate-packages { display:grid; grid-template-columns:1fr; gap:13px; }
+.shop-plate-card {
+    position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(130px,.95fr);
+    align-items:center; gap:8px; min-width:0; overflow:hidden; padding:16px 13px;
+    border:1px solid #8c6830; border-radius:16px;
+    background:radial-gradient(ellipse at 78% 50%,rgba(224,166,58,.19),transparent 56%),linear-gradient(120deg,#1b1b18,#0c1118 75%);
+}
+.shop-plate-card.is-mythic {
+    border-color:#547f9d;
+    background:radial-gradient(ellipse at 78% 50%,rgba(74,151,205,.22),transparent 58%),linear-gradient(120deg,#121d29,#0b1119 75%);
+}
+.shop-plate-copy { position:relative; z-index:1; min-width:0; }
+.shop-rarity-label { color:#eac16b; font-size:9px; font-weight:900; letter-spacing:.8px; }
+.is-mythic .shop-rarity-label { color:#8ec9f2; }
+.shop-plate-copy h4 { margin:7px 0 5px; color:#f4cc76; font-size:15px; line-height:1.2; }
+.is-mythic .shop-plate-copy h4 { color:#a5d7fa; }
+.shop-plate-copy p { margin:0 0 11px; color:#aeb9c7; font-size:10px; line-height:1.4; }
+.shop-plate-price { margin:0 0 10px; color:#ffd36e; font-size:13px; white-space:nowrap; }
+.shop-plate-copy .shop-buy-button { max-width:155px; }
+.shop-plate-visual { min-width:0; display:flex; flex-direction:column; align-items:center; gap:7px; }
+.shop-license-plate {
+    width:100%; min-height:54px; display:flex; align-items:stretch; justify-content:center;
+    padding:5px; border:3px solid #d2d6d9; border-radius:7px;
+    background:linear-gradient(180deg,#fff,#e5e8eb); color:#101419;
+    box-shadow:0 0 15px rgba(237,184,82,.38),0 3px 0 #777;
+    transform:rotate(-2deg);
+}
+.is-mythic .shop-license-plate { box-shadow:0 0 17px rgba(94,179,234,.45),0 3px 0 #777; }
+.shop-plate-main {
+    flex:1; display:flex; align-items:center; justify-content:center; min-width:0;
+    font-size:clamp(15px,4.7vw,23px); font-weight:950; letter-spacing:-.8px; white-space:nowrap;
+}
+.shop-plate-region {
+    flex:0 0 27px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border-left:2px solid #222; font-size:16px; line-height:1.05;
+}
+.shop-plate-region small { font-size:7px; font-weight:900; }
+.shop-plate-caption { color:#7e8a98; font-size:8px; letter-spacing:1.2px; }
+.shop-security {
+    margin:17px 0 0; padding:12px; border:1px solid #293744; border-radius:12px;
+    color:#9eacba; background:#101923; text-align:center; font-size:11px;
+}
+@media (max-width:380px) {
+    .shop-plate-card { grid-template-columns:minmax(0,1fr) minmax(112px,.85fr); padding:13px 9px; }
+    .shop-plate-copy h4 { font-size:13px; }
+    .shop-plate-main { font-size:15px; }
+    .shop-ruble-art { height:65px; }
+}

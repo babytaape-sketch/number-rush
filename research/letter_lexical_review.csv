@@ -2,7 +2,6 @@ letters,reading,lexical_class,meaning_or_note,confidence,source_url,scoring_guid
 КОТ,кот,common_noun,"домашнее животное",high,https://slova.advstat.ru/index.php?length=3,"recognizable word; minor mnemonic/visual bonus at most"
 КОН,кон,common_noun,"граница или этап игры; также конь в форме родительного падежа отсутствует здесь",medium,https://slova.advstat.ru/index.php?length=3,"check sense; avoid overrating ambiguous forms"
 КОМ,ком,common_noun,"сгусток или шарообразный предмет",high,https://slova.advstat.ru/index.php?length=3,"recognizable word"
-КОД,invalid_for_plate_alphabet,"Д is not an allowed standard plate letter",not_applicable,https://base.garant.ru/72098366/,"exclude"
 РОТ,рот,common_noun,"часть лица",high,https://slova.advstat.ru/index.php?length=3,"recognizable word"
 РАК,рак,common_noun,"животное; также название заболевания",high,https://slova.advstat.ru/index.php?length=3,"recognizable word; context-sensitive associations are not rarity"
 МАК,мак,common_noun,"растение",high,https://slova.advstat.ru/index.php?length=3,"recognizable word"

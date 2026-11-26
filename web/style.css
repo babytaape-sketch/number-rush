@@ -2757,3 +2757,20 @@ header { margin-bottom: 8px; }
     #plate.spin-reveal .plate-main,
     .rarity[class*="rarity-reveal-"] { animation: none !important; }
 }
+
+
+/* Продажа только что выпавшего номера */
+.spin-result-sell {
+  width: 100%;
+  margin-top: 12px;
+  min-height: 46px;
+  border: 1px solid rgba(69, 211, 142, .45);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #176b4b, #124b38);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+.spin-result-sell:disabled { opacity: .6; cursor: wait; }
+.spin-result-sell[hidden] { display: none !important; }

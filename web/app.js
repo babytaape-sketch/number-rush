@@ -321,6 +321,13 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     const moodPause = mood === "cinematic" ? 900
         : mood === "showtime" ? 600
         : mood === "suspense" ? 320 : 0;
+    const plate = $("plate");
+    const beautiful = isBeautifulPlate(finalPlate);
+    if (plate) {
+        plate.classList.remove("spin-mood-suspense", "spin-mood-showtime", "spin-mood-cinematic", "spin-beautiful");
+        if (mood !== "normal") plate.classList.add("spin-mood-" + mood);
+        if (beautiful) plate.classList.add("spin-beautiful");
+    }
     const lateDurations = new Map([
         [lateIndexes[0], latestRegularStop + 1900 + rarityLevel * 180],
         [lateIndexes[1], latestRegularStop + 3400 + rarityLevel * 220]
@@ -336,17 +343,9 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     ));
 
     setRarityEffect(rarity);
-    const plate = $("plate");
     if (plate) {
         plate.classList.remove("spin-mood-suspense", "spin-mood-showtime", "spin-mood-cinematic", "spin-beautiful");
-        if (mood !== "normal") {
-            plate.classList.add("spin-mood-" + mood);
-            if (mood === "cinematic") {
-                try { tg?.HapticFeedback?.notificationOccurred("success"); } catch (_) {}
-            }
-        }
-        if (isBeautifulPlate(finalPlate)) {
-            plate.classList.add("spin-beautiful");
+        if (mood === "cinematic" || beautiful) {
             try { tg?.HapticFeedback?.notificationOccurred("success"); } catch (_) {}
         }
     }

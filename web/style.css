@@ -2496,8 +2496,8 @@ header { margin-bottom: 8px; }
     animation: spinBeautifulGlow 1.1s ease-in-out infinite;
 }
 @keyframes spinSuspenseGlow {
-    0%, 100% { filter: none; }
-    50% { filter: drop-shadow(0 0 12px rgba(110,170,255,.55)); }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.006); }
 }
 @keyframes spinShowtimeGlow {
     0%, 100% { filter: none; }
@@ -2562,8 +2562,8 @@ header { margin-bottom: 8px; }
     animation: plateRevealSweep 780ms ease-out both;
 }
 @keyframes plateCharge {
-    from { filter: drop-shadow(0 0 4px rgba(74,137,255,.24)); transform: scale(1); }
-    to { filter: drop-shadow(0 0 17px rgba(74,137,255,.68)); transform: scale(1.008); }
+    from { transform: scale(1); }
+    to { transform: scale(1.008); }
 }
 @keyframes plateLightSweep {
     0% { left: -65%; }

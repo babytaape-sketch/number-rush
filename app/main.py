@@ -1149,8 +1149,7 @@ def me(authorization: str | None = Header(default=None)):
         "rarest_plate": dict(rarest) if rarest else None,
         "purchases_count": purchases, "sales_count": sales,
         "free_spin_available": seconds_left == 0,
-        "free_spin_seconds": seconds_left,
-        "plate_analysis": analyze_standard_plate(number, rarity)
+        "free_spin_seconds": seconds_left
     }
 
 
@@ -1318,7 +1317,8 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
         "used_free_spin": used_free_spin,
         "used_paid_spin": used_paid_spin,
         "free_spin_available": seconds_left == 0,
-        "free_spin_seconds": seconds_left
+        "free_spin_seconds": seconds_left,
+        "plate_analysis": analyze_standard_plate(number, rarity)
     }
 
 

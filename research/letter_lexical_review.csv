@@ -1,6 +1,5 @@
 letters,reading,lexical_class,meaning_or_note,confidence,source_url,scoring_guidance
 КОТ,кот,common_noun,"домашнее животное",high,https://slova.advstat.ru/index.php?length=3,"recognizable word; minor mnemonic/visual bonus at most"
-КОН,кон,common_noun,"граница или этап игры; также конь в форме родительного падежа отсутствует здесь",medium,https://slova.advstat.ru/index.php?length=3,"check sense; avoid overrating ambiguous forms"
 КОМ,ком,common_noun,"сгусток или шарообразный предмет",high,https://slova.advstat.ru/index.php?length=3,"recognizable word"
 РОТ,рот,common_noun,"часть лица",high,https://slova.advstat.ru/index.php?length=3,"recognizable word"
 РАК,рак,common_noun,"животное; также название заболевания",high,https://slova.advstat.ru/index.php?length=3,"recognizable word; context-sensitive associations are not rarity"
@@ -28,3 +27,4 @@ letters,reading,lexical_class,meaning_or_note,confidence,source_url,scoring_guid
 ВОР,вор,common_noun,"человек, совершающий кражу",high,https://slova.advstat.ru/index.php?length=3,"recognizable but negative meaning; do not reward as positive appeal"
 ВРУ,вру,verb_form,"форма глагола врать, первое лицо настоящего времени",medium,https://slova.advstat.ru/index.php?length=3,"verb form, not a standalone name; minimal or no bonus"
 АУТ,аут,sport_term,"термин в спорте",medium,https://slova.advstat.ru/index.php?length=3,"specialized term; no broad popularity bonus"
+ОКО,око,common_noun,"глаз в форме родительного падежа; также анатомический термин",medium,https://slova.advstat.ru/index.php?length=3,"valid dictionary form; weaker standalone readability"

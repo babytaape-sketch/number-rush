@@ -763,12 +763,15 @@ function renderProfile(me) {
       '<div><small>В игре с</small><b>' + date + '</b></div></div>' +
       '<div class="profile-rarest"><small>Самый редкий номер</small><div class="profile-rarest-plate">' + rarest + '</div></div>';
 }
+let dailyStreakBonusReady = false;
+
 function renderDailyStreak(data) {
     const root = $("daily-streak");
     if (!root) return;
     const rewards = data.rewards || [1000, 1500, 2000, 2500, 3000, 3500, 5000];
     const nextDay = Number(data.next_day || 1);
     const claimed = Boolean(data.claimed_today);
+    dailyStreakBonusReady = !claimed;
     root.innerHTML = `
         <div class="streak-card">
             <div class="streak-heading">
@@ -809,10 +812,11 @@ function renderDailyTasks(data) {
     const root = $("daily-task-list");
     if (!root) return;
     const readyCount = (data.tasks || []).filter(task => task.completed && !task.claimed).length;
+    const notificationCount = readyCount + (dailyStreakBonusReady ? 1 : 0);
     const badge = $("daily-task-badge");
     if (badge) {
-        badge.textContent = readyCount > 9 ? "9+" : String(readyCount);
-        badge.hidden = readyCount === 0;
+        badge.textContent = notificationCount > 9 ? "9+" : String(notificationCount);
+        badge.hidden = notificationCount === 0;
     }
     root.innerHTML = (data.tasks || []).map(task => {
         const progress = Math.min(Number(task.progress || 0), Number(task.target || 1));

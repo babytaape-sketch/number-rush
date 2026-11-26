@@ -2680,3 +2680,80 @@ header { margin-bottom: 8px; }
         animation: none !important;
     }
 }
+
+
+/* Редкость: отдельный акцент на символах номера и плашке редкости */
+#plate.spin-reveal .plate-main {
+    transform-origin: center;
+}
+#plate.spin-reveal.spin-rarity-common .plate-main {
+    animation: symbolCommon 750ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-uncommon .plate-main {
+    animation: symbolUncommon 950ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-rare .plate-main {
+    animation: symbolRare 1250ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-epic .plate-main {
+    animation: symbolEpic 2100ms cubic-bezier(.16,.8,.25,1) both;
+}
+#plate.spin-reveal.spin-rarity-legendary .plate-main {
+    animation: symbolLegendary 2600ms cubic-bezier(.12,.78,.18,1) both;
+}
+.rarity.rarity-reveal-common { animation: labelCommon 750ms ease-out both; }
+.rarity.rarity-reveal-uncommon {
+    border-color: rgba(54,212,119,.9);
+    box-shadow: 0 0 18px rgba(54,212,119,.55), inset 0 0 12px rgba(54,212,119,.18);
+    animation: labelUncommon 950ms ease-out both;
+}
+.rarity.rarity-reveal-rare {
+    border-color: rgba(75,160,255,.95);
+    box-shadow: 0 0 24px rgba(50,148,255,.72), inset 0 0 16px rgba(50,148,255,.2);
+    animation: labelRare 1250ms ease-out both;
+}
+.rarity.rarity-reveal-epic {
+    border-color: #d8a4ff;
+    box-shadow: 0 0 28px rgba(174,99,255,.9), 0 0 58px rgba(174,99,255,.55), inset 0 0 20px rgba(210,155,255,.32);
+    animation: labelEpic 2100ms cubic-bezier(.16,.8,.25,1) both;
+}
+.rarity.rarity-reveal-legendary {
+    border-color: #ffe2a0;
+    box-shadow: 0 0 34px rgba(255,194,71,1), 0 0 76px rgba(255,194,71,.72), inset 0 0 24px rgba(255,220,130,.42);
+    animation: labelLegendary 2600ms cubic-bezier(.12,.78,.18,1) both;
+}
+@keyframes symbolCommon {
+    0%,100% { transform: scale(1); text-shadow: none; }
+    45% { transform: scale(1.025); text-shadow: 0 0 12px rgba(255,255,255,.45); }
+}
+@keyframes symbolUncommon {
+    0%,100% { transform: scale(1); text-shadow: 0 0 8px rgba(54,212,119,.25); }
+    35% { transform: scale(1.055); text-shadow: 0 0 18px #36d477, 0 0 34px rgba(54,212,119,.8); }
+    70% { transform: scale(1.018); text-shadow: 0 0 14px #36d477; }
+}
+@keyframes symbolRare {
+    0%,100% { transform: scale(1); text-shadow: 0 0 8px rgba(50,148,255,.35); }
+    28% { transform: scale(1.075); text-shadow: 0 0 22px #3294ff, 0 0 48px rgba(50,148,255,.95); }
+    58% { transform: scale(1.025); text-shadow: 0 0 18px #3294ff, 0 0 30px rgba(50,148,255,.7); }
+}
+@keyframes symbolEpic {
+    0%,100% { transform: scale(1); text-shadow: 0 0 10px rgba(174,99,255,.35); }
+    22% { transform: scale(1.09); text-shadow: 0 0 25px #d8a4ff, 0 0 58px #ae63ff, 0 0 90px rgba(174,99,255,.9); }
+    48% { transform: scale(1.025); text-shadow: 0 0 20px #ae63ff, 0 0 42px rgba(174,99,255,.8); }
+    72% { transform: scale(1.065); text-shadow: 0 0 28px #d8a4ff, 0 0 62px #ae63ff; }
+}
+@keyframes symbolLegendary {
+    0%,100% { transform: scale(1); text-shadow: 0 0 12px rgba(255,194,71,.4); }
+    18% { transform: scale(1.12); text-shadow: 0 0 30px #fff2c2, 0 0 65px #ffc247, 0 0 110px rgba(255,194,71,1); }
+    38% { transform: scale(1.035); text-shadow: 0 0 22px #ffc247, 0 0 48px rgba(255,194,71,.85); }
+    62% { transform: scale(1.095); text-shadow: 0 0 32px #fff2c2, 0 0 76px #ffc247, 0 0 120px rgba(255,194,71,.95); }
+}
+@keyframes labelCommon { 0%,100% { transform: scale(1); } 45% { transform: scale(1.025); } }
+@keyframes labelUncommon { 0%,100% { transform: scale(1); } 35% { transform: scale(1.08); } 70% { transform: scale(1.025); } }
+@keyframes labelRare { 0%,100% { transform: scale(1); } 28% { transform: scale(1.12); } 58% { transform: scale(1.035); } }
+@keyframes labelEpic { 0%,100% { transform: scale(1); } 22% { transform: scale(1.14); } 48% { transform: scale(1.04); } 72% { transform: scale(1.1); } }
+@keyframes labelLegendary { 0%,100% { transform: scale(1); } 18% { transform: scale(1.18); } 38% { transform: scale(1.05); } 62% { transform: scale(1.14); } }
+@media (prefers-reduced-motion: reduce) {
+    #plate.spin-reveal .plate-main,
+    .rarity[class*="rarity-reveal-"] { animation: none !important; }
+}

@@ -191,11 +191,6 @@ function renderPlateAnalysis(analysis) {
         if (category.endsWith("_letters")) return "Рыночная серия " + category.slice(0, -8);
         return "";
     };
-    const market = (analysis.market_evidence || [])
-        .map(item => marketLabel(String(item.category || "")))
-        .filter(Boolean);
-    add("Особенности сочетания", market);
-
     if (!items.length) return "";
     return `
         <details class="plate-analysis">

@@ -52,6 +52,41 @@ def _datasets():
     market = _read_csv("market_listing_evidence.csv")
     return digits, letters, regions, lexical, history, market
 
+# Structural frequencies are exact counts in the exhaustive 1,000 x 1,728 symbol space.
+# Market and historical evidence are deliberately excluded from this mathematical tier.
+DIGIT_PATTERN_FREQUENCIES = {
+    "triple_same": 10 / 1000, "first_decade": 9 / 1000,
+    "ascending_run": 8 / 1000, "descending_run": 8 / 1000,
+    "palindrome_outer": 100 / 1000, "pair_first_two": 100 / 1000,
+    "pair_last_two": 100 / 1000, "pair_outer": 90 / 1000,
+    "round_hundred": 10 / 1000, "round_ten": 100 / 1000,
+    "repeated_digit": 270 / 1000, "all_zero": 1 / 1000,
+}
+LETTER_PATTERN_FREQUENCIES = {
+    "triple_same": 12 / 1728, "mirror_outer": 132 / 1728,
+    "palindrome_outer": 144 / 1728, "pair_first_two": 144 / 1728,
+    "pair_last_two": 144 / 1728,
+}
+
+
+def _rarest_structural_frequency(raw, frequencies):
+    tags = [tag for tag in (raw or "").split("|")
+            if tag and tag not in {"no_structural_pattern", "market_reference_example"}]
+    return min((frequencies[tag] for tag in tags if tag in frequencies), default=1.0)
+
+
+def _structural_tier(probability):
+    if probability > 0.10:
+        return "Common"
+    if probability > 0.01:
+        return "Uncommon"
+    if probability > 0.001:
+        return "Rare"
+    if probability > 0.0001:
+        return "Epic"
+    return "Legendary"
+
+
 def _labels(raw, mapping):
     tags = [tag for tag in (raw or "").split("|") if tag and tag != "no_structural_pattern"]
     return [mapping.get(tag, tag.replace("_", " ")) for tag in tags]
@@ -79,6 +114,10 @@ def analyze_standard_plate(number, game_rarity=None):
 
     digit_tags = _labels(digit_row.get("tags"), DIGIT_LABELS)
     letter_tags = _labels(letter_row.get("tags"), LETTER_LABELS)
+    digit_pattern_frequency = _rarest_structural_frequency(digit_row.get("tags"), DIGIT_PATTERN_FREQUENCIES)
+    letter_pattern_frequency = _rarest_structural_frequency(letter_row.get("tags"), LETTER_PATTERN_FREQUENCIES)
+    combined_pattern_frequency = digit_pattern_frequency * letter_pattern_frequency
+    structural_rarity_candidate = _structural_tier(combined_pattern_frequency)
     history = []
     for row in history_data:
         codes = [part.strip() for part in row.get("region_codes", "").split(";")]
@@ -155,7 +194,15 @@ def analyze_standard_plate(number, game_rarity=None):
         },
         "summary": summary,
         "game_rarity": game_rarity,
-        "assessment_status": "research_enriched_not_retiered",
+        "structural_rarity_candidate": structural_rarity_candidate,
+        "structural_model": "five_tier_exhaustive_v1",
+        "structural_frequency": {
+            "digit_pattern": round(digit_pattern_frequency, 9),
+            "letter_pattern": round(letter_pattern_frequency, 9),
+            "combined": round(combined_pattern_frequency, 12),
+            "assumption": "Равномерное пространство 1000 x 1728; рынок, история и регион не входят в математический tier.",
+        },
+        "assessment_status": "research_candidate_only_not_game_retiered",
         "caveats": [
             "Историческая ассоциация не доказывает текущую ведомственную принадлежность.",
             "Рыночные данные относятся к объявлениям, а не обязательно к завершённым сделкам.",

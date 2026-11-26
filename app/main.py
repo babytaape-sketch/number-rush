@@ -1246,7 +1246,7 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
             con.rollback()
             raise HTTPException(
                 400,
-                "Not enough coins. One spin costs 100 coins."
+                "1 спин - 100₽"
             )
 
         plate_data = generate_plate_details()

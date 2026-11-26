@@ -1,0 +1,11 @@
+plate_or_pattern,S,V,M,H,R,C,provisional_tier,confidence,reason,validation_status
+314 АВЕ 23,S0,V0,M0,H0,R_none,C0,Common,medium,No strong independent feature,illustrative_not_verified
+123 ААА 77,S2_letters,V3,M1,H0,R_none,C1,Rare,medium,Triple letters structural signal; 123 market premium weak,illustrative_not_verified
+777 АВЕ 23,S2,V3,M4_provisional,H0,R_none,C1,Rare,medium,Strong market signal alone cannot force Legendary,illustrative_not_verified
+001 ААА 77,S2,V4,M4_provisional,H0,R_none,C2,Epic_candidate,low,First decade plus triple letters; not automatic Legendary,illustrative_not_verified
+888 ААА 77,S2,V4,M3_provisional,H0,R_none,C2,Epic_candidate,low,Coherent visual pattern; market evidence is listing-based,illustrative_not_verified
+123 ВЕА 77,S1,V2,M1,H0,R_none,C1,Uncommon,medium,Visual sequence but no rare structure,illustrative_not_verified
+070 ААА 70,S2_letters,V3,M0,H0,R_zero_padded_visual,C2,Rare,medium,Region match is visual only,illustrative_not_verified
+911 ЕКХ 77,S1,V2,M2_provisional,H3,R_none,C2,Epic_candidate,low,Historical association needs exact period verification,illustrative_not_verified
+777 ААА 77,S4_candidate,V4,M4_provisional,H0,R_none,C2,Legendary_candidate,low,Rare combined pattern but lacks C3 or full-plate market evidence,illustrative_not_verified
+АМР 97 + ordinary digits,S0_or_S1,V1_or_V2,M_region_dependent,H4_candidate,R_context,C1,Epic_candidate,low,Historical series cannot upgrade every full number automatically,illustrative_template_not_verified

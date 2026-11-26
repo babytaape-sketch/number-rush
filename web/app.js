@@ -110,7 +110,6 @@ const rarityColors = {
     Rare: "#3294ff",
     Epic: "#ae63ff",
     Legendary: "#ffc247",
-    Mythic: "#ff563f"
 };
 
 const rarityNames = {
@@ -119,7 +118,7 @@ const rarityNames = {
     Rare: "РЕДКИЙ",
     Epic: "ЭПИЧЕСКИЙ",
     Legendary: "ЛЕГЕНДАРНЫЙ",
-    Mythic: "МИФИЧЕСКИЙ"
+    Mythic: "ЛЕГЕНДАРНЫЙ"
 };
 
 function setRarityEffect(rarity) {
@@ -335,7 +334,7 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     ));
 
     const rarityLevel = {
-        Common: 0, Uncommon: 1, Rare: 2, Epic: 3, Legendary: 4, Mythic: 5
+        Common: 0, Uncommon: 1, Rare: 2, Epic: 3, Legendary: 4, Mythic: 4
     }[rarity] ?? 0;
 
     const moodScale = mood === "cinematic" ? 1.12
@@ -473,7 +472,7 @@ function renderMarket() {
     if (sort === "cheap") rows.sort((a,b) => a.price - b.price);
     if (sort === "expensive") rows.sort((a,b) => b.price - a.price);
     if (sort === "rarity") {
-        const rank = {Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:5};
+        const rank = {Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:4};
         rows.sort((a,b) => (rank[b.rarity] || 0) - (rank[a.rarity] || 0));
     }
 
@@ -876,14 +875,13 @@ function renderShop(packages) {
     `).join("");
 
     platesRoot.innerHTML = platePackages.map(pack => {
-        const mythic = pack.rarity === "Mythic";
-        const title = mythic ? "МИФИЧЕСКИЙ" : "ЛЕГЕНДАРНЫЙ";
-        const plateLetters = mythic ? "В888ВВ" : "А777МР";
-        const region = mythic ? "88" : "77";
+        const title = "ЛЕГЕНДАРНЫЙ";
+        const plateLetters = "А777МР";
+        const region = "77";
         return `
-            <article class="shop-plate-card ${mythic ? "is-mythic" : "is-legendary"}">
+            <article class="shop-plate-card is-legendary">
                 <div class="shop-plate-copy">
-                    <span class="shop-rarity-label">${mythic ? "✦ МИФИЧЕСКАЯ СЕРИЯ" : "◆ ЛЕГЕНДАРНАЯ СЕРИЯ"}</span>
+                    <span class="shop-rarity-label">◆ ЛЕГЕНДАРНАЯ СЕРИЯ</span>
                     <h4>${title} НОМЕР</h4>
                     <p>Гарантированная редкость</p>
                     <div class="shop-plate-price">⭐ <b>${Number(pack.stars)} Stars</b></div>

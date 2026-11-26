@@ -139,6 +139,13 @@ function setRarityEffect(rarity) {
     }
 
     rarityLabel.style.color = color;
+    rarityLabel.classList.remove(
+        "rarity-reveal-common", "rarity-reveal-uncommon", "rarity-reveal-rare",
+        "rarity-reveal-epic", "rarity-reveal-legendary"
+    );
+    const rarityClass = ["Common", "Uncommon", "Rare", "Epic", "Legendary"].includes(rarity)
+        ? rarity.toLowerCase() : "common";
+    rarityLabel.classList.add("rarity-reveal-" + rarityClass);
     rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
 }
 

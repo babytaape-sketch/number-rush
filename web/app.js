@@ -337,9 +337,8 @@ let freeSpinTimer = null;
 let freeSpinSeconds = 0;
 
 function updateFreeSpinTimer() {
-    const status = $("free-spin-status");
     const button = $("free-spin-button");
-    if (!status || !button) return;
+    if (!button) return;
 
     if (freeSpinSeconds <= 0) {
         button.textContent = "🎁 БЕСПЛАТНЫЙ СПИН";

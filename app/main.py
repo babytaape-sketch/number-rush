@@ -1060,8 +1060,8 @@ def generate_plate_details(forced_rarity=None):
 
     if actual_rarity != rarity:
         # Защита от случайного несоответствия.
-        # Повторно генерируем корректную комбинацию.
-        return generate_plate_details()
+        # При покупке сохраняем запрошенную редкость при повторной генерации.
+        return generate_plate_details(forced_rarity)
 
     tags = get_plate_tags(letters, digits, region_code)
 

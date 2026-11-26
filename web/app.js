@@ -617,6 +617,49 @@ function renderProfile(me) {
       '<div><small>В игре с</small><b>' + date + '</b></div></div>' +
       '<div class="profile-rarest"><small>Самый редкий номер</small><div class="profile-rarest-plate">' + rarest + '</div></div>';
 }
+function renderDailyStreak(data) {
+    const root = $("daily-streak");
+    if (!root) return;
+    const rewards = data.rewards || [100, 150, 200, 250, 300, 350, 500];
+    const nextDay = Number(data.next_day || 1);
+    const claimed = Boolean(data.claimed_today);
+    root.innerHTML = `
+        <div class="streak-card">
+            <div class="streak-heading">
+                <div>
+                    <strong>🔥 Серия ежедневных входов</strong>
+                    <p>Заходи каждый день и забирай всё больше монет. Пропуск дня обнулит серию.</p>
+                </div>
+                <span class="streak-count">${Number(data.streak || 0)} дн.</span>
+            </div>
+            <div class="streak-rewards">
+                ${rewards.map((reward, index) => `
+                    <div class="streak-day ${claimed && index + 1 === Number(data.streak) % 7 || claimed && Number(data.streak) % 7 === 0 && index === 6 ? "is-earned" : ""} ${!claimed && index + 1 === nextDay ? "is-next" : ""}">
+                        <small>ДЕНЬ ${index + 1}</small>
+                        <b>+${Number(reward).toLocaleString("ru-RU")}</b>
+                        <span>🪙</span>
+                    </div>
+                `).join("")}
+            </div>
+            <button class="daily-task-claim streak-claim" id="claim-daily-streak" ${claimed ? "disabled" : ""}>
+                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + Number(data.reward).toLocaleString("ru-RU") + " 🪙"}
+            </button>
+            <small class="streak-footnote">${claimed ? "Возвращайся завтра за следующей наградой." : "Награда доступна один раз в день."}</small>
+        </div>
+    `;
+    const button = $("claim-daily-streak");
+    button?.addEventListener("click", async () => {
+        button.disabled = true;
+        try {
+            await api("/api/daily-streak/claim", { method: "POST" });
+            await refresh();
+        } catch (error) {
+            alert(error.message);
+            button.disabled = false;
+        }
+    });
+}
+
 function renderDailyTasks(data) {
     const root = $("daily-task-list");
     if (!root) return;
@@ -750,6 +793,9 @@ async function refresh() {
     // РЫНОК
     marketCache = await api("/api/market");
     renderMarket();
+
+    const dailyStreak = await api("/api/daily-streak");
+    renderDailyStreak(dailyStreak);
 
     const dailyTasks = await api("/api/daily-tasks");
     renderDailyTasks(dailyTasks);

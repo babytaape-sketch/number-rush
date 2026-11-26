@@ -111,11 +111,20 @@ def _structural_tier(probability):
 
 def _labels(raw, mapping):
     tags = [tag for tag in (raw or "").split("|") if tag and tag not in {"no_structural_pattern", "market_reference_example"}]
-    # A triple already explains its mirrored and paired sub-patterns; avoid listing those as separate features.
+
+    # A specific pair/triple description already explains the generic "repeated digit" tag.
+    # Keep only the most informative description instead of listing the same feature twice.
+    if "repeated_digit" in tags and any(tag in tags for tag in {
+        "triple_same", "pair_first_two", "pair_last_two", "pair_outer"
+    }):
+        tags.remove("repeated_digit")
+
+    # A triple already explains its mirrored and paired sub-patterns.
     if "triple_same" in tags:
         tags = ["triple_same"] + [tag for tag in tags if tag not in {
             "palindrome_outer", "pair_first_two", "pair_last_two", "pair_outer"
         }]
+
     return [mapping.get(tag, tag.replace("_", " ")) for tag in tags]
 
 def analyze_standard_plate(number, game_rarity=None):

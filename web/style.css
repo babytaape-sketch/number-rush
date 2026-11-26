@@ -2549,7 +2549,7 @@ header { margin-bottom: 8px; }
     opacity: .9;
     animation: plateLightSweep 1.35s ease-in-out infinite;
 }
-#plate.spin-active .slot-cell { text-shadow: 0 0 12px rgba(70,145,255,.42); }
+/* Keep the moving light sweep, but do not outline/glow individual rolling symbols. */
 #plate.spin-reveal {
     animation: plateReveal 850ms cubic-bezier(.16,.8,.25,1) both;
     box-shadow: 0 0 0 2px #fff, 0 0 0 5px #080808,

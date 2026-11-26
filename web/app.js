@@ -143,6 +143,42 @@ function setRarityEffect(rarity) {
     rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
 }
 
+function renderPlateAnalysis(analysis) {
+    if (!analysis || !analysis.supported) return "";
+    const list = values => Array.isArray(values) && values.length
+        ? values.map(value => "<li>" + escapeHtml(value) + "</li>").join("")
+        : "<li>Нет отмеченных признаков</li>";
+    const lexical = analysis.lexical
+        ? `<p><b>Буквенное чтение:</b> ${escapeHtml(analysis.lexical.reading)} — ${escapeHtml(analysis.lexical.meaning || "")}
+           <small>Уверенность: ${escapeHtml(analysis.lexical.confidence || "не указана")}</small></p>`
+        : "";
+    const history = (analysis.historical_associations || []).map(item =>
+        `<p><b>Историческая ассоциация:</b> ${escapeHtml(item.association)}
+         <small>Подтверждение: ${escapeHtml(item.evidence_level)}. ${escapeHtml(item.note || "")}
+         ${item.source_url ? `<a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener">Источник</a>` : ""}</small></p>`
+    ).join("");
+    const market = (analysis.market_evidence || []).map(item =>
+        `<p><b>Рыночное наблюдение:</b> ${escapeHtml(item.category)} · ${escapeHtml(item.date)}
+         <small>Выборка: ${escapeHtml(item.sample_size)}. ${escapeHtml(item.caveat || "")}
+         ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">Источник</a>` : ""}</small></p>`
+    ).join("");
+    return `
+        <details class="plate-analysis">
+            <summary>Подробный разбор номера</summary>
+            <div class="plate-analysis-content">
+                <p><b>Регион:</b> ${escapeHtml(analysis.region || "Нет в текущем справочном перечне")} (${escapeHtml(analysis.region_code)})
+                   <small>Статус кода: ${escapeHtml(analysis.region_code_status || "")}</small></p>
+                <p><b>Цифровые сочетания</b></p><ul>${list(analysis.digit_patterns)}</ul>
+                <p><b>Буквенные сочетания</b></p><ul>${list(analysis.letter_patterns)}</ul>
+                ${lexical}
+                ${history}
+                ${market}
+                <small class="analysis-caveat">Это справочный анализ, а не подтверждение фактической выдачи номера или автоматическое изменение его игровой редкости. Рыночные сведения относятся к объявлениям.</small>
+            </div>
+        </details>
+    `;
+}
+
 function renderTags(tags) {
     if (!Array.isArray(tags) || tags.length === 0) {
         return "";
@@ -454,6 +490,7 @@ function renderMarket() {
                         <div class="market-meta">
                             <span class="market-rarity" data-rarity="${escapeHtml(p.rarity)}">${escapeHtml(rarityNames[p.rarity] || p.rarity)}</span>
                             ${renderTags(p.tags)}
+                            ${renderPlateAnalysis(p.analysis)}
                         </div>
                     </div>
                     <div class="market-price">
@@ -635,6 +672,7 @@ function renderCollection() {
                     ${createMiniPlate(p.number, p.rarity)}
                     <small>${escapeHtml(p.rarity)}</small>
                     ${renderTags(p.tags)}
+                    ${renderPlateAnalysis(p.analysis)}
                 </div>
                 <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed
@@ -1018,6 +1056,8 @@ async function runSpin(useFree) {
 
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
         const tags = result.plate.tags || [];
+        const analysisRoot = $("plate-analysis");
+        if (analysisRoot) analysisRoot.innerHTML = renderPlateAnalysis(result.plate_analysis);
         let message = rarityText;
         if (tags.length > 0) message += " • " + tags.join(" • ");
         $("rarity").textContent = message;

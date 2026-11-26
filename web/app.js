@@ -334,7 +334,7 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     if (!main || !region) return;
 
     if (plate) {
-        plate.classList.remove("spin-reveal", "spin-active");
+        plate.classList.remove("spin-reveal", "spin-active", "spin-rarity-common", "spin-rarity-uncommon", "spin-rarity-rare", "spin-rarity-epic", "spin-rarity-legendary");
         void plate.offsetWidth;
         plate.classList.add("spin-active");
     }
@@ -406,16 +406,21 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     ));
 
     setRarityEffect(rarity);
+    const rarityClass = "spin-rarity-" + (["Common", "Uncommon", "Rare", "Epic", "Legendary"].includes(rarity) ? rarity.toLowerCase() : "common");
     if (plate) {
         plate.classList.remove("spin-active");
-        plate.classList.add("spin-reveal");
+        plate.classList.add("spin-reveal", rarityClass);
         plate.classList.remove("spin-mood-suspense", "spin-mood-showtime", "spin-mood-cinematic", "spin-beautiful");
         if (mood === "cinematic" || beautiful) {
             try { tg?.HapticFeedback?.notificationOccurred("success"); } catch (_) {}
         }
     }
-    await sleep(mood === "cinematic" ? 1050 : mood === "showtime" ? 850 : 650);
-    if (plate) plate.classList.remove("spin-reveal");
+    const revealDuration = rarity === "Legendary" ? 2600
+        : rarity === "Epic" ? 2100
+        : rarity === "Rare" ? 1250
+        : rarity === "Uncommon" ? 950 : 750;
+    await sleep(Math.max(revealDuration, mood === "cinematic" ? 1050 : mood === "showtime" ? 850 : 650));
+    if (plate) plate.classList.remove("spin-reveal", rarityClass);
 }
 
 // =========================================================

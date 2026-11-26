@@ -431,7 +431,6 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
 
 let freeSpinTimer = null;
 let freeSpinSeconds = 0;
-let rouletteInProgress = false;
 let currentCoins = 0;
 let spinInProgress = false;
 
@@ -444,19 +443,25 @@ function updateSpinAvailability() {
 }
 
 function updateFreeSpinTimer() {
-    const button = $("roulette-button");
+    const button = $("free-spin-button");
     if (!button) return;
-    if (rouletteInProgress) { button.disabled = true; return; }
+
+    if (spinInProgress) {
+        button.disabled = true;
+        return;
+    }
+
     if (freeSpinSeconds <= 0) {
-        button.textContent = "🎡 КРУТИТЬ БЕСПЛАТНО";
+        button.textContent = "🎁 БЕСПЛАТНЫЙ СПИН";
         button.disabled = false;
         return;
     }
+
     button.disabled = true;
     const hours = Math.floor(freeSpinSeconds / 3600);
     const minutes = Math.floor((freeSpinSeconds % 3600) / 60);
     const seconds = freeSpinSeconds % 60;
-    button.textContent = `🎡 КОЛЕСО · ${hours}ч ${minutes}м ${seconds}с`;
+    button.textContent = `🎁 БЕСПЛАТНЫЙ СПИН · ${hours}ч ${minutes}м ${seconds}с`;
     freeSpinSeconds--;
 }
 
@@ -1071,26 +1076,42 @@ async function refresh() {
 // КНОПКА СПИНА
 // =========================================================
 
-async function runSpin() {
+async function runSpin(useFree) {
     if (spinInProgress) return;
     spinInProgress = true;
-    spinHaptic(false);
+    spinHaptic(useFree);
+    const spinButton = $("spin");
+    const freeButton = $("free-spin-button");
     updateSpinAvailability();
     updateFreeSpinTimer();
-    if ($("spin")) $("spin").disabled = true;
+    if (spinButton) spinButton.disabled = true;
+    if (freeButton) freeButton.disabled = true;
     if ($("hint")) $("hint").textContent = "🎰 Барабаны вращаются...";
+
     try {
-        const result = await api("/api/spin", { method: "POST" });
+        const result = await api(useFree ? "/api/spin?free=true" : "/api/spin", {
+            method: "POST"
+        });
+
+        const coinsElement = $("coins");
+        const spinsElement = $("spins");
         currentCoins = Number(result.coins ?? currentCoins);
-        if ($("coins")) $("coins").textContent = formatRubles(result.coins);
-        if ($("spins")) $("spins").textContent = result.spins;
-        await animatePlate(result.plate.number, result.plate.rarity, chooseSpinMood());
+        updateSpinAvailability();
+        if (coinsElement) coinsElement.textContent = formatRubles(result.coins);
+        if (spinsElement) spinsElement.textContent = result.spins;
+
+        const spinMood = chooseSpinMood();
+        await animatePlate(result.plate.number, result.plate.rarity, spinMood);
         await refresh();
+
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
         const tags = result.plate.tags || [];
-        if ($("plate-analysis")) $("plate-analysis").innerHTML = renderPlateAnalysis(result.plate_analysis);
-        $("rarity").textContent = rarityText + (tags.length ? " • " + tags.join(" • ") : "");
-        if ($("hint")) $("hint").textContent = tags.length ? "✨ " + tags.join(" • ") : "Номер добавлен в коллекцию!";
+        const analysisRoot = $("plate-analysis");
+        if (analysisRoot) analysisRoot.innerHTML = renderPlateAnalysis(result.plate_analysis);
+        let message = rarityText;
+        if (tags.length > 0) message += " • " + tags.join(" • ");
+        $("rarity").textContent = message;
+        if ($("hint")) $("hint").textContent = tags.length > 0 ? "✨ " + tags.join(" • ") : "Номер добавлен в коллекцию!";
     } catch (e) {
         if ($("hint")) $("hint").textContent = e.message;
         await refresh().catch(() => {});
@@ -1101,39 +1122,8 @@ async function runSpin() {
     }
 }
 
-async function runRoulette() {
-    if (rouletteInProgress || freeSpinSeconds > 0) return;
-    rouletteInProgress = true;
-    const button = $("roulette-button"), wheel = $("roulette-wheel"), resultBox = $("roulette-result");
-    if (button) button.disabled = true;
-    if (resultBox) resultBox.textContent = "Колесо вращается...";
-    try {
-        const result = await api("/api/roulette", { method: "POST" });
-        const index = ["1 000", "3 000", "5 000", "15 000", "ЛЕГЕНДАРНЫЙ ПРОКРУТ"].indexOf(result.prize);
-        const stopAngle = 360 * 6 + (360 - (index * 72 + 36));
-        if (wheel) {
-            wheel.style.transition = "none"; wheel.style.transform = "rotate(0deg)"; void wheel.offsetWidth;
-            wheel.style.transition = "transform 5s cubic-bezier(.12,.72,.12,1)";
-            wheel.style.transform = `rotate(${stopAngle}deg)`;
-            await sleep(5100);
-        }
-        currentCoins = Number(result.coins ?? currentCoins);
-        if ($("coins")) $("coins").textContent = formatRubles(currentCoins);
-        if (resultBox) resultBox.textContent = result.coins_awarded
-            ? `🎉 Вы выиграли ${result.prize} монет!`
-            : "✨ ЛЕГЕНДАРНЫЙ ПРОКРУТ";
-        freeSpinSeconds = 86400;
-        await refresh();
-    } catch (e) {
-        if (resultBox) resultBox.textContent = e.message;
-        await refresh().catch(() => {});
-    } finally {
-        rouletteInProgress = false;
-        updateFreeSpinTimer();
-    }
-}
-$("spin").addEventListener("click", runSpin);
-$("roulette-button").addEventListener("click", runRoulette);
+$("spin").addEventListener("click", () => runSpin(false));
+$("free-spin-button").addEventListener("click", () => runSpin(true));
 
 
 // =========================================================

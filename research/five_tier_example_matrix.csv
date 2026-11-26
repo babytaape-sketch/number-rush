@@ -1,0 +1,15 @@
+digits,letters,digit_tags,letter_tags,combined_pattern_frequency,tier
+314,АВЕ,no_structural_pattern,no_structural_pattern,1.0000000,Common
+123,ААА,ascending_run|market_reference_example,triple_same|pair_first_two|pair_last_two|palindrome_outer,0.000055555556,Legendary
+777,АВЕ,triple_same|palindrome_outer|pair_last_two|pair_first_two|market_reference_example,no_structural_pattern,0.010000000,Rare
+001,ААА,pair_first_two|first_decade|repeated_digit|market_reference_example,triple_same|pair_first_two|pair_last_two|palindrome_outer,0.000062500000,Legendary
+888,ААА,triple_same|palindrome_outer|pair_last_two|pair_first_two|market_reference_example,triple_same|pair_first_two|pair_last_two|palindrome_outer,0.000069444444,Legendary
+123,ВЕА,ascending_run|market_reference_example,no_structural_pattern,0.0080000000,Rare
+070,ААА,palindrome_outer|pair_outer|round_ten|repeated_digit,triple_same|pair_first_two|pair_last_two|palindrome_outer,0.00062500000,Epic
+911,ЕКХ,pair_last_two|repeated_digit|market_reference_example,no_structural_pattern,0.10000000,Uncommon
+777,ААА,triple_same|palindrome_outer|pair_last_two|pair_first_two|market_reference_example,triple_same|pair_first_two|pair_last_two|palindrome_outer,0.000069444444,Legendary
+000,АВЕ,triple_same|palindrome_outer|pair_last_two|pair_first_two|round_hundred|round_ten|all_zero,no_structural_pattern,0.0010000000,Epic
+111,ВВВ,triple_same|palindrome_outer|pair_last_two|pair_first_two|market_reference_example,triple_same|pair_first_two|pair_last_two|palindrome_outer,0.000069444444,Legendary
+456,АВА,ascending_run,mirror_outer|palindrome_outer,0.00061111111,Epic
+110,АВЕ,pair_first_two|round_ten|repeated_digit,no_structural_pattern,0.10000000,Uncommon
+111,АВЕ,triple_same|palindrome_outer|pair_last_two|pair_first_two|market_reference_example,no_structural_pattern,0.010000000,Rare

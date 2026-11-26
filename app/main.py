@@ -36,12 +36,12 @@ app = FastAPI(title="NUMBER RUSH API")
 # =========================================================
 
 RARITIES = [
-    ("Common", 75.0, 10),
-    ("Uncommon", 17.0, 25),
-    ("Rare", 6.0, 60),
-    ("Epic", 1.7, 150),
-    ("Legendary", 0.25, 500),
-    ("Mythic", 0.05, 2000),
+    ("Common", 65.0, 10),
+    ("Uncommon", 22.0, 25),
+    ("Rare", 9.0, 60),
+    ("Epic", 3.0, 150),
+    ("Legendary", 0.8, 500),
+    ("Mythic", 0.2, 2000),
 ]
 
 RARITY_NAMES = {

@@ -342,7 +342,7 @@ function updateFreeSpinTimer() {
     if (!status || !button) return;
 
     if (freeSpinSeconds <= 0) {
-        status.textContent = "🎁 Бесплатный спин доступен — нажми кнопку!";
+        button.textContent = "🎁 БЕСПЛАТНЫЙ СПИН";
         button.disabled = false;
         return;
     }
@@ -351,7 +351,7 @@ function updateFreeSpinTimer() {
     const hours = Math.floor(freeSpinSeconds / 3600);
     const minutes = Math.floor((freeSpinSeconds % 3600) / 60);
     const seconds = freeSpinSeconds % 60;
-    status.textContent = `🎁 Бесплатный спин через ${hours}ч ${minutes}м ${seconds}с`;
+    button.textContent = `🎁 БЕСПЛАТНЫЙ СПИН · ${hours}ч ${minutes}м ${seconds}с`;
     freeSpinSeconds--;
 }
 

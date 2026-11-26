@@ -213,7 +213,7 @@ with db() as con:
 DAILY_TASKS = [
     {"key": "spin_5", "title": "Сделать 5 прокруток", "description": "Используй бесплатные или платные прокрутки", "target": 5, "reward": 1500},
     {"key": "sell_1", "title": "Продать 1 номер", "description": "Продай номер через рынок или быструю продажу", "target": 1, "reward": 1000},
-    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи обычный номер или лучше (редкий и выше)", "target": 1, "reward": 2500},
+    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи номер редкости «Редкая» или выше", "target": 1, "reward": 2500},
 ]
 
 
@@ -451,7 +451,7 @@ def claim_daily_task(task_key: str, authorization: str | None = Header(default=N
 
 ACHIEVEMENTS = [
     {"key": "collect_10", "title": "Первая коллекция", "description": "Получи 10 номеров в генераторе", "target": 10, "reward": 2500, "stat": "total_spins"},
-    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 редких номеров или выше", "target": 5, "reward": 5000, "stat": "rare_plates"},
+    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров редкости «Редкая» или выше", "target": 5, "reward": 5000, "stat": "rare_plates"},
     {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 7500, "stat": "total_spins"},
     {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 10000, "stat": "sales"},
     {"key": "coins_10000", "title": "Богач", "description": "Накопи 100 000 рублей одновременно", "target": 100000, "reward": 15000, "stat": "coins"},

@@ -420,7 +420,7 @@ let currentCoins = 0;
 function updateSpinAvailability() {
     const button = $("spin");
     const notice = $("spin-cost-notice");
-    const insufficient = currentCoins < 100;
+    const insufficient = currentCoins < 1000;
     if (button) button.disabled = insufficient;
     if (notice) notice.hidden = !insufficient;
 }
@@ -739,7 +739,7 @@ function renderProfile(me) {
 function renderDailyStreak(data) {
     const root = $("daily-streak");
     if (!root) return;
-    const rewards = data.rewards || [100, 150, 200, 250, 300, 350, 500];
+    const rewards = data.rewards || [1000, 1500, 2000, 2500, 3000, 3500, 5000];
     const nextDay = Number(data.next_day || 1);
     const claimed = Boolean(data.claimed_today);
     root.innerHTML = `

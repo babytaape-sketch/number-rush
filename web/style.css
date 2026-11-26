@@ -2146,25 +2146,24 @@ html, body, button, a, input, select, textarea {
 }
 
 
-/* Главный экран: однотонный фон и компактный номер по центру */
+/* Главный экран: номер выше, по центру тёмно-синего фона */
 .hero {
     position: relative;
     isolation: auto;
     overflow: visible;
     background: transparent;
     border-radius: 0;
+    padding: 28px 0 24px;
 }
 .hero-skyline { display: none !important; }
 .hero .plate {
     width: min(80%, 560px);
     max-width: 560px;
-    margin: clamp(250px, 50vw, 350px) auto 0;
+    margin: 0 auto;
 }
 .hero .rarity:empty { display: none; }
 .hero .rarity:not(:empty) { margin-top: 12px; margin-bottom: 16px; }
 @media (max-width: 520px) {
-    .hero .plate {
-        width: 80%;
-        margin-top: clamp(245px, 52vw, 315px);
-    }
+    .hero { padding-top: 22px; }
+    .hero .plate { width: 80%; margin: 0 auto; }
 }

@@ -1384,6 +1384,7 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
             "points": plate_data["points"],
             "region": plate_data["region"],
             "region_name": plate_data["region_name"],
+            "quick_sell_price": calculate_quick_sell_price(number, rarity),
         },
         "reward": reward,
         "coins": updated["coins"],

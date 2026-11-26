@@ -1822,3 +1822,10 @@ nav .tab.active {
     cursor: pointer;
 }
 .shop-buy-button:disabled { opacity: .55; cursor: wait; }
+
+
+/* Шесть вкладок навигации с магазином */
+@media (min-width: 651px) {
+    nav { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    nav .tab { font-size: clamp(10px, 1vw, 13px); padding-left: 3px; padding-right: 3px; }
+}

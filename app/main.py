@@ -219,9 +219,11 @@ DAILY_STREAK_REWARDS = [100, 150, 200, 250, 300, 350, 500]
 
 
 STAR_PACKAGES = {
-    "coins_5000": {"coins": 5000, "stars": 25, "title": "5 000 рублей"},
-    "coins_12000": {"coins": 12000, "stars": 50, "title": "12 000 рублей"},
-    "coins_35000": {"coins": 35000, "stars": 100, "title": "35 000 рублей"},
+    "coins_5000": {"type": "coins", "coins": 5000, "stars": 25, "title": "5 000 рублей"},
+    "coins_12000": {"type": "coins", "coins": 12000, "stars": 50, "title": "12 000 рублей"},
+    "coins_35000": {"type": "coins", "coins": 35000, "stars": 100, "title": "35 000 рублей"},
+    "plate_legendary": {"type": "plate", "rarity": "Legendary", "stars": 250, "title": "Легендарный номер"},
+    "plate_mythic": {"type": "plate", "rarity": "Mythic", "stars": 500, "title": "Мифический номер"},
 }
 
 
@@ -247,7 +249,11 @@ def create_star_invoice(package_id: str, authorization: str | None = Header(defa
     try:
         result = telegram_request("createInvoiceLink", {
             "title": package["title"],
-            "description": f"Пополнение баланса NUMBER RUSH на {package['coins']:,} рублей".replace(",", " "),
+            "description": (
+                f"Пополнение баланса на {package['coins']:,} рублей".replace(",", " ")
+                if package["type"] == "coins"
+                else f"Гарантированный номер редкости: {RARITY_NAMES[package['rarity']]}"
+            ),
             "payload": payload,
             "provider_token": "",
             "currency": "XTR",
@@ -984,8 +990,8 @@ def calculate_quick_sell_price(number, rarity):
 # ГЕНЕРАЦИЯ НОМЕРОВ ПОД КОНКРЕТНУЮ РЕДКОСТЬ
 # =========================================================
 
-def generate_plate_details():
-    rarity = random.choices(
+def generate_plate_details(forced_rarity=None):
+    rarity = forced_rarity or random.choices(
         [item[0] for item in RARITIES],
         weights=[item[1] for item in RARITIES],
         k=1
@@ -1726,12 +1732,30 @@ def telegram_polling():
                                      package["stars"], int(time.time()))
                                 )
                                 if cur.rowcount:
-                                    con.execute("UPDATE users SET coins=coins+? WHERE user_id=?",
-                                                (package["coins"], uid))
+                                    if package["type"] == "coins":
+                                        con.execute("UPDATE users SET coins=coins+? WHERE user_id=?",
+                                                    (package["coins"], uid))
+                                        success_text = f"Оплата прошла успешно! Начислено {package['coins']:,} рублей.".replace(",", " ")
+                                    else:
+                                        plate = generate_plate_details(package["rarity"])
+                                        con.execute(
+                                            "INSERT INTO plates(owner_id, number, rarity, created_at) VALUES (?, ?, ?, ?)",
+                                            (uid, plate["number"], plate["rarity"], int(time.time()))
+                                        )
+                                        con.execute(
+                                            "UPDATE users SET rare_plates=rare_plates+1 WHERE user_id=?",
+                                            (uid,)
+                                        )
+                                        success_text = (
+                                            f"Оплата прошла успешно! В коллекцию добавлен "
+                                            f"{RARITY_NAMES[plate['rarity']].lower()} номер: {plate['number']}"
+                                        )
+                                else:
+                                    success_text = "Этот платёж уже был обработан."
                                 con.commit()
                             telegram_request("sendMessage", {
                                 "chat_id": message["chat"]["id"],
-                                "text": f"Оплата прошла успешно! Начислено {package['coins']:,} рублей.".replace(",", " ")
+                                "text": success_text
                             })
                     except Exception as exc:
                         print(f"Stars payment processing error: {exc}")

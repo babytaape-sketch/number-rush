@@ -2199,6 +2199,32 @@ header { margin-bottom: 8px; }
     flex: 0 0 auto;
 }
 
+/* Цветная обводка номеров в коллекции по редкости */
+#collection .mini-plate[data-rarity="Common"] {
+    border-color: #b9c3d0;
+    box-shadow: 0 0 0 1px #777, 0 0 0 2px #080808, 0 0 7px rgba(185,195,208,.28), inset 0 1px 3px #fff;
+}
+#collection .mini-plate[data-rarity="Uncommon"] {
+    border-color: #36d477;
+    box-shadow: 0 0 0 1px #174c32, 0 0 0 2px #080808, 0 0 9px rgba(54,212,119,.48), inset 0 1px 3px #fff;
+}
+#collection .mini-plate[data-rarity="Rare"] {
+    border-color: #3294ff;
+    box-shadow: 0 0 0 1px #17416c, 0 0 0 2px #080808, 0 0 10px rgba(50,148,255,.52), inset 0 1px 3px #fff;
+}
+#collection .mini-plate[data-rarity="Epic"] {
+    border-color: #ae63ff;
+    box-shadow: 0 0 0 1px #51277a, 0 0 0 2px #080808, 0 0 11px rgba(174,99,255,.56), inset 0 1px 3px #fff;
+}
+#collection .mini-plate[data-rarity="Legendary"] {
+    border-color: #ffc247;
+    box-shadow: 0 0 0 1px #79551b, 0 0 0 2px #080808, 0 0 12px rgba(255,194,71,.62), inset 0 1px 3px #fff;
+}
+#collection .mini-plate[data-rarity="Mythic"] {
+    border-color: #ff563f;
+    box-shadow: 0 0 0 1px #792a20, 0 0 0 2px #080808, 0 0 13px rgba(255,86,63,.68), inset 0 1px 3px #fff;
+}
+
 /* Сбалансированные номерные таблички в коллекции и на рынке */
 #collection .collection-item,
 #market .market-item {

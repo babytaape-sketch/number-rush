@@ -763,7 +763,7 @@ WORD_SERIES = [
 ]
 
 SPECIAL_DIGITS = {
-    "000", "001", "007", "100",
+    "000", "007", "100",
     "111", "222", "333", "444",
     "555", "666", "700", "777",
     "800", "888", "900", "999"
@@ -846,6 +846,10 @@ def classify_plate(letters, digits, region_code):
 
     if digits == "000":
         return "Legendary"
+
+    # 001 is a recognizable but less powerful pattern: Rare, not Epic.
+    if digits == "001":
+        return "Rare"
 
     if (
         digits in SPECIAL_DIGITS
@@ -1054,29 +1058,48 @@ def generate_plate_details(forced_rarity=None):
                 break
 
     elif rarity == "Uncommon":
-        digits = random.choice([
+        uncommon_patterns = [
             "110", "112", "122", "211",
             "221", "233", "344", "455",
             "566", "677", "788", "899"
-        ])
+        ]
+        # Slightly favor the more immediately recognizable paired patterns.
+        featured = {"112", "122", "211", "221"}
+        digits = random.choices(
+            uncommon_patterns,
+            weights=[1.5 if value in featured else 1 for value in uncommon_patterns],
+            k=1
+        )[0]
         letters = random_letters(ordinary=True)
 
     elif rarity == "Rare":
-        digits = random.choice([
-            "101", "202", "303", "404",
-            "505", "606", "707", "808",
-            "909", "123", "234", "345",
-            "456", "567", "678", "789"
-        ])
+        rare_patterns = [
+            "001", "101", "202", "303", "404",
+            "505", "606", "707", "808", "909",
+            "123", "234", "345", "456", "567", "678", "789"
+        ]
+        # Sequences and 001 get a modest 1.5x preference.
+        featured = {"001", "123", "234", "345", "456", "567", "678", "789"}
+        digits = random.choices(
+            rare_patterns,
+            weights=[1.5 if value in featured else 1 for value in rare_patterns],
+            k=1
+        )[0]
         letters = random_letters(ordinary=True)
 
     elif rarity == "Epic":
-        digits = random.choice([
+        epic_patterns = [
             "111", "222", "333", "444",
             "555", "666", "888", "999",
-            "001", "007", "100", "200",
-            "300", "500", "700", "800", "900"
-        ])
+            "007", "100", "200", "300",
+            "500", "700", "800", "900"
+        ]
+        # Triple repeats stand out more, so favor them without changing Epic odds.
+        digits = random.choices(
+            epic_patterns,
+            weights=[1.5 if len(set(value)) == 1 else 1 for value in epic_patterns],
+            k=1
+        )[0]
         letters = random_letters(ordinary=True)
 
     elif rarity == "Legendary":

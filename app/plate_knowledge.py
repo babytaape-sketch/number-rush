@@ -69,10 +69,32 @@ LETTER_PATTERN_FREQUENCIES = {
 }
 
 
-def _rarest_structural_frequency(raw, frequencies):
-    tags = [tag for tag in (raw or "").split("|")
-            if tag and tag not in {"no_structural_pattern", "market_reference_example"}]
-    return min((frequencies[tag] for tag in tags if tag in frequencies), default=1.0)
+def _structural_tags(raw):
+    return {
+        tag for tag in (raw or "").split("|")
+        if tag and tag not in {"no_structural_pattern", "market_reference_example"}
+    }
+
+
+def _joint_pattern_frequency(raw, rows, key):
+    """Exact frequency of the intersection of every structural tag on this value.
+
+    Unlike v1's minimum single-tag frequency, this counts how many entries in the
+    exhaustive catalogue satisfy all tags simultaneously. Overlapping labels are
+    therefore not treated as independent events or multiplied twice.
+    """
+    tags = _structural_tags(raw)
+    if not tags:
+        return 1.0
+    total = len(rows)
+    if not total:
+        return 1.0
+    matches = 0
+    for row in rows:
+        row_tags = _structural_tags(row.get("tags", ""))
+        if tags.issubset(row_tags):
+            matches += 1
+    return matches / total
 
 
 def _structural_tier(probability):
@@ -114,8 +136,12 @@ def analyze_standard_plate(number, game_rarity=None):
 
     digit_tags = _labels(digit_row.get("tags"), DIGIT_LABELS)
     letter_tags = _labels(letter_row.get("tags"), LETTER_LABELS)
-    digit_pattern_frequency = _rarest_structural_frequency(digit_row.get("tags"), DIGIT_PATTERN_FREQUENCIES)
-    letter_pattern_frequency = _rarest_structural_frequency(letter_row.get("tags"), LETTER_PATTERN_FREQUENCIES)
+    digit_pattern_frequency = _joint_pattern_frequency(
+        digit_row.get("tags"), list(digit_data.values()), "digits"
+    )
+    letter_pattern_frequency = _joint_pattern_frequency(
+        letter_row.get("tags"), list(letter_data.values()), "letters"
+    )
     combined_pattern_frequency = digit_pattern_frequency * letter_pattern_frequency
     structural_rarity_candidate = _structural_tier(combined_pattern_frequency)
     history = []
@@ -197,12 +223,12 @@ def analyze_standard_plate(number, game_rarity=None):
         "summary": summary,
         "game_rarity": game_rarity,
         "structural_rarity_candidate": structural_rarity_candidate,
-        "structural_model": "five_tier_exhaustive_v1",
+        "structural_model": "five_tier_exact_intersection_v2",
         "structural_frequency": {
             "digit_pattern": round(digit_pattern_frequency, 9),
             "letter_pattern": round(letter_pattern_frequency, 9),
             "combined": round(combined_pattern_frequency, 12),
-            "assumption": "Равномерное пространство 1000 x 1728; рынок, история и регион не входят в математический tier.",
+            "assumption": "Частота точного пересечения всех структурных тегов по полному каталогу 1000 x 1728; рынок, история и регион не входят в математический tier.",
         },
         "assessment_status": "research_candidate_only_not_game_retiered",
         "caveats": [

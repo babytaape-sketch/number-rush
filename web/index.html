@@ -35,7 +35,16 @@
         ГЕНЕРИРОВАТЬ <span>↗</span>
       </button>
 
-      <button type="button" id="free-spin-button" class="free-spin-button" disabled>🎁 БЕСПЛАТНЫЙ СПИН</button>
+      <section class="roulette-card" aria-label="Колесо удачи">
+        <h2>🎡 Колесо удачи</h2>
+        <p>Бесплатная попытка раз в 24 часа</p>
+        <div class="roulette-pointer">▼</div>
+        <div class="roulette-wheel-wrap"><div id="roulette-wheel" class="roulette-wheel">
+          <span>1 000</span><span>3 000</span><span>5 000</span><span>15 000</span><span>ЛЕГЕНДАРНЫЙ<br>ПРОКРУТ</span>
+        </div></div>
+        <button type="button" id="roulette-button" disabled>🎡 КРУТИТЬ БЕСПЛАТНО</button>
+        <div id="roulette-result" class="roulette-result">Испытай удачу!</div>
+      </section>
       <div id="spin-cost-notice" class="spin-cost-notice" hidden>1 спин — 1 000₽</div>
     </section>
 
@@ -159,6 +168,6 @@
     <footer>NUMBER RUSH <span>•</span> COLLECT YOUR STYLE</footer>
   </div>
 
-  <script src="/static/app.js?v=71"></script>
+  <script src="/static/app.js?v=72"></script>
 </body>
 </html>

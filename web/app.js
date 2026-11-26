@@ -12,10 +12,11 @@ if (tg) {
     tg.setBackgroundColor("#080b10");
 }
 
-// Лёгкий тактильный отклик при нажатии на элементы интерфейса.
-document.addEventListener("pointerdown", event => {
+// Лёгкий тактильный отклик только после настоящего нажатия.
+// Событие click не срабатывает при обычном свайпе/прокрутке.
+document.addEventListener("click", event => {
     const target = event.target?.closest(
-        "button, .tab, [role='button'], .market-item, .collection-item, .achievement-card, .daily-task-card, .shop-package"
+        "button, [role='button'], .market-item, .collection-item, .achievement-card, .daily-task-card, .shop-package"
     );
     if (!target || target.disabled || !tg?.HapticFeedback) return;
 
@@ -24,7 +25,7 @@ document.addEventListener("pointerdown", event => {
     } catch (_) {
         // Haptic feedback недоступен на некоторых клиентах Telegram.
     }
-}, { passive: true });
+});
 
 const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };

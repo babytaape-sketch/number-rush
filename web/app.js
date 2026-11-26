@@ -27,50 +27,16 @@ document.addEventListener("click", event => {
     }
 });
 
-// Виброотклик работает только пока вращается хотя бы один символ.
-let spinHapticTimer = null;
-let activeSlotHaptics = new Map();
-let nextSlotHapticId = 0;
+// Вибрация привязана к фактическому прохождению символом очередной позиции.
+let lastSlotHapticAt = 0;
 
-function scheduleSpinHaptic() {
-    if (spinHapticTimer) clearTimeout(spinHapticTimer);
-    spinHapticTimer = null;
-    if (activeSlotHaptics.size === 0) return;
-
+function slotStepHaptic(progress) {
     const now = performance.now();
-    let progress = 0;
-    for (const item of activeSlotHaptics.values()) {
-        progress = Math.max(progress, Math.min(1, (now - item.startedAt) / item.duration));
-    }
-
+    if (now - lastSlotHapticAt < 48) return;
+    lastSlotHapticAt = now;
     try {
-        tg?.HapticFeedback?.impactOccurred("soft");
+        tg?.HapticFeedback?.impactOccurred(progress > 0.82 ? "light" : "soft");
     } catch (_) {}
-
-    // По мере замедления символов импульсы становятся реже.
-    const interval = 180 + progress * 120;
-    spinHapticTimer = setTimeout(scheduleSpinHaptic, interval);
-}
-
-function beginSlotHaptic(duration) {
-    const id = ++nextSlotHapticId;
-    activeSlotHaptics.set(id, { startedAt: performance.now(), duration });
-    if (activeSlotHaptics.size === 1) scheduleSpinHaptic();
-    return id;
-}
-
-function endSlotHaptic(id) {
-    activeSlotHaptics.delete(id);
-    if (activeSlotHaptics.size === 0 && spinHapticTimer) {
-        clearTimeout(spinHapticTimer);
-        spinHapticTimer = null;
-    }
-}
-
-function stopAllSlotHaptics() {
-    activeSlotHaptics.clear();
-    if (spinHapticTimer) clearTimeout(spinHapticTimer);
-    spinHapticTimer = null;
 }
 
 function spinHaptic(useFree) {
@@ -206,15 +172,7 @@ function sleep(ms) {
 async function rollSlot(element, finalChar, options = {}) {
     const duration = options.duration || 2600;
     const delay = options.delay || 0;
-
-    const alphabet = plateLetters.includes(finalChar)
-        ? plateLetters
-        : plateDigits;
-
-    const fontSize = parseFloat(
-        getComputedStyle(element).fontSize
-    ) || 36;
-
+    const fontSize = parseFloat(getComputedStyle(element).fontSize) || 36;
     const symbolHeight = fontSize;
 
     const strip = document.createElement("span");
@@ -222,12 +180,10 @@ async function rollSlot(element, finalChar, options = {}) {
 
     const windowElement = document.createElement("span");
     windowElement.className = "slot-window";
-
     windowElement.style.height = `${symbolHeight}px`;
     windowElement.style.overflow = "hidden";
 
     const totalSymbols = options.totalSymbols || 10;
-
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
         symbol.className = "slot-symbol";
@@ -246,65 +202,50 @@ async function rollSlot(element, finalChar, options = {}) {
 
     windowElement.appendChild(strip);
     element.replaceChildren(windowElement);
-
-    strip.style.transform = "translateY(0)";
+    strip.style.transform = "translate3d(0, 0, 0)";
     strip.style.willChange = "transform";
 
-    await sleep(delay);
+    if (delay) await sleep(delay);
 
     const distance = totalSymbols * symbolHeight;
-    const hapticId = beginSlotHaptic(duration);
+    const start = performance.now();
+    let lastCrossedSymbol = 0;
 
-    try {
-    
-        if (strip.animate) {
-            const animation = strip.animate(
-                options.fastThenBrake
-                    ? [
-                        { transform: "translate3d(0, 0, 0)", offset: 0, easing: "linear" },
-                        { transform: `translate3d(0, -${distance * 0.88}px, 0)`, offset: 0.72, easing: "cubic-bezier(.12,.75,.22,1)" },
-                        { transform: `translate3d(0, -${distance}px, 0)`, offset: 1 }
-                    ]
-                    : [
-                        { transform: "translate3d(0, 0, 0)" },
-                        { transform: `translate3d(0, -${distance}px, 0)` }
-                    ],
-                {
-                    duration,
-                    easing: "cubic-bezier(.16,1,.3,1)",
-                    fill: "forwards"
-                }
+    await new Promise(resolve => {
+        function frame(now) {
+            const elapsed = Math.min(1, (now - start) / duration);
+            const fastPhaseEnd = 0.68;
+            const fastDistance = 0.82;
+            let progress;
+
+            if (elapsed <= fastPhaseEnd) {
+                progress = (elapsed / fastPhaseEnd) * fastDistance;
+            } else {
+                const brakeProgress = (elapsed - fastPhaseEnd) / (1 - fastPhaseEnd);
+                progress = fastDistance + (1 - fastDistance) *
+                    (1 - Math.pow(1 - brakeProgress, 2));
+            }
+
+            strip.style.transform = `translate3d(0, -${distance * progress}px, 0)`;
+
+            const crossedSymbol = Math.min(
+                totalSymbols,
+                Math.floor(progress * totalSymbols + 0.0001)
             );
-    
-            await animation.finished;
-            // Сохраняем конечное положение до снятия WAAPI-анимации,
-            // чтобы не было краткого скачка полосы в исходную позицию.
-            strip.style.transform = `translate3d(0, -${distance}px, 0)`;
-            animation.cancel();
-        } else {
-            const start = performance.now();
-    
-            await new Promise(resolve => {
-                function frame(now) {
-                    const progress = Math.min(1, (now - start) / duration);
-                    const eased = 1 - Math.pow(1 - progress, 3);
-    
-                    strip.style.transform =
-                        `translate3d(0, -${distance * eased}px, 0)`;
-    
-                    if (progress < 1) {
-                        requestAnimationFrame(frame);
-                    } else {
-                        resolve();
-                    }
-                }
-    
+            if (crossedSymbol > lastCrossedSymbol) {
+                slotStepHaptic(elapsed);
+                lastCrossedSymbol = crossedSymbol;
+            }
+
+            if (elapsed < 1) {
                 requestAnimationFrame(frame);
-            });
+            } else {
+                strip.style.transform = `translate3d(0, -${distance}px, 0)`;
+                resolve();
+            }
         }
-    } finally {
-        endSlotHaptic(hapticId);
-    }
+        requestAnimationFrame(frame);
+    });
 
     strip.style.willChange = "auto";
     element.textContent = finalChar;
@@ -313,7 +254,6 @@ async function rollSlot(element, finalChar, options = {}) {
 async function animatePlate(finalPlate, rarity) {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
-
     if (!main || !region) return;
 
     const parts = finalPlate.trim().split(/\s+/);
@@ -325,7 +265,6 @@ async function animatePlate(finalPlate, rarity) {
         slot.className = "slot-cell";
         return slot;
     });
-
     const regionSlots = regionChars.map(() => {
         const slot = document.createElement("span");
         slot.className = "slot-cell";
@@ -335,70 +274,40 @@ async function animatePlate(finalPlate, rarity) {
     main.replaceChildren(...mainSlots);
     region.replaceChildren(...regionSlots);
 
-    // Регион всегда останавливается первым.
-    await Promise.all(
-        regionSlots.map((slot, index) =>
-            rollSlot(slot, regionChars[index], {
-                duration: 1800,
-                totalSymbols: 19
-            })
-        )
-    );
-
-    // Выбираем случайную букву и случайную цифру для дополнительной интриги.
-    const letterIndexes = mainChars
-        .map((char, index) => plateLetters.includes(char) ? index : -1)
-        .filter(index => index >= 0);
-    const digitIndexes = mainChars
-        .map((char, index) => plateDigits.includes(char) ? index : -1)
-        .filter(index => index >= 0);
-
-    const suspenseLetter = letterIndexes.length
-        ? letterIndexes[Math.floor(Math.random() * letterIndexes.length)]
-        : -1;
-    const suspenseDigit = digitIndexes.length
-        ? digitIndexes[Math.floor(Math.random() * digitIndexes.length)]
-        : -1;
+    // Сначала останавливается регион.
+    await Promise.all(regionSlots.map((slot, index) =>
+        rollSlot(slot, regionChars[index], { duration: 2100, totalSymbols: 19 })
+    ));
 
     const rarityLevel = {
-        Common: 0,
-        Uncommon: 1,
-        Rare: 2,
-        Epic: 3,
-        Legendary: 4,
-        Mythic: 5
+        Common: 0, Uncommon: 1, Rare: 2, Epic: 3, Legendary: 4, Mythic: 5
     }[rarity] ?? 0;
 
-    const baseDuration = 1950 + rarityLevel * 160;
-    const stopInterval = 290 + rarityLevel * 30;
-    const suspenseExtra = 850 + rarityLevel * 300;
-
-    // Все символы начинают вращаться одновременно.
-    // Обычные останавливаются по очереди, выбранные буква и цифра
-    // получают случайное дополнительное вращение и задерживают развязку.
-    await Promise.all(
-        mainSlots.map((slot, index) => {
-            const isSuspense = index === suspenseLetter || index === suspenseDigit;
-            const isFinalTwo = index >= mainSlots.length - 2;
-            const randomExtra = isSuspense
-                ? Math.floor(Math.random() * 500)
-                : 0;
-            // Последние две цифры продолжают вращаться заметно дольше
-            // остальных символов — даже после их остановки.
-            const finalTwoExtra = isFinalTwo
-                ? 3600 + rarityLevel * 400 + Math.floor(Math.random() * 600) +
-                    (index === mainSlots.length - 1 ? 1400 : 0)
-                : 0;
-
-            return rollSlot(slot, mainChars[index], {
-                duration: baseDuration + index * stopInterval +
-                    (isSuspense ? suspenseExtra + randomExtra : 0) +
-                    finalTwoExtra,
-                totalSymbols: 19,
-                fastThenBrake: isFinalTwo
-            });
-        })
+    const baseDuration = 2200 + rarityLevel * 140;
+    const stopInterval = 260 + rarityLevel * 25;
+    const regularDurations = mainSlots.map((_, index) =>
+        baseDuration + index * stopInterval
     );
+    const latestRegularStop = Math.max(...regularDurations);
+
+    // Два разных случайных разряда выбираются при каждом спине.
+    const lateIndexes = [];
+    while (lateIndexes.length < Math.min(2, mainSlots.length)) {
+        const candidate = Math.floor(Math.random() * mainSlots.length);
+        if (!lateIndexes.includes(candidate)) lateIndexes.push(candidate);
+    }
+    const lateDurations = new Map([
+        [lateIndexes[0], latestRegularStop + 1900 + rarityLevel * 180],
+        [lateIndexes[1], latestRegularStop + 3400 + rarityLevel * 220]
+    ]);
+
+    // Эти два случайных символа гарантированно остановятся последними.
+    await Promise.all(mainSlots.map((slot, index) =>
+        rollSlot(slot, mainChars[index], {
+            duration: lateDurations.get(index) || regularDurations[index],
+            totalSymbols: 19
+        })
+    ));
 
     setRarityEffect(rarity);
     await sleep(500);

@@ -27,76 +27,50 @@ document.addEventListener("click", event => {
     }
 });
 
-// Мягкий звук премиального механизма звучит только пока вращается хотя бы один символ.
-let spinAudioContext = null;
-let spinSoundTimer = null;
-let activeSlotSounds = new Map();
-let nextSlotSoundId = 0;
+// Виброотклик работает только пока вращается хотя бы один символ.
+let spinHapticTimer = null;
+let activeSlotHaptics = new Map();
+let nextSlotHapticId = 0;
 
-function unlockSpinAudio() {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-    try {
-        if (!spinAudioContext) spinAudioContext = new AudioContextClass();
-        if (spinAudioContext.state === "suspended") spinAudioContext.resume().catch(() => {});
-    } catch (_) {}
-}
-
-function playSpinTick() {
-    if (!spinAudioContext || spinAudioContext.state !== "running") return;
-    try {
-        const now = spinAudioContext.currentTime;
-        const oscillator = spinAudioContext.createOscillator();
-        const gain = spinAudioContext.createGain();
-        oscillator.type = "triangle";
-        oscillator.frequency.setValueAtTime(430 + Math.random() * 35, now);
-        oscillator.frequency.exponentialRampToValueAtTime(285, now + 0.075);
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.018, now + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.085);
-        oscillator.connect(gain);
-        gain.connect(spinAudioContext.destination);
-        oscillator.start(now);
-        oscillator.stop(now + 0.09);
-    } catch (_) {}
-}
-
-function scheduleSpinTick() {
-    if (spinSoundTimer) clearTimeout(spinSoundTimer);
-    spinSoundTimer = null;
-    if (activeSlotSounds.size === 0) return;
+function scheduleSpinHaptic() {
+    if (spinHapticTimer) clearTimeout(spinHapticTimer);
+    spinHapticTimer = null;
+    if (activeSlotHaptics.size === 0) return;
 
     const now = performance.now();
     let progress = 0;
-    for (const item of activeSlotSounds.values()) {
+    for (const item of activeSlotHaptics.values()) {
         progress = Math.max(progress, Math.min(1, (now - item.startedAt) / item.duration));
     }
 
-    playSpinTick();
-    // По мере замедления барабанов увеличивается пауза между мягкими щелчками.
-    const interval = 85 + progress * 155;
-    spinSoundTimer = setTimeout(scheduleSpinTick, interval);
+    try {
+        tg?.HapticFeedback?.impactOccurred("soft");
+    } catch (_) {}
+
+    // По мере замедления символов импульсы становятся реже.
+    const interval = 115 + progress * 125;
+    spinHapticTimer = setTimeout(scheduleSpinHaptic, interval);
 }
 
-function beginSlotSound(duration) {
-    const id = ++nextSlotSoundId;
-    activeSlotSounds.set(id, { startedAt: performance.now(), duration });
-    if (activeSlotSounds.size === 1) scheduleSpinTick();
+function beginSlotHaptic(duration) {
+    const id = ++nextSlotHapticId;
+    activeSlotHaptics.set(id, { startedAt: performance.now(), duration });
+    if (activeSlotHaptics.size === 1) scheduleSpinHaptic();
     return id;
 }
 
-function endSlotSound(id) {
-    activeSlotSounds.delete(id);
-    if (activeSlotSounds.size === 0 && spinSoundTimer) {
-        clearTimeout(spinSoundTimer);
-        spinSoundTimer = null;
+function endSlotHaptic(id) {
+    activeSlotHaptics.delete(id);
+    if (activeSlotHaptics.size === 0 && spinHapticTimer) {
+        clearTimeout(spinHapticTimer);
+        spinHapticTimer = null;
     }
 }
 
-function stopAllSlotSounds() {
-    activeSlotSounds.clear();
-    if (spinSoundTimer) clearTimeout(spinSoundTimer);
-    spinSoundTimer = null;
+function stopAllSlotHaptics() {
+    activeSlotHaptics.clear();
+    if (spinHapticTimer) clearTimeout(spinHapticTimer);
+    spinHapticTimer = null;
 }
 
 function spinHaptic(useFree) {
@@ -276,7 +250,7 @@ async function rollSlot(element, finalChar, options = {}) {
     await sleep(delay);
 
     const distance = totalSymbols * symbolHeight;
-    const soundId = beginSlotSound(duration);
+    const hapticId = beginSlotHaptic(duration);
 
     try {
     
@@ -317,7 +291,7 @@ async function rollSlot(element, finalChar, options = {}) {
             });
         }
     } finally {
-        endSlotSound(soundId);
+        endSlotHaptic(hapticId);
     }
 
     element.textContent = finalChar;
@@ -1043,7 +1017,6 @@ async function refresh() {
 // =========================================================
 
 async function runSpin(useFree) {
-    unlockSpinAudio();
     spinHaptic(useFree);
     const spinButton = $("spin");
     const freeButton = $("free-spin-button");
@@ -1074,7 +1047,7 @@ async function runSpin(useFree) {
         $("hint").textContent = e.message;
         await refresh().catch(() => {});
     } finally {
-        stopAllSlotSounds();
+        stopAllSlotHaptics();
         spinButton.disabled = false;
         updateFreeSpinTimer();
     }

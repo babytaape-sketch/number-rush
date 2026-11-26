@@ -639,7 +639,7 @@ function renderProfile(me) {
     const rarest = me.rarest_plate ? createMiniPlate(me.rarest_plate.number) + '<small>' + escapeHtml(me.rarest_plate.rarity) + '</small>' : '<small>Пока нет номеров</small>';
     root.innerHTML = '<div class="profile-heading">' + avatar + '<div><strong>' + escapeHtml(name || "Игрок") + '</strong><small>ID: ' + escapeHtml(me.id) + '</small></div></div>' +
       '<div class="profile-stats">' +
-      '<div><small>Баланс</small><b>' + Number(me.coins).toLocaleString("ru-RU") + ' <span class="ruble-coin">₽</span></b></div>' +
+      '<div><small>Баланс</small><b>' + formatRubles(me.coins) + ' <span class="ruble-coin">₽</span></b></div>' +
       '<div><small>Номеров сейчас</small><b>' + me.collection_count + '</b></div>' +
       '<div><small>Всего спинов</small><b>' + me.total_spins + '</b></div>' +
       '<div><small>Покупки</small><b>' + me.purchases_count + '</b></div>' +

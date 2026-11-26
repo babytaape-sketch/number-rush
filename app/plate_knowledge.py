@@ -88,7 +88,7 @@ def _structural_tier(probability):
 
 
 def _labels(raw, mapping):
-    tags = [tag for tag in (raw or "").split("|") if tag and tag != "no_structural_pattern"]
+    tags = [tag for tag in (raw or "").split("|") if tag and tag not in {"no_structural_pattern", "market_reference_example"}]
     return [mapping.get(tag, tag.replace("_", " ")) for tag in tags]
 
 def analyze_standard_plate(number, game_rarity=None):
@@ -134,12 +134,14 @@ def analyze_standard_plate(number, game_rarity=None):
     for row in market_data:
         category = row.get("category", "")
         relevant = (
-            (digits == "777" and "777" in category)
-            or (digits == "001" and "first_decade" in category)
-            or (digits == "007" and "007" in category)
-            or (len(set(digits)) == 1 and category == "three_identical_digits")
-            or (digits[0] == digits[2] and category == "mirror_digits")
-            or (digits.endswith("00") and category == "round_hundreds")
+            (category.endswith("_digits") and category[:-7] == digits)
+            or (category == "three_identical_digits" and len(set(digits)) == 1)
+            or (category == "three_identical_letters" and len(set(letters)) == 1)
+            or (category == "mirror_digits" and digits[0] == digits[2])
+            or (category == "round_hundreds" and digits.endswith("00"))
+            or (category == "first_decade_001_010" and 1 <= int(digits) <= 10)
+            or (category.endswith("_letters") and category[:-7].upper() == letters)
+            or (category == "word_KOT" and lexical and "кот" in lexical.get("reading", "").lower())
         )
         if relevant:
             market_mentions.append({

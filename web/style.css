@@ -1655,3 +1655,16 @@ footer {
     opacity: .4;
     cursor: not-allowed;
 }
+
+
+/* Достижения */
+.achievement-card .daily-task-reward {
+    color: #ffd36a;
+}
+.achievement-card.is-completed {
+    border-color: rgba(255, 194, 71, .58);
+    background: linear-gradient(145deg, #332a18, #101b2a);
+}
+.achievement-card .daily-task-progress span {
+    background: linear-gradient(90deg, #8b6cff, #ffc247);
+}

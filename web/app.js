@@ -393,6 +393,15 @@ async function animatePlate(finalPlate, rarity) {
 
 let freeSpinTimer = null;
 let freeSpinSeconds = 0;
+let currentCoins = 0;
+
+function updateSpinAvailability() {
+    const button = $("spin");
+    const notice = $("spin-cost-notice");
+    const insufficient = currentCoins < 100;
+    if (button) button.disabled = insufficient;
+    if (notice) notice.hidden = !insufficient;
+}
 
 function updateFreeSpinTimer() {
     const button = $("free-spin-button");
@@ -968,6 +977,8 @@ async function refresh() {
     renderProfile(me);
 
     freeSpinSeconds = Number(me.free_spin_seconds ?? 0);
+    currentCoins = Number(me.coins ?? 0);
+    updateSpinAvailability();
 
     if (freeSpinTimer) {
         clearInterval(freeSpinTimer);
@@ -1031,6 +1042,8 @@ async function runSpin(useFree) {
 
         const coinsElement = $("coins");
         const spinsElement = $("spins");
+        currentCoins = Number(result.coins ?? currentCoins);
+        updateSpinAvailability();
         if (coinsElement) coinsElement.textContent = formatRubles(result.coins);
         if (spinsElement) spinsElement.textContent = result.spins;
 
@@ -1048,7 +1061,7 @@ async function runSpin(useFree) {
         await refresh().catch(() => {});
     } finally {
         stopAllSlotHaptics();
-        spinButton.disabled = false;
+        updateSpinAvailability();
         updateFreeSpinTimer();
     }
 }

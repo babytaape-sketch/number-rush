@@ -443,7 +443,6 @@ nav {
 
 .slot-cell {
     display: flex;
-    contain: layout paint;
     min-width: 0;
     height: 100%;
     align-items: center;
@@ -454,8 +453,6 @@ nav {
 
 .slot-window {
     display: block;
-    contain: layout paint;
-    backface-visibility: hidden;
     width: 100%;
     overflow: hidden;
     line-height: 1;
@@ -463,7 +460,6 @@ nav {
 
 .slot-strip {
     display: flex;
-    backface-visibility: hidden;
     flex-direction: column;
     width: 100%;
     will-change: transform;

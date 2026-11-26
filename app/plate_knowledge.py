@@ -31,8 +31,8 @@ LETTER_LABELS = {
     "triple_same": "Три одинаковые буквы",
     "pair_first_two": "Повтор первых двух букв",
     "pair_last_two": "Повтор последних двух букв",
-    "mirror_outer": "Зеркальные крайние буквы",
-    "palindrome_outer": "Крайние буквы совпадают",
+    "mirror_outer": "Одинаковые крайние буквы",
+    "palindrome_outer": "Одинаковые крайние буквы",
 }
 
 def _read_csv(filename):
@@ -119,6 +119,10 @@ def _labels(raw, mapping):
     }):
         tags.remove("repeated_digit")
 
+    # The two research tags describe the same first/last-letter match.
+    if mapping is LETTER_LABELS and "palindrome_outer" in tags:
+        tags = [tag for tag in tags if tag != "mirror_outer"]
+
     # A triple already explains its mirrored and paired sub-patterns.
     if "triple_same" in tags:
         tags = ["triple_same"] + [tag for tag in tags if tag not in {
@@ -145,7 +149,12 @@ def analyze_standard_plate(number, game_rarity=None):
     digit_data, letter_data, region_data, lexical_data, history_data, market_data = _datasets()
     digit_row = digit_data.get(digits, {})
     letter_row = letter_data.get(letters, {})
-    region = region_data.get(region_code, {})
+    # Three-digit regional codes reuse the two-digit base code (e.g. 177 -> 77).
+    # Code 90 is an additional Moscow-region code absent from the two-digit reference table.
+    region_lookup_code = region_code[-2:] if len(region_code) == 3 else region_code
+    region = region_data.get(region_lookup_code, {})
+    if not region and region_lookup_code == "90":
+        region = {"region": "Московская область", "status": "current_listed"}
     lexical = lexical_data.get(letters)
 
     digit_tags = _labels(digit_row.get("tags"), DIGIT_LABELS)

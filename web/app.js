@@ -27,9 +27,11 @@ document.addEventListener("click", event => {
     }
 });
 
-// Звук прокрутки создаётся программно, без внешних аудиофайлов.
+// Мягкий звук премиального механизма звучит только пока вращается хотя бы один символ.
 let spinAudioContext = null;
 let spinSoundTimer = null;
+let activeSlotSounds = new Map();
+let nextSlotSoundId = 0;
 
 function unlockSpinAudio() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -46,27 +48,54 @@ function playSpinTick() {
         const now = spinAudioContext.currentTime;
         const oscillator = spinAudioContext.createOscillator();
         const gain = spinAudioContext.createGain();
-        oscillator.type = "square";
-        oscillator.frequency.setValueAtTime(780 + Math.random() * 420, now);
-        oscillator.frequency.exponentialRampToValueAtTime(260, now + 0.035);
+        oscillator.type = "triangle";
+        oscillator.frequency.setValueAtTime(430 + Math.random() * 35, now);
+        oscillator.frequency.exponentialRampToValueAtTime(285, now + 0.075);
         gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.045, now + 0.004);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+        gain.gain.exponentialRampToValueAtTime(0.018, now + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.085);
         oscillator.connect(gain);
         gain.connect(spinAudioContext.destination);
         oscillator.start(now);
-        oscillator.stop(now + 0.05);
+        oscillator.stop(now + 0.09);
     } catch (_) {}
 }
 
-function startSpinSound() {
-    stopSpinSound();
+function scheduleSpinTick() {
+    if (spinSoundTimer) clearTimeout(spinSoundTimer);
+    spinSoundTimer = null;
+    if (activeSlotSounds.size === 0) return;
+
+    const now = performance.now();
+    let progress = 0;
+    for (const item of activeSlotSounds.values()) {
+        progress = Math.max(progress, Math.min(1, (now - item.startedAt) / item.duration));
+    }
+
     playSpinTick();
-    spinSoundTimer = setInterval(playSpinTick, 95);
+    // По мере замедления барабанов увеличивается пауза между мягкими щелчками.
+    const interval = 85 + progress * 155;
+    spinSoundTimer = setTimeout(scheduleSpinTick, interval);
 }
 
-function stopSpinSound() {
-    if (spinSoundTimer) clearInterval(spinSoundTimer);
+function beginSlotSound(duration) {
+    const id = ++nextSlotSoundId;
+    activeSlotSounds.set(id, { startedAt: performance.now(), duration });
+    if (activeSlotSounds.size === 1) scheduleSpinTick();
+    return id;
+}
+
+function endSlotSound(id) {
+    activeSlotSounds.delete(id);
+    if (activeSlotSounds.size === 0 && spinSoundTimer) {
+        clearTimeout(spinSoundTimer);
+        spinSoundTimer = null;
+    }
+}
+
+function stopAllSlotSounds() {
+    activeSlotSounds.clear();
+    if (spinSoundTimer) clearTimeout(spinSoundTimer);
     spinSoundTimer = null;
 }
 
@@ -247,42 +276,48 @@ async function rollSlot(element, finalChar, options = {}) {
     await sleep(delay);
 
     const distance = totalSymbols * symbolHeight;
+    const soundId = beginSlotSound(duration);
 
-    if (strip.animate) {
-        const animation = strip.animate(
-            [
-                { transform: "translate3d(0, 0, 0)" },
-                { transform: `translate3d(0, -${distance}px, 0)` }
-            ],
-            {
-                duration,
-                easing: "cubic-bezier(.22,.61,.36,1)",
-                fill: "forwards"
-            }
-        );
-
-        await animation.finished;
-        animation.cancel();
-    } else {
-        const start = performance.now();
-
-        await new Promise(resolve => {
-            function frame(now) {
-                const progress = Math.min(1, (now - start) / duration);
-                const eased = 1 - Math.pow(1 - progress, 3);
-
-                strip.style.transform =
-                    `translate3d(0, -${distance * eased}px, 0)`;
-
-                if (progress < 1) {
-                    requestAnimationFrame(frame);
-                } else {
-                    resolve();
+    try {
+    
+        if (strip.animate) {
+            const animation = strip.animate(
+                [
+                    { transform: "translate3d(0, 0, 0)" },
+                    { transform: `translate3d(0, -${distance}px, 0)` }
+                ],
+                {
+                    duration,
+                    easing: "cubic-bezier(.22,.61,.36,1)",
+                    fill: "forwards"
                 }
-            }
-
-            requestAnimationFrame(frame);
-        });
+            );
+    
+            await animation.finished;
+            animation.cancel();
+        } else {
+            const start = performance.now();
+    
+            await new Promise(resolve => {
+                function frame(now) {
+                    const progress = Math.min(1, (now - start) / duration);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+    
+                    strip.style.transform =
+                        `translate3d(0, -${distance * eased}px, 0)`;
+    
+                    if (progress < 1) {
+                        requestAnimationFrame(frame);
+                    } else {
+                        resolve();
+                    }
+                }
+    
+                requestAnimationFrame(frame);
+            });
+        }
+    } finally {
+        endSlotSound(soundId);
     }
 
     element.textContent = finalChar;
@@ -1026,9 +1061,7 @@ async function runSpin(useFree) {
         if (coinsElement) coinsElement.textContent = formatRubles(result.coins);
         if (spinsElement) spinsElement.textContent = result.spins;
 
-        startSpinSound();
         await animatePlate(result.plate.number, result.plate.rarity);
-        stopSpinSound();
         await refresh();
 
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
@@ -1041,7 +1074,7 @@ async function runSpin(useFree) {
         $("hint").textContent = e.message;
         await refresh().catch(() => {});
     } finally {
-        stopSpinSound();
+        stopAllSlotSounds();
         spinButton.disabled = false;
         updateFreeSpinTimer();
     }

@@ -1,7 +1,7 @@
-rarity,target_probability_pct,simulated_count,simulated_probability_pct,configured_reward
-Common,65.0,650244,65.0244,10
-Uncommon,22.0,219551,21.9551,25
-Rare,9.0,90262,9.0262,60
-Epic,3.0,30111,3.0111,150
-Legendary,0.8,7867,0.7867,500
-Mythic,0.2,1965,0.1965,2000
+rarity,target_weight_pct,acceptance_factor,expected_output_share_pct,simulated_count_1m,simulated_share_pct,reward
+Common,65.0,1.0,65.3459,653765,65.3765,10
+Uncommon,22.0,1.0,22.1171,221019,22.1019,25
+Rare,9.0,1.0,9.0479,90204,9.0204,60
+Epic,3.0,14/17,2.4837,24945,2.4945,150
+Legendary,0.8,1.0,0.8043,8088,0.8088,500
+Mythic,0.2,1.0,0.2011,1979,0.1979,2000

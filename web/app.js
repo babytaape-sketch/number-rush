@@ -593,7 +593,7 @@ function renderCollection() {
         ? rows.map(p => `
             <div class="item collection-item">
                 <div class="collection-plate-wrap">
-                    ${createMiniPlate(p.number)}
+                    ${createMiniPlate(p.number, p.rarity)}
                     <small>${escapeHtml(p.rarity)}</small>
                     ${renderTags(p.tags)}
                 </div>

@@ -1460,10 +1460,10 @@ def list_plate(
 ):
     user = current_user(authorization)
 
-    if payload.price < 1 or payload.price > 1000000:
+    if payload.price < 1 or payload.price > 10000000:
         raise HTTPException(
             400,
-            "Price must be between 1 and 1,000,000 coins"
+            "Price must be between 1 and 10,000,000 coins"
         )
 
     with db() as con:

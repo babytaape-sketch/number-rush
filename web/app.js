@@ -649,7 +649,7 @@ function renderCollection() {
             String(p.number).toLowerCase().includes(query) ||
             String(rarityNames[p.rarity] || p.rarity).toLowerCase().includes(query) ||
             (p.tags || []).some(tag => String(tag).toLowerCase().includes(query));
-        const matchesRarity = rarity === "all" || p.rarity === rarity;
+        const matchesRarity = rarity === "all" || p.rarity === rarity || (rarity === "Legendary" && p.rarity === "Mythic");
         return matchesSearch && matchesRarity;
     });
 

@@ -1022,7 +1022,7 @@ async function runSpin(useFree) {
     const freeButton = $("free-spin-button");
     spinButton.disabled = true;
     freeButton.disabled = true;
-    $("hint")?.textContent = "🎰 Барабаны вращаются...";
+    if ($("hint")) $("hint").textContent = "🎰 Барабаны вращаются...";
 
     try {
         const result = await api(useFree ? "/api/spin?free=true" : "/api/spin", {
@@ -1042,9 +1042,9 @@ async function runSpin(useFree) {
         let message = rarityText;
         if (tags.length > 0) message += " • " + tags.join(" • ");
         $("rarity").textContent = message;
-        $("hint")?.textContent = tags.length > 0 ? "✨ " + tags.join(" • ") : "Номер добавлен в коллекцию!";
+        if ($("hint")) $("hint").textContent = tags.length > 0 ? "✨ " + tags.join(" • ") : "Номер добавлен в коллекцию!";
     } catch (e) {
-        $("hint")?.textContent = e.message;
+        if ($("hint")) $("hint").textContent = e.message;
         await refresh().catch(() => {});
     } finally {
         stopAllSlotHaptics();
@@ -1084,6 +1084,6 @@ refresh().catch(e => {
     }
 
     if ($("hint")) {
-        $("hint")?.textContent = e.message;
+        if ($("hint")) $("hint").textContent = e.message;
     }
 });

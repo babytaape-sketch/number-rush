@@ -330,7 +330,14 @@ function isBeautifulPlate(number) {
 async function animatePlate(finalPlate, rarity, mood = "normal") {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
+    const plate = $("plate");
     if (!main || !region) return;
+
+    if (plate) {
+        plate.classList.remove("spin-reveal", "spin-active");
+        void plate.offsetWidth;
+        plate.classList.add("spin-active");
+    }
 
     const parts = finalPlate.trim().split(/\s+/);
     const mainChars = Array.from(parts[0] || "");
@@ -378,7 +385,6 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     const moodPause = mood === "cinematic" ? 900
         : mood === "showtime" ? 600
         : mood === "suspense" ? 320 : 0;
-    const plate = $("plate");
     const beautiful = isBeautifulPlate(finalPlate);
     if (plate) {
         plate.classList.remove("spin-mood-suspense", "spin-mood-showtime", "spin-mood-cinematic", "spin-beautiful");
@@ -401,12 +407,15 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
 
     setRarityEffect(rarity);
     if (plate) {
+        plate.classList.remove("spin-active");
+        plate.classList.add("spin-reveal");
         plate.classList.remove("spin-mood-suspense", "spin-mood-showtime", "spin-mood-cinematic", "spin-beautiful");
         if (mood === "cinematic" || beautiful) {
             try { tg?.HapticFeedback?.notificationOccurred("success"); } catch (_) {}
         }
     }
-    await sleep(mood === "cinematic" ? 850 : mood === "showtime" ? 650 : 500);
+    await sleep(mood === "cinematic" ? 1050 : mood === "showtime" ? 850 : 650);
+    if (plate) plate.classList.remove("spin-reveal");
 }
 
 // =========================================================

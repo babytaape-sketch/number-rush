@@ -1715,3 +1715,76 @@ nav .tab.active {
         font-size: 12px;
     }
 }
+
+
+/* Серия ежедневных входов */
+.streak-card {
+    margin: 0 0 18px;
+    padding: 16px;
+    border: 1px solid #6c5730;
+    border-radius: 16px;
+    background: linear-gradient(145deg, #302719, #111c2d);
+}
+.streak-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+.streak-heading strong { color: #ffe0a0; font-size: 15px; }
+.streak-heading p {
+    margin: 6px 0 0;
+    color: #b6a98f;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.streak-count {
+    flex: 0 0 auto;
+    padding: 7px 10px;
+    border: 1px solid #8b6c35;
+    border-radius: 10px;
+    color: #ffd36a;
+    font-size: 12px;
+    font-weight: 900;
+}
+.streak-rewards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 14px;
+}
+.streak-day {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 10px 3px;
+    border: 1px solid #3a4658;
+    border-radius: 10px;
+    background: #111d2e;
+}
+.streak-day small { color: #91a2bb; font-size: 9px; font-weight: 800; }
+.streak-day b { color: #dce5f4; font-size: 12px; }
+.streak-day span { font-size: 11px; }
+.streak-day.is-next {
+    border-color: #ffc247;
+    background: rgba(255,194,71,.12);
+}
+.streak-day.is-next b, .streak-day.is-next small { color: #ffd36a; }
+.streak-day.is-earned {
+    border-color: #36d477;
+    background: rgba(54,212,119,.1);
+}
+.streak-day.is-earned b { color: #72e5a0; }
+.streak-claim { margin-top: 14px; }
+.streak-footnote {
+    display: block;
+    margin-top: 9px;
+    color: #91a2bb;
+    font-size: 10px;
+    text-align: center;
+}
+@media (max-width: 430px) {
+    .streak-rewards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .streak-day { padding: 9px 1px; }
+    .streak-day b { font-size: 11px; }
+}

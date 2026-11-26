@@ -140,7 +140,7 @@ def analyze_standard_plate(number, game_rarity=None):
             or (category == "mirror_digits" and digits[0] == digits[2])
             or (category == "round_hundreds" and digits.endswith("00"))
             or (category == "first_decade_001_010" and 1 <= int(digits) <= 10)
-            or (category.endswith("_letters") and category[:-7].upper() == letters)
+            or (category.endswith("_letters") and category[:-8].upper() == letters)
             or (category == "word_KOT" and lexical and "кот" in lexical.get("reading", "").lower())
         )
         if relevant:

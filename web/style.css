@@ -1634,3 +1634,24 @@ footer {
     box-shadow: 0 0 0 2px #111e32, 0 0 10px rgba(255,77,94,.35);
 }
 .tab-badge[hidden] { display: none; }
+
+
+/* Отдельная кнопка бесплатного спина */
+.free-spin-button {
+    display: block;
+    width: min(100%, 720px);
+    margin: 12px auto 0;
+    padding: 14px 18px;
+    border: 1px solid rgba(200,255,0,.45);
+    border-radius: 14px;
+    color: var(--lime);
+    background: rgba(200,255,0,.08);
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: .5px;
+    cursor: pointer;
+}
+.free-spin-button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}

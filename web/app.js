@@ -666,8 +666,7 @@ function renderDailyStreak(data) {
                 ${rewards.map((reward, index) => `
                     <div class="streak-day ${claimed && index + 1 === Number(data.streak) % 7 || claimed && Number(data.streak) % 7 === 0 && index === 6 ? "is-earned" : ""} ${!claimed && index + 1 === nextDay ? "is-next" : ""}">
                         <small>ДЕНЬ ${index + 1}</small>
-                        <b>+${Number(reward).toLocaleString("ru-RU")}</b>
-                        <span>рублей</span>
+                        <b>+${formatRubles(reward)}</b>
                     </div>
                 `).join("")}
             </div>

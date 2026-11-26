@@ -713,7 +713,7 @@ function renderCollection() {
             <div class="item collection-item">
                 <div class="collection-plate-wrap">
                     ${createMiniPlate(p.number, p.rarity)}
-                    <small>${escapeHtml(p.rarity)}</small>
+                    <small>${escapeHtml(rarityNames[p.rarity] || p.rarity)}</small>
                     ${renderTags(p.tags)}
                     ${renderPlateAnalysis(p.analysis)}
                 </div>
@@ -747,7 +747,7 @@ function renderProfile(me) {
         ? '<img class="profile-avatar" src="' + escapeHtml(u.photo_url) + '" alt="">'
         : '<div class="profile-avatar profile-avatar-placeholder">👤</div>';
     const date = me.created_at ? new Date(me.created_at * 1000).toLocaleDateString("ru-RU") : "—";
-    const rarest = me.rarest_plate ? createMiniPlate(me.rarest_plate.number) + '<small>' + escapeHtml(me.rarest_plate.rarity) + '</small>' : '<small>Пока нет номеров</small>';
+    const rarest = me.rarest_plate ? createMiniPlate(me.rarest_plate.number) + '<small>' + escapeHtml(rarityNames[me.rarest_plate.rarity] || me.rarest_plate.rarity) + '</small>' : '<small>Пока нет номеров</small>';
     root.innerHTML = '<div class="profile-heading">' + avatar + '<div><strong>' + escapeHtml(name || "Игрок") + '</strong><small>ID: ' + escapeHtml(me.id) + '</small></div></div>' +
       '<div class="profile-stats">' +
       '<div><small>Баланс</small><b>' + formatRubles(me.coins) + '</b></div>' +

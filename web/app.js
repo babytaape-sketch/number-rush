@@ -18,7 +18,7 @@ document.addEventListener("click", event => {
     const target = event.target?.closest(
         "button, [role='button'], .market-item, .collection-item, .achievement-card, .daily-task-card, .shop-package"
     );
-    if (!target || target.disabled || !tg?.HapticFeedback) return;
+    if (!target || target.disabled || target.id === "spin" || target.id === "free-spin-button" || !tg?.HapticFeedback) return;
 
     try {
         tg.HapticFeedback.impactOccurred("light");
@@ -26,6 +26,55 @@ document.addEventListener("click", event => {
         // Haptic feedback недоступен на некоторых клиентах Telegram.
     }
 });
+
+// Звук прокрутки создаётся программно, без внешних аудиофайлов.
+let spinAudioContext = null;
+let spinSoundTimer = null;
+
+function unlockSpinAudio() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    try {
+        if (!spinAudioContext) spinAudioContext = new AudioContextClass();
+        if (spinAudioContext.state === "suspended") spinAudioContext.resume().catch(() => {});
+    } catch (_) {}
+}
+
+function playSpinTick() {
+    if (!spinAudioContext || spinAudioContext.state !== "running") return;
+    try {
+        const now = spinAudioContext.currentTime;
+        const oscillator = spinAudioContext.createOscillator();
+        const gain = spinAudioContext.createGain();
+        oscillator.type = "square";
+        oscillator.frequency.setValueAtTime(780 + Math.random() * 420, now);
+        oscillator.frequency.exponentialRampToValueAtTime(260, now + 0.035);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.045, now + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+        oscillator.connect(gain);
+        gain.connect(spinAudioContext.destination);
+        oscillator.start(now);
+        oscillator.stop(now + 0.05);
+    } catch (_) {}
+}
+
+function startSpinSound() {
+    stopSpinSound();
+    playSpinTick();
+    spinSoundTimer = setInterval(playSpinTick, 95);
+}
+
+function stopSpinSound() {
+    if (spinSoundTimer) clearInterval(spinSoundTimer);
+    spinSoundTimer = null;
+}
+
+function spinHaptic(useFree) {
+    try {
+        tg?.HapticFeedback?.impactOccurred(useFree ? "medium" : "heavy");
+    } catch (_) {}
+}
 
 const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };
@@ -959,6 +1008,8 @@ async function refresh() {
 // =========================================================
 
 async function runSpin(useFree) {
+    unlockSpinAudio();
+    spinHaptic(useFree);
     const spinButton = $("spin");
     const freeButton = $("free-spin-button");
     spinButton.disabled = true;
@@ -975,7 +1026,9 @@ async function runSpin(useFree) {
         if (coinsElement) coinsElement.textContent = formatRubles(result.coins);
         if (spinsElement) spinsElement.textContent = result.spins;
 
+        startSpinSound();
         await animatePlate(result.plate.number, result.plate.rarity);
+        stopSpinSound();
         await refresh();
 
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
@@ -988,6 +1041,7 @@ async function runSpin(useFree) {
         $("hint").textContent = e.message;
         await refresh().catch(() => {});
     } finally {
+        stopSpinSound();
         spinButton.disabled = false;
         updateFreeSpinTimer();
     }

@@ -415,7 +415,7 @@ function renderMarket() {
                         </div>
                     </div>
                     <div class="market-price">
-                        <strong>${Number(p.price).toLocaleString("ru-RU")} 🪙</strong>
+                        <strong>${Number(p.price).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></strong>
                         <button class="market-action favorite ${favorite ? "is-favorite" : ""}" data-favorite-listing="${p.listing_id}" aria-label="Избранное">${favorite ? "★" : "☆"}</button>
                         ${p.is_mine
                             ? `<button class="market-action cancel" data-cancel-listing="${p.listing_id}">СНЯТЬ</button>`
@@ -470,7 +470,7 @@ function askMarketPrice() {
         overlay.innerHTML = `
             <div class="price-keypad">
                 <div class="price-keypad-title">ЦЕНА НОМЕРА</div>
-                <div class="price-keypad-display">0 <span>🪙</span></div>
+                <div class="price-keypad-display">0 <span><span class="ruble-coin">₽</span></span></div>
                 <div class="price-keypad-grid">
                     ${[1,2,3,4,5,6,7,8,9].map(n => `<button type="button" data-digit="${n}">${n}</button>`).join("")}
                     <button type="button" class="keypad-clear" data-clear="1">⌫</button>
@@ -492,11 +492,11 @@ function askMarketPrice() {
             const digit = event.target.closest("[data-digit]");
             if (digit) {
                 if (value.length < 7) value += digit.dataset.digit;
-                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span>🪙</span>`;
+                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span><span class="ruble-coin">₽</span></span>`;
             }
             if (event.target.closest("[data-clear]")) {
                 value = value.slice(0, -1);
-                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span>🪙</span>`;
+                display.innerHTML = `${Number(value || 0).toLocaleString("ru-RU")} <span><span class="ruble-coin">₽</span></span>`;
             }
             if (event.target.closest("[data-submit]")) {
                 const price = Number(value);
@@ -595,11 +595,11 @@ function renderCollection() {
                     ${renderTags(p.tags)}
                 </div>
                 <strong>#${p.id}</strong>
-                <small class="collection-value">Оценка: ${Number(p.market_value || 0).toLocaleString("ru-RU")} 🪙</small>
+                <small class="collection-value">Оценка: ${Number(p.market_value || 0).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></small>
                 ${p.is_listed
                     ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
                     : `<div class="collection-actions">
-                        <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${Number(p.quick_sell_price || 0).toLocaleString("ru-RU")} 🪙</button>
+                        <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${Number(p.quick_sell_price || 0).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></button>
                         <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>
                       </div>`}
             </div>
@@ -628,7 +628,7 @@ function renderProfile(me) {
     const rarest = me.rarest_plate ? createMiniPlate(me.rarest_plate.number) + '<small>' + escapeHtml(me.rarest_plate.rarity) + '</small>' : '<small>Пока нет номеров</small>';
     root.innerHTML = '<div class="profile-heading">' + avatar + '<div><strong>' + escapeHtml(name || "Игрок") + '</strong><small>ID: ' + escapeHtml(me.id) + '</small></div></div>' +
       '<div class="profile-stats">' +
-      '<div><small>Монеты</small><b>' + Number(me.coins).toLocaleString("ru-RU") + ' 🪙</b></div>' +
+      '<div><small>Баланс</small><b>' + Number(me.coins).toLocaleString("ru-RU") + ' <span class="ruble-coin">₽</span></b></div>' +
       '<div><small>Номеров сейчас</small><b>' + me.collection_count + '</b></div>' +
       '<div><small>Всего спинов</small><b>' + me.total_spins + '</b></div>' +
       '<div><small>Покупки</small><b>' + me.purchases_count + '</b></div>' +
@@ -647,7 +647,7 @@ function renderDailyStreak(data) {
             <div class="streak-heading">
                 <div>
                     <strong>🔥 Серия ежедневных входов</strong>
-                    <p>Заходи каждый день и забирай всё больше монет. Пропуск дня обнулит серию.</p>
+                    <p>Заходи каждый день и получай всё больше рублей. Пропуск дня обнулит серию.</p>
                 </div>
                 <span class="streak-count">${Number(data.streak || 0)} дн.</span>
             </div>
@@ -656,12 +656,12 @@ function renderDailyStreak(data) {
                     <div class="streak-day ${claimed && index + 1 === Number(data.streak) % 7 || claimed && Number(data.streak) % 7 === 0 && index === 6 ? "is-earned" : ""} ${!claimed && index + 1 === nextDay ? "is-next" : ""}">
                         <small>ДЕНЬ ${index + 1}</small>
                         <b>+${Number(reward).toLocaleString("ru-RU")}</b>
-                        <span>🪙</span>
+                        <span><span class="ruble-coin">₽</span></span>
                     </div>
                 `).join("")}
             </div>
             <button class="daily-task-claim streak-claim" id="claim-daily-streak" ${claimed ? "disabled" : ""}>
-                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + Number(data.reward).toLocaleString("ru-RU") + " 🪙"}
+                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + Number(data.reward).toLocaleString("ru-RU") + " <span class="ruble-coin">₽</span>"}
             </button>
             <small class="streak-footnote">${claimed ? "Возвращайся завтра за следующей наградой." : "Награда доступна один раз в день."}</small>
         </div>
@@ -698,7 +698,7 @@ function renderDailyTasks(data) {
                         <strong>${escapeHtml(task.title)}</strong>
                         <p>${escapeHtml(task.description)}</p>
                     </div>
-                    <span class="daily-task-reward">+${Number(task.reward).toLocaleString("ru-RU")} 🪙</span>
+                    <span class="daily-task-reward">+${Number(task.reward).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></span>
                 </div>
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
@@ -750,7 +750,7 @@ function renderAchievements(data) {
                         <strong>🏆 ${escapeHtml(item.title)}</strong>
                         <p>${escapeHtml(item.description)}</p>
                     </div>
-                    <span class="daily-task-reward">+${Number(item.reward).toLocaleString("ru-RU")} 🪙</span>
+                    <span class="daily-task-reward">+${Number(item.reward).toLocaleString("ru-RU")} <span class="ruble-coin">₽</span></span>
                 </div>
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
@@ -785,8 +785,8 @@ function renderShop(packages) {
     if (!root) return;
     root.innerHTML = (packages || []).map(pack => `
         <article class="shop-package">
-            <div class="shop-package-icon">🪙</div>
-            <strong>${Number(pack.coins).toLocaleString("ru-RU")} монет</strong>
+            <div class="shop-package-icon"><span class="ruble-coin">₽</span></div>
+            <strong>${Number(pack.coins).toLocaleString("ru-RU")} рублей</strong>
             <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
             <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ ЗА STARS</button>
         </article>
@@ -803,7 +803,7 @@ async function buyStarPackage(packageId, button) {
         const invoice = await api(`/api/shop/${encodeURIComponent(packageId)}/invoice`, { method: "POST" });
         tg.openInvoice(invoice.invoice_url, async status => {
             if (status === "paid") {
-                alert("Оплата принята! Монеты скоро появятся на балансе.");
+                alert("Оплата принята! Рубли скоро появятся на балансе.");
                 await refresh();
             } else if (status === "failed") {
                 alert("Не удалось провести оплату. Попробуй ещё раз.");

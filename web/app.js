@@ -760,6 +760,48 @@ $("achievement-list")?.addEventListener("click", event => {
     if (button) claimAchievement(button.dataset.claimAchievement, button);
 });
 
+
+function renderShop(packages) {
+    const root = $("shop-packages");
+    if (!root) return;
+    root.innerHTML = (packages || []).map(pack => `
+        <article class="shop-package">
+            <div class="shop-package-icon">🪙</div>
+            <strong>${Number(pack.coins).toLocaleString("ru-RU")} монет</strong>
+            <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
+            <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ ЗА STARS</button>
+        </article>
+    `).join("");
+}
+
+async function buyStarPackage(packageId, button) {
+    if (!tg || typeof tg.openInvoice !== "function") {
+        alert("Покупка Stars доступна только внутри Telegram.");
+        return;
+    }
+    button.disabled = true;
+    try {
+        const invoice = await api(`/api/shop/${encodeURIComponent(packageId)}/invoice`, { method: "POST" });
+        tg.openInvoice(invoice.invoice_url, async status => {
+            if (status === "paid") {
+                alert("Оплата принята! Монеты скоро появятся на балансе.");
+                await refresh();
+            } else if (status === "failed") {
+                alert("Не удалось провести оплату. Попробуй ещё раз.");
+            }
+            button.disabled = false;
+        });
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+    }
+}
+
+$("shop-packages")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-buy-package]");
+    if (button) buyStarPackage(button.dataset.buyPackage, button);
+});
+
 async function refresh() {
     const me = await api("/api/me");
     renderProfile(me);
@@ -802,6 +844,9 @@ async function refresh() {
 
     const achievements = await api("/api/achievements");
     renderAchievements(achievements);
+
+    const shopPackages = await api("/api/shop");
+    renderShop(shopPackages);
 }
 
 // =========================================================
@@ -857,7 +902,7 @@ document.querySelectorAll(".tab").forEach(btn => {
             b.classList.toggle("active", b === btn)
         );
 
-        ["collection", "market", "daily-tasks", "achievements", "profile"].forEach(id => {
+        ["collection", "market", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
             $(id).classList.toggle("hidden", btn.dataset.tab !== id);
         });
     });

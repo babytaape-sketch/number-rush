@@ -829,6 +829,38 @@ $("shop-packages")?.addEventListener("click", event => {
     if (button) buyStarPackage(button.dataset.buyPackage, button);
 });
 
+function renderLeaderboard(data) {
+    const root = $("leaderboard-content");
+    if (!root) return;
+
+    const renderTable = (title, ranking, suffix, icon) => {
+        const mine = ranking?.my_rank;
+        const rows = ranking?.top || [];
+        return `
+            <section class="leaderboard-section">
+                <h3>${icon} ${title}</h3>
+                ${mine ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО</strong><b>№${mine.rank}</b><small>${Number(mine.value).toLocaleString("ru-RU")} ${suffix}</small></div>` : ""}
+                <div class="leaderboard-list">
+                    ${rows.map(player => {
+                        const place = player.rank === 1 ? "🥇" : player.rank === 2 ? "🥈" : player.rank === 3 ? "🥉" : `#${player.rank}`;
+                        return `
+                            <article class="leaderboard-player ${player.is_me ? "is-me" : ""}">
+                                <span class="leaderboard-place">${place}</span>
+                                <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}</strong>
+                                <b class="leaderboard-score">${Number(player.value).toLocaleString("ru-RU")} <small>${suffix}</small></b>
+                            </article>
+                        `;
+                    }).join("") || '<p class="daily-tasks-note">Пока здесь никого нет.</p>'}
+                </div>
+            </section>
+        `;
+    };
+
+    root.innerHTML =
+        renderTable("По балансу", data.money, "руб.", "💰") +
+        renderTable("По прокруткам", data.spins, "спинов", "🎰");
+}
+
 async function refresh() {
     const me = await api("/api/me");
     renderProfile(me);
@@ -861,6 +893,9 @@ async function refresh() {
     // РЫНОК
     marketCache = await api("/api/market");
     renderMarket();
+
+    const leaderboard = await api("/api/leaderboard");
+    renderLeaderboard(leaderboard);
 
     const dailyStreak = await api("/api/daily-streak");
     renderDailyStreak(dailyStreak);
@@ -928,7 +963,7 @@ document.querySelectorAll(".tab").forEach(btn => {
             b.classList.toggle("active", b === btn)
         );
 
-        ["collection", "market", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
+        ["collection", "market", "leaderboard", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
             $(id).classList.toggle("hidden", btn.dataset.tab !== id);
         });
     });

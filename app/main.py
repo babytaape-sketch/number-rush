@@ -42,8 +42,7 @@ RARITIES = [
     ("Uncommon", 22.0, 25),
     ("Rare", 9.0, 60),
     ("Epic", 3.0, 150),
-    ("Legendary", 0.8, 500),
-    ("Mythic", 0.2, 2000),
+    ("Legendary", 1.0, 500),
 ]
 
 RARITY_NAMES = {
@@ -52,7 +51,6 @@ RARITY_NAMES = {
     "Rare": "Редкая",
     "Epic": "Эпическая",
     "Legendary": "Легендарная",
-    "Mythic": "Мифическая",
 }
 
 RARITY_ORDER = [
@@ -61,7 +59,6 @@ RARITY_ORDER = [
     "Rare",
     "Epic",
     "Legendary",
-    "Mythic",
 ]
 
 RARITY_REWARDS = {
@@ -225,14 +222,15 @@ STAR_PACKAGES = {
     "coins_12000": {"type": "coins", "coins": 12000, "stars": 50, "title": "12 000 рублей"},
     "coins_35000": {"type": "coins", "coins": 35000, "stars": 100, "title": "35 000 рублей"},
     "plate_legendary": {"type": "plate", "coins": 0, "rarity": "Legendary", "stars": 300, "title": "Легендарный номер"},
-    "plate_mythic": {"type": "plate", "coins": 0, "rarity": "Mythic", "stars": 500, "title": "Мифический номер"},
+    # Legacy package retained for already-issued invoices; hidden from the shop listing.
+    "plate_mythic": {"type": "plate", "coins": 0, "rarity": "Legendary", "stars": 500, "title": "Легендарный номер"},
 }
 
 
 @app.get("/api/shop")
 def get_shop(authorization: str | None = Header(default=None)):
     current_user(authorization)
-    return [{"id": key, **value} for key, value in STAR_PACKAGES.items()]
+    return [{"id": key, **value} for key, value in STAR_PACKAGES.items() if key != "plate_mythic"]
 
 
 @app.post("/api/shop/{package_id}/invoice")
@@ -827,7 +825,7 @@ def classify_plate(letters, digits, region_code):
     special = is_special_series(letters, region_code)
 
     if special and digits in BEAUTIFUL_DIGITS:
-        return "Mythic"
+        return "Legendary"
 
     if special:
         return "Legendary"
@@ -944,7 +942,7 @@ def calculate_plate_value(number, rarity):
     """Детерминированная оценка с учётом редкости и особенностей номера."""
     base_values = {
         "Common": 90, "Uncommon": 180, "Rare": 360,
-        "Epic": 750, "Legendary": 1600, "Mythic": 3500
+        "Epic": 750, "Legendary": 1600, "Mythic": 1600
     }
     parts = str(number).strip().split()
     if len(parts) != 2 or len(parts[0]) != 6:
@@ -1000,6 +998,8 @@ def calculate_quick_sell_price(number, rarity):
 # =========================================================
 
 def generate_plate_details(forced_rarity=None):
+    if forced_rarity == "Mythic":
+        forced_rarity = "Legendary"
     rarity = forced_rarity or random.choices(
         [item[0] for item in RARITIES],
         weights=[item[1] for item in RARITIES],
@@ -1045,7 +1045,7 @@ def generate_plate_details(forced_rarity=None):
     elif rarity == "Legendary":
         if random.random() < 0.65:
             # Специальная серия с НЕмифическими цифрами остаётся Legendary.
-            # Красивые комбинации в специальной серии классифицируются как Mythic.
+            # Красивые комбинации в специальной серии тоже относятся к Legendary.
             letters, region_code, region_name = pick_special_series()
             digits = random_digits()
             while digits in BEAUTIFUL_DIGITS:
@@ -1054,16 +1054,11 @@ def generate_plate_details(forced_rarity=None):
             letters = random_letters(ordinary=True)
             digits = random.choice(["000", "777"])
 
-    else:  # Mythic
+    else:  # Legacy Mythic requests are normalized to Legendary
         letters, region_code, region_name = pick_special_series()
-        digits = random.choice([
-            "000", "001", "007", "100",
-            "111", "222", "333", "444",
-            "555", "666", "700", "777",
-            "800", "888", "900", "999",
-            "123", "234", "345", "456",
-            "567", "678", "789"
-        ])
+        digits = random_digits()
+        while digits in BEAUTIFUL_DIGITS:
+            digits = random_digits()
 
     # Дополнительная проверка: номер должен соответствовать редкости.
     actual_rarity = classify_plate(letters, digits, region_code)
@@ -1126,7 +1121,7 @@ def me(authorization: str | None = Header(default=None)):
         ).fetchone()["n"]
         rarest = con.execute(
             """SELECT number, rarity FROM plates WHERE owner_id=?
-            ORDER BY CASE rarity WHEN 'Mythic' THEN 6
+            ORDER BY CASE rarity WHEN 'Mythic' THEN 5
             WHEN 'Legendary' THEN 5 WHEN 'Epic' THEN 4
             WHEN 'Rare' THEN 3 WHEN 'Uncommon' THEN 2 ELSE 1 END DESC,
             id DESC LIMIT 1""", (uid,)

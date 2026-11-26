@@ -665,6 +665,58 @@ $("daily-task-list")?.addEventListener("click", event => {
     if (button) claimDailyTask(button.dataset.claimTask, button);
 });
 
+
+function renderAchievements(data) {
+    const root = $("achievement-list");
+    if (!root) return;
+
+    const achievements = data.achievements || [];
+    const readyCount = achievements.filter(item => item.completed && !item.claimed).length;
+    const badge = $("achievement-badge");
+    if (badge) {
+        badge.textContent = readyCount > 9 ? "9+" : String(readyCount);
+        badge.hidden = readyCount === 0;
+    }
+
+    root.innerHTML = achievements.map(item => {
+        const progress = Math.min(Number(item.progress || 0), Number(item.target || 1));
+        const percent = Math.round(progress / Math.max(1, Number(item.target)) * 100);
+        return `
+            <article class="daily-task-card achievement-card ${item.completed ? "is-completed" : ""} ${item.claimed ? "is-claimed" : ""}">
+                <div class="daily-task-top">
+                    <div>
+                        <strong>🏆 ${escapeHtml(item.title)}</strong>
+                        <p>${escapeHtml(item.description)}</p>
+                    </div>
+                    <span class="daily-task-reward">+${Number(item.reward).toLocaleString("ru-RU")} 🪙</span>
+                </div>
+                <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
+                <div class="daily-task-bottom">
+                    <small>${progress.toLocaleString("ru-RU")} / ${Number(item.target).toLocaleString("ru-RU")}</small>
+                    <b>${item.claimed ? "НАГРАДА ПОЛУЧЕНА" : item.completed ? "ГОТОВО К ПОЛУЧЕНИЮ" : "В ПРОЦЕССЕ"}</b>
+                </div>
+                ${item.completed && !item.claimed ? `<button class="daily-task-claim" data-claim-achievement="${escapeHtml(item.key)}">ЗАБРАТЬ НАГРАДУ</button>` : ""}
+            </article>
+        `;
+    }).join("");
+}
+
+async function claimAchievement(key, button) {
+    if (button) button.disabled = true;
+    try {
+        await api(`/api/achievements/${encodeURIComponent(key)}/claim`, { method: "POST" });
+        await refresh();
+    } catch (e) {
+        alert(e.message);
+        if (button) button.disabled = false;
+    }
+}
+
+$("achievement-list")?.addEventListener("click", event => {
+    const button = event.target.closest("[data-claim-achievement]");
+    if (button) claimAchievement(button.dataset.claimAchievement, button);
+});
+
 async function refresh() {
     const me = await api("/api/me");
     renderProfile(me);
@@ -701,6 +753,9 @@ async function refresh() {
 
     const dailyTasks = await api("/api/daily-tasks");
     renderDailyTasks(dailyTasks);
+
+    const achievements = await api("/api/achievements");
+    renderAchievements(achievements);
 }
 
 // =========================================================
@@ -756,7 +811,7 @@ document.querySelectorAll(".tab").forEach(btn => {
             b.classList.toggle("active", b === btn)
         );
 
-        ["collection", "market", "daily-tasks", "profile"].forEach(id => {
+        ["collection", "market", "daily-tasks", "achievements", "profile"].forEach(id => {
             $(id).classList.toggle("hidden", btn.dataset.tab !== id);
         });
     });

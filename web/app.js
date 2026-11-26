@@ -144,35 +144,54 @@ function setRarityEffect(rarity) {
 
 function renderPlateAnalysis(analysis) {
     if (!analysis || !analysis.supported) return "";
-    const list = values => Array.isArray(values) && values.length
-        ? values.map(value => "<li>" + escapeHtml(value) + "</li>").join("")
-        : "<li>Нет отмеченных признаков</li>";
-    const lexical = analysis.lexical
-        ? `<p><b>Буквенное чтение:</b> ${escapeHtml(analysis.lexical.reading)} — ${escapeHtml(analysis.lexical.meaning || "")}
-           <small>Уверенность: ${escapeHtml(analysis.lexical.confidence || "не указана")}</small></p>`
-        : "";
-    const history = (analysis.historical_associations || []).map(item =>
-        `<p><b>Историческая ассоциация:</b> ${escapeHtml(item.association)}
-         <small>Подтверждение: ${escapeHtml(item.evidence_level)}. ${escapeHtml(item.note || "")}
-         ${item.source_url ? `<a href="${escapeHtml(item.source_url)}" target="_blank" rel="noopener">Источник</a>` : ""}</small></p>`
-    ).join("");
-    const market = (analysis.market_evidence || []).map(item =>
-        `<p><b>Рыночное наблюдение:</b> ${escapeHtml(item.category)} · ${escapeHtml(item.date)}
-         <small>Выборка: ${escapeHtml(item.sample_size)}. ${escapeHtml(item.caveat || "")}
-         ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener">Источник</a>` : ""}</small></p>`
-    ).join("");
+
+    const items = [];
+    const add = (label, values) => {
+        if (!Array.isArray(values) || !values.length) return;
+        const unique = [...new Set(values.map(value => String(value || "").trim()).filter(Boolean))];
+        if (unique.length) items.push(
+            `<p><b>${escapeHtml(label)}:</b> ${unique.map(escapeHtml).join(" · ")}</p>`
+        );
+    };
+
+    const regionName = String(analysis.region || "").trim();
+    const regionCode = String(analysis.region_code || "").trim();
+    if (regionName || regionCode) {
+        items.push(`<p><b>Регион:</b> ${escapeHtml(regionName || regionCode)}${regionName && regionCode ? ` (${escapeHtml(regionCode)})` : ""}</p>`);
+    }
+
+    add("Цифры", analysis.digit_patterns);
+    add("Буквы", analysis.letter_patterns);
+
+    if (analysis.lexical && analysis.lexical.reading) {
+        const meaning = String(analysis.lexical.meaning || "").trim();
+        items.push(`<p><b>Читается:</b> ${escapeHtml(analysis.lexical.reading)}${meaning ? ` — ${escapeHtml(meaning)}` : ""}</p>`);
+    }
+
+    const history = (analysis.historical_associations || [])
+        .map(item => String(item.association || "").trim())
+        .filter(Boolean);
+    add("Серия", history);
+
+    const marketNames = {
+        three_identical_digits: "Три одинаковые цифры",
+        first_decade: "Число из первой десятки",
+        mirror_digits: "Зеркальные цифры",
+        round_hundreds: "Круглая сотня",
+        777: "Комбинация 777",
+        007: "Комбинация 007"
+    };
+    const market = (analysis.market_evidence || [])
+        .map(item => marketNames[item.category] || "")
+        .filter(Boolean);
+    add("Особые комбинации", market);
+
+    if (!items.length) return "";
     return `
         <details class="plate-analysis">
-            <summary>Подробный разбор номера</summary>
+            <summary>Описание номера</summary>
             <div class="plate-analysis-content">
-                <p><b>Регион:</b> ${escapeHtml(analysis.region || "Нет в текущем справочном перечне")} (${escapeHtml(analysis.region_code)})
-                   <small>Статус кода: ${escapeHtml(analysis.region_code_status || "")}</small></p>
-                <p><b>Цифровые сочетания</b></p><ul>${list(analysis.digit_patterns)}</ul>
-                <p><b>Буквенные сочетания</b></p><ul>${list(analysis.letter_patterns)}</ul>
-                ${lexical}
-                ${history}
-                ${market}
-                <small class="analysis-caveat">Это справочный анализ, а не подтверждение фактической выдачи номера или автоматическое изменение его игровой редкости. Рыночные сведения относятся к объявлениям.</small>
+                ${items.join("")}
             </div>
         </details>
     `;

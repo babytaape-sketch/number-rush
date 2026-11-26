@@ -155,6 +155,18 @@ with db() as con:
             "INTEGER NOT NULL DEFAULT 0"
         )
 
+    if "daily_streak" not in columns:
+        con.execute(
+            "ALTER TABLE users ADD COLUMN daily_streak "
+            "INTEGER NOT NULL DEFAULT 0"
+        )
+
+    if "last_daily_claim_date" not in columns:
+        con.execute(
+            "ALTER TABLE users ADD COLUMN last_daily_claim_date "
+            "TEXT NOT NULL DEFAULT ''"
+        )
+
     con.execute("""CREATE TABLE IF NOT EXISTS app_migrations (migration_id TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)""")
     if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", ("backfill_rare_plates_counter",)).fetchone():
         con.execute(
@@ -183,6 +195,79 @@ DAILY_TASKS = [
 
 def daily_task_date(now=None):
     return time.strftime("%Y-%m-%d", time.gmtime(now or time.time()))
+
+
+DAILY_STREAK_REWARDS = [100, 150, 200, 250, 300, 350, 500]
+
+
+@app.get("/api/daily-streak")
+def get_daily_streak(authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    today = daily_task_date()
+    yesterday = time.strftime(
+        "%Y-%m-%d",
+        time.gmtime(time.time() - 86400)
+    )
+
+    with db() as con:
+        row = con.execute(
+            "SELECT daily_streak, last_daily_claim_date FROM users WHERE user_id=?",
+            (user["user_id"],)
+        ).fetchone()
+
+    last_date = row["last_daily_claim_date"] or ""
+    streak = int(row["daily_streak"])
+    if last_date not in (today, yesterday):
+        streak = 0
+
+    next_day = (streak % 7) + 1
+    return {
+        "streak": streak,
+        "next_day": next_day,
+        "reward": DAILY_STREAK_REWARDS[next_day - 1],
+        "claimed_today": last_date == today,
+        "rewards": DAILY_STREAK_REWARDS,
+    }
+
+
+@app.post("/api/daily-streak/claim")
+def claim_daily_streak(authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    today = daily_task_date()
+    yesterday = time.strftime(
+        "%Y-%m-%d",
+        time.gmtime(time.time() - 86400)
+    )
+
+    with db() as con:
+        con.execute("BEGIN IMMEDIATE")
+        row = con.execute(
+            "SELECT daily_streak, last_daily_claim_date FROM users WHERE user_id=?",
+            (user["user_id"],)
+        ).fetchone()
+
+        last_date = row["last_daily_claim_date"] or ""
+        if last_date == today:
+            con.rollback()
+            raise HTTPException(400, "Ежедневная награда уже получена.")
+
+        streak = int(row["daily_streak"]) + 1 if last_date == yesterday else 1
+        reward = DAILY_STREAK_REWARDS[(streak - 1) % 7]
+
+        con.execute(
+            """UPDATE users
+            SET daily_streak=?, last_daily_claim_date=?, coins=coins+?
+            WHERE user_id=?""",
+            (streak, today, reward, user["user_id"])
+        )
+        con.commit()
+
+    return {
+        "ok": True,
+        "streak": streak,
+        "reward": reward,
+        "next_day": (streak % 7) + 1,
+    }
 
 
 def update_daily_task(con, uid, task_key, now=None):

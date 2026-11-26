@@ -1853,3 +1853,9 @@ nav .tab.active {
         max-width: 255px !important;
     }
 }
+
+
+/* Отключаем случайное двойное нажатие для масштабирования в Mini App */
+html, body, button, a, input, select, textarea {
+    touch-action: manipulation;
+}

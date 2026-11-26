@@ -2462,3 +2462,12 @@ header { margin-bottom: 8px; }
     -webkit-backdrop-filter: blur(10px);
 }
 .spin-cost-notice[hidden] { display: none !important; }
+
+
+/* Final, high-specificity rarity outlines for collection plates */
+#collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Common"] { border: 3px solid #b9c3d0 !important; box-shadow: 0 0 0 1px #555, 0 0 10px rgba(185,195,208,.5), inset 0 1px 3px #fff !important; }
+#collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Uncommon"] { border: 3px solid #36d477 !important; box-shadow: 0 0 0 1px #174c32, 0 0 12px rgba(54,212,119,.7), inset 0 1px 3px #fff !important; }
+#collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Rare"] { border: 3px solid #3294ff !important; box-shadow: 0 0 0 1px #17416c, 0 0 13px rgba(50,148,255,.75), inset 0 1px 3px #fff !important; }
+#collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Epic"] { border: 3px solid #ae63ff !important; box-shadow: 0 0 0 1px #51277a, 0 0 14px rgba(174,99,255,.78), inset 0 1px 3px #fff !important; }
+#collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Legendary"] { border: 3px solid #ffc247 !important; box-shadow: 0 0 0 1px #79551b, 0 0 15px rgba(255,194,71,.82), inset 0 1px 3px #fff !important; }
+#collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Mythic"] { border: 3px solid #ff563f !important; box-shadow: 0 0 0 1px #792a20, 0 0 16px rgba(255,86,63,.85), inset 0 1px 3px #fff !important; }

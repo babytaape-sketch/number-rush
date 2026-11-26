@@ -38,11 +38,11 @@ app = FastAPI(title="NUMBER RUSH API")
 # =========================================================
 
 RARITIES = [
-    ("Common", 65.0, 10),
-    ("Uncommon", 22.0, 25),
-    ("Rare", 9.0, 60),
-    ("Epic", 3.0, 150),
-    ("Legendary", 1.0, 500),
+    ("Common", 65.0, 100),
+    ("Uncommon", 22.0, 250),
+    ("Rare", 9.0, 600),
+    ("Epic", 3.0, 1500),
+    ("Legendary", 1.0, 5000),
 ]
 
 RARITY_NAMES = {
@@ -202,11 +202,18 @@ with db() as con:
         con.execute("UPDATE users SET spins=0")
         con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", ("remove_initial_five_spins", int(time.time())))
 
+    # Preserve purchasing power after the economy rebalance, exactly once.
+    economy_migration = "economy_rebalance_x10_2026_11"
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", (economy_migration,)).fetchone():
+        con.execute("UPDATE users SET coins=coins*10")
+        con.execute("UPDATE listings SET price=price*10")
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (economy_migration, int(time.time())))
+
 
 DAILY_TASKS = [
-    {"key": "spin_5", "title": "Сделать 5 прокруток", "description": "Используй бесплатные или платные прокрутки", "target": 5, "reward": 150},
-    {"key": "sell_1", "title": "Продать 1 номер", "description": "Продай номер через рынок или быструю продажу", "target": 1, "reward": 100},
-    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи номер редкости Rare или выше", "target": 1, "reward": 250},
+    {"key": "spin_5", "title": "Сделать 5 прокруток", "description": "Используй бесплатные или платные прокрутки", "target": 5, "reward": 1500},
+    {"key": "sell_1", "title": "Продать 1 номер", "description": "Продай номер через рынок или быструю продажу", "target": 1, "reward": 1000},
+    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи номер редкости Rare или выше", "target": 1, "reward": 2500},
 ]
 
 
@@ -214,13 +221,13 @@ def daily_task_date(now=None):
     return time.strftime("%Y-%m-%d", time.gmtime(now or time.time()))
 
 
-DAILY_STREAK_REWARDS = [100, 150, 200, 250, 300, 350, 500]
+DAILY_STREAK_REWARDS = [1000, 1500, 2000, 2500, 3000, 3500, 5000]
 
 
 STAR_PACKAGES = {
-    "coins_5000": {"type": "coins", "coins": 5000, "stars": 25, "title": "5 000 рублей"},
-    "coins_12000": {"type": "coins", "coins": 12000, "stars": 50, "title": "12 000 рублей"},
-    "coins_35000": {"type": "coins", "coins": 35000, "stars": 100, "title": "35 000 рублей"},
+    "coins_5000": {"type": "coins", "coins": 50000, "stars": 25, "title": "50 000 рублей"},
+    "coins_12000": {"type": "coins", "coins": 120000, "stars": 50, "title": "120 000 рублей"},
+    "coins_35000": {"type": "coins", "coins": 350000, "stars": 100, "title": "350 000 рублей"},
     "plate_legendary": {"type": "plate", "coins": 0, "rarity": "Legendary", "stars": 300, "title": "Легендарный номер"},
     # Legacy package retained for already-issued invoices; hidden from the shop listing.
     "plate_mythic": {"type": "plate", "coins": 0, "rarity": "Legendary", "stars": 500, "title": "Легендарный номер"},
@@ -244,6 +251,7 @@ def create_star_invoice(package_id: str, authorization: str | None = Header(defa
     payload = json.dumps({
         "user_id": str(user["user_id"]),
         "package_id": package_id,
+        "coins": package["coins"],
         "nonce": secrets.token_urlsafe(12)
     }, separators=(",", ":"))
     try:
@@ -442,11 +450,11 @@ def claim_daily_task(task_key: str, authorization: str | None = Header(default=N
 # =========================================================
 
 ACHIEVEMENTS = [
-    {"key": "collect_10", "title": "Первая коллекция", "description": "Получи 10 номеров в генераторе", "target": 10, "reward": 250, "stat": "total_spins"},
-    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров Rare или выше", "target": 5, "reward": 500, "stat": "rare_plates"},
-    {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 750, "stat": "total_spins"},
-    {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 1000, "stat": "sales"},
-    {"key": "coins_10000", "title": "Богач", "description": "Накопи 10 000 рублей одновременно", "target": 10000, "reward": 1500, "stat": "coins"},
+    {"key": "collect_10", "title": "Первая коллекция", "description": "Получи 10 номеров в генераторе", "target": 10, "reward": 2500, "stat": "total_spins"},
+    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров Rare или выше", "target": 5, "reward": 5000, "stat": "rare_plates"},
+    {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 7500, "stat": "total_spins"},
+    {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 10000, "stat": "sales"},
+    {"key": "coins_10000", "title": "Богач", "description": "Накопи 100 000 рублей одновременно", "target": 100000, "reward": 15000, "stat": "coins"},
 ]
 
 
@@ -617,7 +625,7 @@ def current_user(authorization: str | None):
             (user_id, username, coins, spins, created_at)
             VALUES (?, ?, ?, ?, ?)
             """,
-            (uid, username, 100, 0, int(time.time()))
+            (uid, username, 1000, 0, int(time.time()))
         )
 
         con.execute(
@@ -941,8 +949,8 @@ def plate_analysis(number: str, authorization: str | None = Header(default=None)
 def calculate_plate_value(number, rarity):
     """Детерминированная оценка с учётом редкости и особенностей номера."""
     base_values = {
-        "Common": 90, "Uncommon": 180, "Rare": 360,
-        "Epic": 750, "Legendary": 1600, "Mythic": 1600
+        "Common": 900, "Uncommon": 1800, "Rare": 3600,
+        "Epic": 7500, "Legendary": 16000, "Mythic": 16000
     }
     parts = str(number).strip().split()
     if len(parts) != 2 or len(parts[0]) != 6:
@@ -986,7 +994,7 @@ def calculate_plate_value(number, rarity):
         value *= 1.2
 
     value *= 1 + min(len(tags), 5) * 0.08
-    return max(10, int(round(value / 5) * 5))
+    return max(100, int(round(value / 50) * 50))
 
 
 def calculate_quick_sell_price(number, rarity):
@@ -1078,7 +1086,7 @@ def generate_plate_details(forced_rarity=None):
         "rarity_ru": RARITY_NAMES[rarity],
         "points": len(tags),
         "tags": tags,
-        "price": random.randint(70, 140),
+        "price": random.randint(700, 1400),
         "region": region_code,
         "region_name": region_name,
     }
@@ -1238,11 +1246,11 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
                 (uid,)
             )
 
-        elif row["coins"] >= 100:
+        elif row["coins"] >= 1000:
             used_paid_spin = True
 
             con.execute(
-                "UPDATE users SET coins=coins-100 WHERE user_id=?",
+                "UPDATE users SET coins=coins-1000 WHERE user_id=?",
                 (uid,)
             )
 
@@ -1250,7 +1258,7 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
             con.rollback()
             raise HTTPException(
                 400,
-                "1 спин - 100₽"
+                "1 спин - 1 000₽"
             )
 
         plate_data = generate_plate_details()
@@ -1741,9 +1749,10 @@ def telegram_polling():
                                 )
                                 if cur.rowcount:
                                     if package["type"] == "coins":
+                                        credited_coins = int(payload.get("coins", package["coins"]))
                                         con.execute("UPDATE users SET coins=coins+? WHERE user_id=?",
-                                                    (package["coins"], uid))
-                                        success_text = f"Оплата прошла успешно! Начислено {package['coins']:,} рублей.".replace(",", " ")
+                                                    (credited_coins, uid))
+                                        success_text = f"Оплата прошла успешно! Начислено {credited_coins:,} рублей.".replace(",", " ")
                                     else:
                                         plate = generate_plate_details(package["rarity"])
                                         con.execute(

@@ -110,7 +110,7 @@ def _structural_tier(probability):
 
 
 def _labels(raw, mapping):
-    tags = [tag for tag in (raw or "").split("|") if tag and tag not in {"no_structural_pattern", "market_reference_example"}]
+    tags = [tag for tag in (raw or "").split("|") if tag and tag not in {"no_structural_pattern", "market_reference_example", "round_ten"}]
 
     # A specific pair/triple description already explains the generic "repeated digit" tag.
     # Keep only the most informative description instead of listing the same feature twice.

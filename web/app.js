@@ -12,6 +12,20 @@ if (tg) {
     tg.setBackgroundColor("#080b10");
 }
 
+// Лёгкий тактильный отклик при нажатии на элементы интерфейса.
+document.addEventListener("pointerdown", event => {
+    const target = event.target?.closest(
+        "button, .tab, [role='button'], .market-item, .collection-item, .achievement-card, .daily-task-card, .shop-package"
+    );
+    if (!target || target.disabled || !tg?.HapticFeedback) return;
+
+    try {
+        tg.HapticFeedback.impactOccurred("light");
+    } catch (_) {
+        // Haptic feedback недоступен на некоторых клиентах Telegram.
+    }
+}, { passive: true });
+
 const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };
 

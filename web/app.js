@@ -661,7 +661,7 @@ function renderDailyStreak(data) {
                 `).join("")}
             </div>
             <button class="daily-task-claim streak-claim" id="claim-daily-streak" ${claimed ? "disabled" : ""}>
-                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + Number(data.reward).toLocaleString("ru-RU") + " <span class="ruble-coin">₽</span>"}
+                ${claimed ? "НАГРАДА СЕГОДНЯ ПОЛУЧЕНА" : "ЗАБРАТЬ +" + Number(data.reward).toLocaleString("ru-RU") + ' <span class="ruble-coin">₽</span>'}
             </button>
             <small class="streak-footnote">${claimed ? "Возвращайся завтра за следующей наградой." : "Награда доступна один раз в день."}</small>
         </div>

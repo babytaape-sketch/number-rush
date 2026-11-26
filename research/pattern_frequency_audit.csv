@@ -1,0 +1,25 @@
+dimension,pattern,count,denominator,share_percent,exact_fraction
+digits,triple_same,10,1000,1.000000,10/1000
+digits,first_decade,9,1000,0.900000,9/1000
+digits,ascending_run,8,1000,0.800000,8/1000
+digits,descending_run,8,1000,0.800000,8/1000
+digits,palindrome_outer,100,1000,10.000000,100/1000
+digits,pair_first_two,100,1000,10.000000,100/1000
+digits,pair_last_two,100,1000,10.000000,100/1000
+digits,pair_outer,90,1000,9.000000,90/1000
+digits,round_hundred,10,1000,1.000000,10/1000
+digits,round_ten,100,1000,10.000000,100/1000
+digits,repeated_digit,270,1000,27.000000,270/1000
+digits,all_zero,1,1000,0.100000,1/1000
+digits,no_structural_pattern,633,1000,63.300000,633/1000
+letters,triple_same,12,1728,0.694444,12/1728
+letters,mirror_outer,132,1728,7.638889,132/1728
+letters,palindrome_outer,144,1728,8.333333,144/1728
+letters,pair_first_two,144,1728,8.333333,144/1728
+letters,pair_last_two,144,1728,8.333333,144/1728
+letters,no_structural_pattern,1320,1728,76.388889,1320/1728
+digits_intersection,triple_same + first_decade,0,1000,0.000000,0/1000
+digits_intersection,triple_same + palindrome_outer,10,1000,1.000000,10/1000
+digits_intersection,triple_same + round_hundred,1,1000,0.100000,1/1000
+letters_intersection,triple_same + palindrome_outer,12,1728,0.694444,12/1728
+letters_intersection,mirror_outer (A≠B),132,1728,7.638889,132/1728

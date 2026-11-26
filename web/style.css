@@ -1668,3 +1668,27 @@ footer {
 .achievement-card .daily-task-progress span {
     background: linear-gradient(90deg, #8b6cff, #ffc247);
 }
+
+
+/* Навигация: все вкладки остаются внутри панели */
+nav {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    min-width: 0;
+}
+nav .tab {
+    min-width: 0;
+    padding: 12px 4px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: clamp(10px, 1.15vw, 14px);
+}
+@media (max-width: 650px) {
+    nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    nav .tab {
+        padding: 11px 3px;
+        font-size: 11px;
+    }
+}

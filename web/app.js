@@ -986,7 +986,6 @@ async function runSpin(useFree) {
         if ($("hint")) $("hint").textContent = e.message;
         await refresh().catch(() => {});
     } finally {
-        stopAllSlotHaptics();
         updateSpinAvailability();
         updateFreeSpinTimer();
     }

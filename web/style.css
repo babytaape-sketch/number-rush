@@ -2512,3 +2512,18 @@ header { margin-bottom: 8px; }
     45% { filter: drop-shadow(0 0 22px rgba(255,215,100,.95)) brightness(1.16); transform: scale(1.025); }
     100% { filter: none; transform: scale(1); }
 }
+
+
+/* Справочный разбор комбинаций российского номера */
+.plate-analysis-host { width: min(100%, 760px); margin: 0 auto 14px; text-align: left; }
+.plate-analysis { width: 100%; color: #dbe5f5; border: 1px solid #2b405e; border-radius: 12px; background: rgba(10, 20, 36, .88); font-size: 12px; }
+.plate-analysis summary { padding: 10px 13px; color: var(--lime); font-weight: 800; cursor: pointer; list-style-position: inside; }
+.plate-analysis-content { padding: 0 13px 12px; line-height: 1.45; }
+.plate-analysis-content p { margin: 8px 0 4px; }
+.plate-analysis-content ul { margin: 4px 0 8px; padding-left: 20px; }
+.plate-analysis-content small { display: block; margin-top: 3px; color: #9eacc2; font-size: 10px; font-weight: 500; }
+.plate-analysis-content a { color: #b8d8ff; text-decoration: underline; }
+.analysis-caveat { margin-top: 10px !important; padding-top: 8px; border-top: 1px solid #2b405e; }
+.collection-item .plate-analysis, .market-item .plate-analysis { margin-top: 5px; }
+.collection-item .plate-analysis summary, .market-item .plate-analysis summary { padding: 7px 9px; font-size: 10px; }
+.collection-item .plate-analysis-content, .market-item .plate-analysis-content { padding: 0 9px 9px; font-size: 10px; }

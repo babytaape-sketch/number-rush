@@ -838,7 +838,7 @@ def classify_plate(letters, digits, region_code):
     if special:
         return "Legendary"
 
-    if digits in ("000", "777"):
+    if digits == "000":
         return "Legendary"
 
     if (
@@ -859,6 +859,29 @@ def classify_plate(letters, digits, region_code):
         return "Uncommon"
 
     return "Common"
+
+
+# Reclassify existing non-special 777 plates: triple digits are Epic, not Legendary.
+with db() as con:
+    migration_id = "reclassify_non_special_777_as_epic_2026_11"
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", (migration_id,)).fetchone():
+        rows = con.execute("SELECT id, owner_id, number FROM plates WHERE rarity='Legendary'").fetchall()
+        for row in rows:
+            parts = str(row["number"] or "").strip().split()
+            if len(parts) != 2 or len(parts[0]) != 6:
+                continue
+            body, region_code = parts
+            letters, digits = body[0] + body[4:6], body[1:4]
+            if digits == "777" and not is_special_series(letters, region_code):
+                con.execute("UPDATE plates SET rarity='Epic' WHERE id=?", (row["id"],))
+        con.execute(
+            """UPDATE users SET rare_plates=(
+                SELECT COUNT(*) FROM plates
+                WHERE plates.owner_id=users.user_id
+                AND plates.rarity IN ('Rare','Epic','Legendary','Mythic')
+            )"""
+        )
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (migration_id, int(time.time())))
 
 
 def get_plate_tags(letters, digits, region_code=None):

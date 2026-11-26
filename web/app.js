@@ -4,6 +4,10 @@ const tg = window.Telegram?.WebApp;
 if (tg) {
     tg.ready();
     tg.expand();
+    // Не позволяем вертикальному свайпу случайно сворачивать Mini App.
+    if (typeof tg.disableVerticalSwipes === "function") {
+        tg.disableVerticalSwipes();
+    }
     tg.setHeaderColor("#080b10");
     tg.setBackgroundColor("#080b10");
 }

@@ -866,8 +866,8 @@ function renderShop(packages) {
     platesRoot.innerHTML = platePackages.map(pack => {
         const mythic = pack.rarity === "Mythic";
         const title = mythic ? "МИФИЧЕСКИЙ" : "ЛЕГЕНДАРНЫЙ";
-        const plateLetters = mythic ? "В888ВВ" : "А777АА";
-        const region = "77";
+        const plateLetters = mythic ? "В888ВВ" : "А777МР";
+        const region = mythic ? "88" : "77";
         return `
             <article class="shop-plate-card ${mythic ? "is-mythic" : "is-legendary"}">
                 <div class="shop-plate-copy">

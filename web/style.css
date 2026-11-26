@@ -1877,3 +1877,18 @@ html, body, button, a, input, select, textarea {
     vertical-align: -0.06em;
     box-sizing: border-box;
 }
+
+
+/* Бесплатный спин: зелёная кнопка с таймером внутри */
+.free-spin-button {
+    color: #07120a;
+    border-color: #35d46a;
+    background: linear-gradient(110deg, #35d46a, #8cf0a5);
+    box-shadow: 0 6px 20px rgba(53, 212, 106, .2);
+}
+.free-spin-button:disabled {
+    color: #d9ffe3;
+    background: linear-gradient(110deg, #237a43, #319957);
+    border-color: #319957;
+    opacity: 1;
+}

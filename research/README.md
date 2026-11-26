@@ -30,11 +30,13 @@
 
 ### Цифровые сочетания
 - [digit_patterns_000_999.csv](digit_patterns_000_999.csv) — все 1000 трёхзначных сочетаний от 000 до 999 с тегами структурных рисунков.
+- [digit_pattern_name_catalog.csv](digit_pattern_name_catalog.csv) — полный словарь названий и частотных классов для всех 1000 цифровых троек.
 - [pattern_frequency_audit.csv](pattern_frequency_audit.csv) — сводные частоты цифровых и буквенных структур.
 - [pattern_frequency_audit_notes.md](pattern_frequency_audit_notes.md) — методика, пересечения признаков и ограничения частотного анализа.
 
 ### Буквенные сочетания и лексика
 - [letter_patterns_1728.csv](letter_patterns_1728.csv) — все 1728 троек из 12 букв, используемых на российских знаках.
+- [letter_pattern_name_catalog.csv](letter_pattern_name_catalog.csv) — полный словарь структурных названий для всех 1728 буквенных троек.
 - [letter_lexical_screening_1728.csv](letter_lexical_screening_1728.csv) — первичный автоматизированный просмотр всех 1728 троек; это не полноценная ручная лингвистическая экспертиза.
 - [letter_lexical_triage_51.csv](letter_lexical_triage_51.csv) — разбор 51 кандидата, отобранного на первичном этапе.
 - [letter_lexical_review.csv](letter_lexical_review.csv) — обзор 29 лексических кандидатов.

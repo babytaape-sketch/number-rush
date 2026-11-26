@@ -864,7 +864,7 @@ def me(authorization: str | None = Header(default=None)):
 # =========================================================
 
 @app.post("/api/spin")
-def spin(authorization: str | None = Header(default=None)):
+def spin(free: bool = False, authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]
     now = int(time.time())
@@ -888,9 +888,11 @@ def spin(authorization: str | None = Header(default=None)):
         used_free_spin = False
         used_paid_spin = False
 
-        if free_spin_ready:
+        if free:
+            if not free_spin_ready:
+                con.rollback()
+                raise HTTPException(400, "Бесплатный спин пока недоступен.")
             used_free_spin = True
-
             con.execute(
                 "UPDATE users SET last_free_spin_at=? WHERE user_id=?",
                 (now, uid)

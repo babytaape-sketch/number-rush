@@ -1692,3 +1692,26 @@ nav .tab {
         font-size: 11px;
     }
 }
+
+
+/* Чёткие обводки и немного более крупный текст вкладок */
+nav .tab {
+    border: 1px solid #405779;
+    background: linear-gradient(180deg, #172943, #101d31);
+    color: #c4d0e3;
+    font-size: clamp(12px, 1.25vw, 15px);
+    padding: 13px 5px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+}
+nav .tab.active {
+    border-color: #7898e8;
+    color: #a9beff;
+    background: linear-gradient(180deg, #1d3151, #14233b);
+    box-shadow: inset 0 0 0 1px rgba(120,152,232,.22), 0 0 10px rgba(120,152,232,.10);
+}
+@media (max-width: 650px) {
+    nav .tab {
+        padding: 12px 4px;
+        font-size: 12px;
+    }
+}

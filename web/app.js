@@ -334,7 +334,7 @@ async function animatePlate(finalPlate, rarity) {
         regionSlots.map((slot, index) =>
             rollSlot(slot, regionChars[index], {
                 duration: 1800,
-                totalSymbols: 14
+                totalSymbols: 19
             })
         )
     );
@@ -385,7 +385,7 @@ async function animatePlate(finalPlate, rarity) {
                 duration: baseDuration + index * stopInterval +
                     (isSuspense ? suspenseExtra + randomExtra : 0) +
                     finalTwoExtra,
-                totalSymbols: 14
+                totalSymbols: 19
             });
         })
     );

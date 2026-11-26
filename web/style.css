@@ -2155,6 +2155,11 @@ html, body, button, a, input, select, textarea {
     border-radius: 0;
     padding: 28px 0 24px;
 }
+
+/* Поднимаем номер ближе к шапке и центру тёмно-синего фона */
+header { margin-bottom: 8px; }
+.hero { padding-top: 8px; }
+
 .hero-skyline { display: none !important; }
 .hero .plate {
     width: min(80%, 560px);

@@ -48,7 +48,7 @@ function scheduleSpinHaptic() {
     } catch (_) {}
 
     // По мере замедления символов импульсы становятся реже.
-    const interval = 115 + progress * 125;
+    const interval = 180 + progress * 120;
     spinHapticTimer = setTimeout(scheduleSpinHaptic, interval);
 }
 
@@ -166,9 +166,12 @@ function setRarityEffect(rarity) {
     plate.style.setProperty("--rarity-color", color);
     plate.dataset.rarity = rarity;
 
-    plate.classList.remove("rarity-flash");
-    void plate.offsetWidth;
-    plate.classList.add("rarity-flash");
+    if (typeof plate.animate === "function") {
+        plate.animate(
+            [{ transform: "scale(1)" }, { transform: "scale(1.015)" }, { transform: "scale(1)" }],
+            { duration: 420, easing: "ease-out" }
+        );
+    }
 
     rarityLabel.style.color = color;
     rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
@@ -223,7 +226,7 @@ async function rollSlot(element, finalChar, options = {}) {
     windowElement.style.height = `${symbolHeight}px`;
     windowElement.style.overflow = "hidden";
 
-    const totalSymbols = options.totalSymbols || 22;
+    const totalSymbols = options.totalSymbols || 10;
 
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
@@ -297,6 +300,7 @@ async function rollSlot(element, finalChar, options = {}) {
         endSlotHaptic(hapticId);
     }
 
+    strip.style.willChange = "auto";
     element.textContent = finalChar;
 }
 
@@ -330,7 +334,7 @@ async function animatePlate(finalPlate, rarity) {
         regionSlots.map((slot, index) =>
             rollSlot(slot, regionChars[index], {
                 duration: 1350,
-                totalSymbols: 18
+                totalSymbols: 10
             })
         )
     );
@@ -381,7 +385,7 @@ async function animatePlate(finalPlate, rarity) {
                 duration: baseDuration + index * stopInterval +
                     (isSuspense ? suspenseExtra + randomExtra : 0) +
                     finalTwoExtra,
-                totalSymbols: 22
+                totalSymbols: 10
             });
         })
     );

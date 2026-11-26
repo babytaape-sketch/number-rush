@@ -431,6 +431,8 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
 
 let freeSpinTimer = null;
 let freeSpinSeconds = 0;
+let bonusSpinProgress = 0;
+let bonusSpinsPending = 0;
 let currentCoins = 0;
 let spinInProgress = false;
 
@@ -451,8 +453,17 @@ function updateFreeSpinTimer() {
         return;
     }
 
-    if (freeSpinSeconds <= 0) {
-        button.textContent = "🎁 БЕСПЛАТНЫЙ СПИН";
+    const bonusPending = Number(bonusSpinsPending || 0);
+    const bonusProgress = Number(bonusSpinProgress || 0);
+    const dailyReady = freeSpinSeconds <= 0;
+    const available = bonusPending + (dailyReady ? 1 : 0);
+
+    if (available > 0) {
+        button.textContent = available > 1
+            ? `🎁 ЗАБРАТЬ ${available} БЕСПЛАТНЫХ СПИНА`
+            : (bonusPending > 0
+                ? "🎰 БОНУСНЫЙ СПИН ГОТОВ"
+                : "🎁 БЕСПЛАТНЫЙ СПИН");
         button.disabled = false;
         return;
     }
@@ -461,8 +472,8 @@ function updateFreeSpinTimer() {
     const hours = Math.floor(freeSpinSeconds / 3600);
     const minutes = Math.floor((freeSpinSeconds % 3600) / 60);
     const seconds = freeSpinSeconds % 60;
-    button.textContent = `🎁 БЕСПЛАТНЫЙ СПИН · ${hours}ч ${minutes}м ${seconds}с`;
-    freeSpinSeconds--;
+    button.textContent = `🎁 ${bonusProgress}/20 · ${hours}ч ${minutes}м ${seconds}с`;
+    freeSpinSeconds = Math.max(0, freeSpinSeconds - 1);
 }
 
 
@@ -1026,6 +1037,8 @@ async function refresh() {
     renderProfile(me);
 
     freeSpinSeconds = Number(me.free_spin_seconds ?? 0);
+    bonusSpinProgress = Number(me.bonus_spin_progress ?? 0);
+    bonusSpinsPending = Number(me.bonus_spins_pending ?? 0);
     currentCoins = Number(me.coins ?? 0);
     updateSpinAvailability();
 
@@ -1076,7 +1089,8 @@ async function refresh() {
 // КНОПКА СПИНА
 // =========================================================
 
-async function runSpin(useFree) {
+async function runSpin(spinType = "paid") {
+    const useFree = spinType === "daily" || spinType === "bonus";
     if (spinInProgress) return;
     spinInProgress = true;
     spinHaptic(useFree);
@@ -1089,7 +1103,8 @@ async function runSpin(useFree) {
     if ($("hint")) $("hint").textContent = "🎰 Барабаны вращаются...";
 
     try {
-        const result = await api(useFree ? "/api/spin?free=true" : "/api/spin", {
+        const spinUrl = spinType === "daily" ? "/api/spin?free=true" : spinType === "bonus" ? "/api/spin?bonus=true" : "/api/spin";
+        const result = await api(spinUrl, {
             method: "POST"
         });
 
@@ -1123,7 +1138,10 @@ async function runSpin(useFree) {
 }
 
 $("spin").addEventListener("click", () => runSpin(false));
-$("free-spin-button").addEventListener("click", () => runSpin(true));
+$("free-spin-button").addEventListener("click", () => {
+    if (bonusSpinsPending > 0) runSpin("bonus");
+    else if (freeSpinSeconds <= 0) runSpin("daily");
+});
 
 
 // =========================================================

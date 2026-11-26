@@ -383,8 +383,11 @@ async function animatePlate(finalPlate, rarity) {
             const randomExtra = isSuspense
                 ? Math.floor(Math.random() * 500)
                 : 0;
+            // Последние две цифры продолжают вращаться заметно дольше
+            // остальных символов — даже после их остановки.
             const finalTwoExtra = isFinalTwo
-                ? 1150 + rarityLevel * 260 + Math.floor(Math.random() * 400)
+                ? 3600 + rarityLevel * 400 + Math.floor(Math.random() * 600) +
+                    (index === mainSlots.length - 1 ? 1400 : 0)
                 : 0;
 
             return rollSlot(slot, mainChars[index], {

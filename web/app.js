@@ -262,12 +262,15 @@ async function rollSlot(element, finalChar, options = {}) {
                 ],
                 {
                     duration,
-                    easing: "cubic-bezier(.22,.61,.36,1)",
+                    easing: "cubic-bezier(.16,1,.3,1)",
                     fill: "forwards"
                 }
             );
     
             await animation.finished;
+            // Сохраняем конечное положение до снятия WAAPI-анимации,
+            // чтобы не было краткого скачка полосы в исходную позицию.
+            strip.style.transform = `translate3d(0, -${distance}px, 0)`;
             animation.cancel();
         } else {
             const start = performance.now();
@@ -327,7 +330,7 @@ async function animatePlate(finalPlate, rarity) {
         regionSlots.map((slot, index) =>
             rollSlot(slot, regionChars[index], {
                 duration: 1350,
-                totalSymbols: 22
+                totalSymbols: 18
             })
         )
     );

@@ -717,6 +717,12 @@ $("spin").addEventListener("click", async () => {
             method: "POST"
         });
 
+        // Баланс меняется сразу после ответа сервера, до анимации.
+        const coinsElement = $("coins");
+        const spinsElement = $("spins");
+        if (coinsElement) coinsElement.textContent = Number(result.coins).toLocaleString("ru-RU");
+        if (spinsElement) spinsElement.textContent = result.spins;
+
         await animatePlate(
             result.plate.number,
             result.plate.rarity

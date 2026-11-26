@@ -55,6 +55,9 @@
 - [rarity_tier_mapping_proposal.md](rarity_tier_mapping_proposal.md) — исследовательское предложение по соотнесению признаков с уровнями редкости.
 - [rarity_tier_test_matrix.csv](rarity_tier_test_matrix.csv) — тестовая матрица примеров; иллюстративные комбинации не подтверждают факт выдачи.
 
+### Проверка модели оценки редкости
+- [rarity_assessment_gap_and_v2_2026-11-27.md](rarity_assessment_gap_and_v2_2026-11-27.md) — аудит неполноты справочников и переход исследовательского расчёта к точному пересечению структурных признаков v2.
+
 ### Аудит текущей игровой реализации (не нормативный справочник)
 - [generator_distribution_audit.md](generator_distribution_audit.md) — аудит текущего генератора, включая обработку повторных попыток и уточнённую модель распределения.
 - [generator_simulation_1m.csv](generator_simulation_1m.csv) — результат модельной симуляции 1 млн выдач; это не production-телеметрия.

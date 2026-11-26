@@ -2484,16 +2484,16 @@ header { margin-bottom: 8px; }
 
 /* Rare spin moments: visual drama only, never changes the generated result */
 #plate.spin-mood-suspense {
-    animation: spinSuspenseGlow 1.15s ease-in-out 2;
+    animation: spinSuspenseGlow 1.15s ease-in-out infinite;
 }
 #plate.spin-mood-showtime {
-    animation: spinShowtimeGlow 1.25s ease-in-out 2;
+    animation: spinShowtimeGlow 1.25s ease-in-out infinite;
 }
 #plate.spin-mood-cinematic {
-    animation: spinCinematicGlow 1.55s ease-in-out 2;
+    animation: spinCinematicGlow 1.55s ease-in-out infinite;
 }
 #plate.spin-beautiful {
-    animation: spinBeautifulGlow 1.1s ease-out 1;
+    animation: spinBeautifulGlow 1.1s ease-in-out infinite;
 }
 @keyframes spinSuspenseGlow {
     0%, 100% { filter: none; }

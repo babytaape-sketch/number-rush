@@ -219,9 +219,9 @@ DAILY_STREAK_REWARDS = [100, 150, 200, 250, 300, 350, 500]
 
 
 STAR_PACKAGES = {
-    "coins_5000": {"coins": 5000, "stars": 25, "title": "5 000 монет"},
-    "coins_12000": {"coins": 12000, "stars": 50, "title": "12 000 монет"},
-    "coins_35000": {"coins": 35000, "stars": 100, "title": "35 000 монет"},
+    "coins_5000": {"coins": 5000, "stars": 25, "title": "5 000 рублей"},
+    "coins_12000": {"coins": 12000, "stars": 50, "title": "12 000 рублей"},
+    "coins_35000": {"coins": 35000, "stars": 100, "title": "35 000 рублей"},
 }
 
 
@@ -247,7 +247,7 @@ def create_star_invoice(package_id: str, authorization: str | None = Header(defa
     try:
         result = telegram_request("createInvoiceLink", {
             "title": package["title"],
-            "description": f"Пополнение баланса NUMBER RUSH на {package['coins']:,} монет".replace(",", " "),
+            "description": f"Пополнение баланса NUMBER RUSH на {package['coins']:,} рублей".replace(",", " "),
             "payload": payload,
             "provider_token": "",
             "currency": "XTR",
@@ -440,7 +440,7 @@ ACHIEVEMENTS = [
     {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров Rare или выше", "target": 5, "reward": 500, "stat": "rare_plates"},
     {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 750, "stat": "total_spins"},
     {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 1000, "stat": "sales"},
-    {"key": "coins_10000", "title": "Богач", "description": "Накопи 10 000 монет одновременно", "target": 10000, "reward": 1500, "stat": "coins"},
+    {"key": "coins_10000", "title": "Богач", "description": "Накопи 10 000 рублей одновременно", "target": 10000, "reward": 1500, "stat": "coins"},
 ]
 
 
@@ -1203,7 +1203,7 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
 
         number = plate_data["number"]
         rarity = plate_data["rarity"]
-        reward = 0  # За выпадение номера монеты не начисляются.
+        reward = 0  # За выпадение номера рублейы не начисляются.
 
         con.execute(
             """UPDATE users
@@ -1526,7 +1526,7 @@ def buy_listing(
                     "🎉 Твой номер продан на рынке!\n"
                     f"Номер: {sold_plate['number']}\n"
                     f"Редкость: {RARITY_NAMES.get(sold_plate['rarity'], sold_plate['rarity'])}\n"
-                    f"Получено: {listing['price']:,} 🪙".replace(",", " ")
+                    f"Получено: {listing['price']:,} ₽".replace(",", " ")
                 )
             })
         except Exception as exc:
@@ -1688,7 +1688,7 @@ def telegram_polling():
                                 con.commit()
                             telegram_request("sendMessage", {
                                 "chat_id": message["chat"]["id"],
-                                "text": f"Оплата прошла успешно! Начислено {package['coins']:,} монет.".replace(",", " ")
+                                "text": f"Оплата прошла успешно! Начислено {package['coins']:,} рублей.".replace(",", " ")
                             })
                     except Exception as exc:
                         print(f"Stars payment processing error: {exc}")

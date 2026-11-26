@@ -160,6 +160,12 @@ with db() as con:
             "INTEGER NOT NULL DEFAULT 0"
         )
 
+    if "bonus_spin_progress" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN bonus_spin_progress INTEGER NOT NULL DEFAULT 0")
+
+    if "bonus_spins_pending" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN bonus_spins_pending INTEGER NOT NULL DEFAULT 0")
+
     if "rare_plates" not in columns:
         con.execute(
             "ALTER TABLE users ADD COLUMN rare_plates "
@@ -1164,7 +1170,7 @@ def me(authorization: str | None = Header(default=None)):
             "SELECT COUNT(*) n FROM market_transactions WHERE buyer_id=?", (uid,)
         ).fetchone()["n"]
         row = con.execute(
-            "SELECT last_free_spin_at, total_spins FROM users WHERE user_id=?", (uid,)
+            "SELECT last_free_spin_at, total_spins, bonus_spin_progress, bonus_spins_pending FROM users WHERE user_id=?", (uid,)
         ).fetchone()
 
     seconds_left = max(0, 86400 - (now - row["last_free_spin_at"]))
@@ -1175,7 +1181,9 @@ def me(authorization: str | None = Header(default=None)):
         "rarest_plate": dict(rarest) if rarest else None,
         "purchases_count": purchases, "sales_count": sales,
         "free_spin_available": seconds_left == 0,
-        "free_spin_seconds": seconds_left
+        "free_spin_seconds": seconds_left,
+        "bonus_spin_progress": int(row["bonus_spin_progress"]),
+        "bonus_spins_pending": int(row["bonus_spins_pending"])
     }
 
 
@@ -1227,7 +1235,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
 # =========================================================
 
 @app.post("/api/spin")
-def spin(free: bool = False, authorization: str | None = Header(default=None)):
+def spin(free: bool = False, bonus: bool = False, authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]
     now = int(time.time())
@@ -1237,7 +1245,7 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
 
         row = con.execute(
             """
-            SELECT coins, spins, last_free_spin_at
+            SELECT coins, spins, last_free_spin_at, bonus_spins_pending
             FROM users WHERE user_id=?
             """,
             (uid,)
@@ -1249,9 +1257,17 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
         )
 
         used_free_spin = False
+        used_bonus_spin = False
         used_paid_spin = False
 
-        if free:
+        if bonus:
+            if row["bonus_spins_pending"] <= 0:
+                con.rollback()
+                raise HTTPException(400, "Бонусный спин пока недоступен.")
+            used_bonus_spin = True
+            con.execute("UPDATE users SET bonus_spins_pending=bonus_spins_pending-1 WHERE user_id=?", (uid,))
+
+        elif free:
             if not free_spin_ready:
                 con.rollback()
                 raise HTTPException(400, "Бесплатный спин пока недоступен.")
@@ -1290,13 +1306,22 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
         rarity = plate_data["rarity"]
         reward = 0  # За выпадение номера рублейы не начисляются.
 
-        con.execute(
-            """UPDATE users
-            SET total_spins=total_spins+1,
-                rare_plates=rare_plates+?
-            WHERE user_id=?""",
-            (1 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0, uid)
-        )
+        if not free and not bonus:
+            con.execute(
+                """UPDATE users
+                SET total_spins=total_spins+1,
+                    bonus_spin_progress=CASE WHEN bonus_spin_progress >= 19 THEN 0 ELSE bonus_spin_progress+1 END,
+                    bonus_spins_pending=bonus_spins_pending+CASE WHEN bonus_spin_progress >= 19 THEN 1 ELSE 0 END,
+                    rare_plates=rare_plates+?
+                WHERE user_id=?""",
+                (1 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0, uid)
+            )
+        else:
+            con.execute(
+                """UPDATE users SET total_spins=total_spins+1, rare_plates=rare_plates+?
+                WHERE user_id=?""",
+                (1 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0, uid)
+            )
 
         cur = con.execute(
             """
@@ -1313,7 +1338,7 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
 
         updated = con.execute(
             """
-            SELECT coins, spins, last_free_spin_at
+            SELECT coins, spins, last_free_spin_at, bonus_spin_progress, bonus_spins_pending
             FROM users WHERE user_id=?
             """,
             (uid,)
@@ -1341,6 +1366,9 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
         "coins": updated["coins"],
         "spins": updated["spins"],
         "used_free_spin": used_free_spin,
+        "used_bonus_spin": used_bonus_spin,
+        "bonus_spin_progress": int(updated["bonus_spin_progress"]),
+        "bonus_spins_pending": int(updated["bonus_spins_pending"]),
         "used_paid_spin": used_paid_spin,
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left,

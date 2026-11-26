@@ -2580,6 +2580,101 @@ header { margin-bottom: 8px; }
     20% { opacity: 1; }
     100% { left: 135%; opacity: 0; }
 }
+
+/* Rarity-specific reveal: stronger tiers get a more memorable finish. */
+#plate.spin-reveal.spin-rarity-common {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 5px #080808, 0 0 18px rgba(255,255,255,.3);
+    animation: plateReveal 750ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-uncommon {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 5px #080808, 0 0 22px #36d477, 0 0 42px rgba(54,212,119,.42);
+    animation: plateReveal 950ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-rare {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 5px #080808, 0 0 28px #3294ff, 0 0 58px rgba(50,148,255,.62);
+    animation: rareReveal 1250ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-epic {
+    position: relative;
+    box-shadow: 0 0 0 2px #f2ddff, 0 0 0 5px #080808, 0 0 30px #ae63ff, 0 0 70px rgba(174,99,255,.85), 0 0 110px rgba(174,99,255,.35);
+    animation: epicReveal 2100ms cubic-bezier(.16,.8,.25,1) both;
+}
+#plate.spin-reveal.spin-rarity-legendary {
+    position: relative;
+    box-shadow: 0 0 0 2px #fff2c2, 0 0 0 5px #080808, 0 0 34px #ffc247, 0 0 82px rgba(255,194,71,.95), 0 0 140px rgba(255,194,71,.48), inset 0 0 22px rgba(255,220,130,.5);
+    animation: legendaryReveal 2600ms cubic-bezier(.12,.78,.18,1) both;
+}
+#plate.spin-reveal.spin-rarity-epic::before,
+#plate.spin-reveal.spin-rarity-legendary::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: -12px;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+}
+#plate.spin-reveal.spin-rarity-epic::before {
+    background: radial-gradient(ellipse, rgba(210,155,255,.45), transparent 68%);
+    animation: epicAura 1800ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-legendary::before {
+    background: radial-gradient(ellipse, rgba(255,225,145,.62), transparent 66%);
+    animation: legendaryAura 2300ms ease-out both;
+}
+#plate.spin-reveal.spin-rarity-epic::after { animation: epicSweep 1250ms ease-out both; }
+#plate.spin-reveal.spin-rarity-legendary::after { animation: legendarySweep 1550ms ease-out both; }
+@keyframes rareReveal {
+    0% { transform: scale(.98); filter: brightness(1); }
+    35% { transform: scale(1.045); filter: brightness(1.35); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+@keyframes epicReveal {
+    0% { transform: scale(.96); filter: brightness(1); }
+    22% { transform: scale(1.055); filter: brightness(1.65); }
+    42% { transform: scale(1.015); filter: brightness(1.15); }
+    64% { transform: scale(1.04); filter: brightness(1.45); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+@keyframes legendaryReveal {
+    0% { transform: scale(.94); filter: brightness(1); }
+    16% { transform: scale(1.075); filter: brightness(2); }
+    30% { transform: scale(1.015); filter: brightness(1.25); }
+    48% { transform: scale(1.055); filter: brightness(1.75); }
+    68% { transform: scale(1.025); filter: brightness(1.35); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+@keyframes epicAura {
+    0% { opacity: 0; transform: scale(.8); }
+    35% { opacity: 1; transform: scale(1.08); }
+    100% { opacity: 0; transform: scale(1.35); }
+}
+@keyframes legendaryAura {
+    0% { opacity: 0; transform: scale(.72); }
+    28% { opacity: 1; transform: scale(1.08); }
+    62% { opacity: .72; transform: scale(1.18); }
+    100% { opacity: 0; transform: scale(1.42); }
+}
+@keyframes epicSweep {
+    0% { left: -75%; opacity: 0; }
+    18% { opacity: 1; }
+    100% { left: 145%; opacity: 0; }
+}
+@keyframes legendarySweep {
+    0% { left: -75%; opacity: 0; }
+    14% { opacity: 1; }
+    45% { opacity: .95; }
+    100% { left: 145%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #plate.spin-reveal.spin-rarity-epic,
+    #plate.spin-reveal.spin-rarity-legendary,
+    #plate.spin-reveal.spin-rarity-epic::before,
+    #plate.spin-reveal.spin-rarity-legendary::before {
+        animation: none !important;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     #plate.spin-active, #plate.spin-active::after, #plate.spin-reveal, #plate.spin-reveal::after {
         animation: none !important;

@@ -819,11 +819,8 @@ function renderShop(packages) {
                     <div class="shop-plate-price">⭐ <b>${Number(pack.stars)} Stars</b></div>
                     <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ НОМЕР</button>
                 </div>
-                <div class="shop-plate-visual" aria-label="Пример номерного знака">
-                    <div class="shop-license-plate">
-                        <span class="shop-plate-main">${plateLetters}</span>
-                        <span class="shop-plate-region"><b>${region}</b><small>RUS</small></span>
-                    </div>
+                <div class="shop-plate-visual" aria-label="Пример российского номерного знака">
+                    <div class="shop-real-plate">${createMiniPlate(`${plateLetters} ${region}`)}</div>
                     <span class="shop-plate-caption">ПРИМЕР НОМЕРА</span>
                 </div>
             </article>

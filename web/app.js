@@ -251,7 +251,26 @@ async function rollSlot(element, finalChar, options = {}) {
     element.textContent = finalChar;
 }
 
-async function animatePlate(finalPlate, rarity) {
+function chooseSpinMood() {
+    const roll = Math.random();
+    if (roll < 0.01) return "cinematic";
+    if (roll < 0.07) return "showtime";
+    if (roll < 0.25) return "suspense";
+    return "normal";
+}
+
+function isBeautifulPlate(number) {
+    const main = String(number).trim().split(/\\s+/)[0] || "";
+    const digits = main.replace(/[А-ЯЁ]/g, "");
+    if (digits.length < 3) return false;
+
+    if (/^(\\d)\\1+$/.test(digits)) return true;
+    if (/012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210/.test(digits)) return true;
+    if (digits.length >= 4 && digits === digits.split("").reverse().join("")) return true;
+    return false;
+}
+
+async function animatePlate(finalPlate, rarity, mood = "normal") {
     const main = document.querySelector(".plate-main");
     const region = document.querySelector(".region-code");
     if (!main || !region) return;
@@ -283,8 +302,11 @@ async function animatePlate(finalPlate, rarity) {
         Common: 0, Uncommon: 1, Rare: 2, Epic: 3, Legendary: 4, Mythic: 5
     }[rarity] ?? 0;
 
-    const baseDuration = 2200 + rarityLevel * 140;
-    const stopInterval = 260 + rarityLevel * 25;
+    const moodScale = mood === "cinematic" ? 1.12
+        : mood === "showtime" ? 1.08
+        : mood === "suspense" ? 1.04 : 1;
+    const baseDuration = (2200 + rarityLevel * 140) * moodScale;
+    const stopInterval = (260 + rarityLevel * 25) * moodScale;
     const regularDurations = mainSlots.map((_, index) =>
         baseDuration + index * stopInterval
     );
@@ -296,6 +318,9 @@ async function animatePlate(finalPlate, rarity) {
         const candidate = Math.floor(Math.random() * mainSlots.length);
         if (!lateIndexes.includes(candidate)) lateIndexes.push(candidate);
     }
+    const moodPause = mood === "cinematic" ? 900
+        : mood === "showtime" ? 600
+        : mood === "suspense" ? 320 : 0;
     const lateDurations = new Map([
         [lateIndexes[0], latestRegularStop + 1900 + rarityLevel * 180],
         [lateIndexes[1], latestRegularStop + 3400 + rarityLevel * 220]
@@ -305,12 +330,27 @@ async function animatePlate(finalPlate, rarity) {
     await Promise.all(mainSlots.map((slot, index) =>
         rollSlot(slot, mainChars[index], {
             duration: lateDurations.get(index) || regularDurations[index],
+            delay: index === lateIndexes[1] ? moodPause : 0,
             totalSymbols: 19
         })
     ));
 
     setRarityEffect(rarity);
-    await sleep(500);
+    const plate = $("plate");
+    if (plate) {
+        plate.classList.remove("spin-mood-suspense", "spin-mood-showtime", "spin-mood-cinematic", "spin-beautiful");
+        if (mood !== "normal") {
+            plate.classList.add("spin-mood-" + mood);
+            if (mood === "cinematic") {
+                try { tg?.HapticFeedback?.notificationOccurred("success"); } catch (_) {}
+            }
+        }
+        if (isBeautifulPlate(finalPlate)) {
+            plate.classList.add("spin-beautiful");
+            try { tg?.HapticFeedback?.notificationOccurred("success"); } catch (_) {}
+        }
+    }
+    await sleep(mood === "cinematic" ? 850 : mood === "showtime" ? 650 : 500);
 }
 
 // =========================================================
@@ -973,7 +1013,8 @@ async function runSpin(useFree) {
         if (coinsElement) coinsElement.textContent = formatRubles(result.coins);
         if (spinsElement) spinsElement.textContent = result.spins;
 
-        await animatePlate(result.plate.number, result.plate.rarity);
+        const spinMood = chooseSpinMood();
+        await animatePlate(result.plate.number, result.plate.rarity, spinMood);
         await refresh();
 
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();

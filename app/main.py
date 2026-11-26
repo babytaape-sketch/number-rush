@@ -89,7 +89,8 @@ def init_db():
             spins INTEGER NOT NULL DEFAULT 0,
             created_at INTEGER NOT NULL,
             last_free_spin_at INTEGER NOT NULL DEFAULT 0,
-            total_spins INTEGER NOT NULL DEFAULT 0
+            total_spins INTEGER NOT NULL DEFAULT 0,
+            rare_plates INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS plates (
@@ -148,7 +149,26 @@ with db() as con:
             "INTEGER NOT NULL DEFAULT 0"
         )
 
+    if "rare_plates" not in columns:
+        con.execute(
+            "ALTER TABLE users ADD COLUMN rare_plates "
+            "INTEGER NOT NULL DEFAULT 0"
+        )
+
     con.execute("""CREATE TABLE IF NOT EXISTS app_migrations (migration_id TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)""")
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", ("backfill_rare_plates_counter",)).fetchone():
+        con.execute(
+            """UPDATE users SET rare_plates=(
+                SELECT COUNT(*) FROM plates
+                WHERE plates.owner_id=users.user_id
+                AND plates.rarity IN ('Rare','Epic','Legendary','Mythic')
+            )"""
+        )
+        con.execute(
+            "INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)",
+            ("backfill_rare_plates_counter", int(time.time()))
+        )
+
     if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", ("remove_initial_five_spins",)).fetchone():
         con.execute("UPDATE users SET spins=0")
         con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", ("remove_initial_five_spins", int(time.time())))
@@ -261,6 +281,116 @@ def claim_daily_task(task_key: str, authorization: str | None = Header(default=N
         )
 
     return {"ok": True, "reward": task["reward"]}
+
+
+# =========================================================
+# ДОСТИЖЕНИЯ
+# =========================================================
+
+ACHIEVEMENTS = [
+    {"key": "collect_10", "title": "Первая коллекция", "description": "Получи 10 номеров в генераторе", "target": 10, "reward": 250, "stat": "total_spins"},
+    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров Rare или выше", "target": 5, "reward": 500, "stat": "rare_plates"},
+    {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 750, "stat": "total_spins"},
+    {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 1000, "stat": "sales"},
+    {"key": "coins_10000", "title": "Богач", "description": "Накопи 10 000 монет одновременно", "target": 10000, "reward": 1500, "stat": "coins"},
+]
+
+
+@app.get("/api/achievements")
+def get_achievements(authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    uid = user["user_id"]
+
+    with db() as con:
+        stats = con.execute(
+            "SELECT coins, total_spins, rare_plates FROM users WHERE user_id=?",
+            (uid,)
+        ).fetchone()
+        sales = con.execute(
+            "SELECT COUNT(*) n FROM market_transactions WHERE seller_id=?",
+            (uid,)
+        ).fetchone()["n"]
+
+        values = {
+            "coins": int(stats["coins"]),
+            "total_spins": int(stats["total_spins"]),
+            "rare_plates": int(stats["rare_plates"]),
+            "sales": int(sales),
+        }
+
+        con.execute(
+            """CREATE TABLE IF NOT EXISTS user_achievements (
+                user_id TEXT NOT NULL,
+                achievement_key TEXT NOT NULL,
+                unlocked_at INTEGER NOT NULL,
+                claimed INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, achievement_key)
+            )"""
+        )
+
+        for achievement in ACHIEVEMENTS:
+            if values[achievement["stat"]] >= achievement["target"]:
+                con.execute(
+                    """INSERT OR IGNORE INTO user_achievements
+                    (user_id, achievement_key, unlocked_at, claimed)
+                    VALUES (?, ?, ?, 0)""",
+                    (uid, achievement["key"], int(time.time()))
+                )
+
+        rows = con.execute(
+            "SELECT achievement_key, unlocked_at, claimed FROM user_achievements WHERE user_id=?",
+            (uid,)
+        ).fetchall()
+
+    saved = {row["achievement_key"]: dict(row) for row in rows}
+    return {
+        "achievements": [
+            {
+                **achievement,
+                "progress": achievement["target"] if achievement["key"] in saved else min(
+                    values[achievement["stat"]], achievement["target"]
+                ),
+                "completed": achievement["key"] in saved,
+                "claimed": bool(saved.get(achievement["key"], {}).get("claimed", 0)),
+            }
+            for achievement in ACHIEVEMENTS
+        ]
+    }
+
+
+@app.post("/api/achievements/{achievement_key}/claim")
+def claim_achievement(achievement_key: str, authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    achievement = next((item for item in ACHIEVEMENTS if item["key"] == achievement_key), None)
+    if not achievement:
+        raise HTTPException(404, "Достижение не найдено")
+
+    with db() as con:
+        row = con.execute(
+            """SELECT claimed FROM user_achievements
+            WHERE user_id=? AND achievement_key=?""",
+            (user["user_id"], achievement_key)
+        ).fetchone()
+
+        if not row:
+            raise HTTPException(400, "Сначала выполни достижение")
+        if row["claimed"]:
+            raise HTTPException(400, "Награда уже получена")
+
+        updated = con.execute(
+            """UPDATE user_achievements SET claimed=1
+            WHERE user_id=? AND achievement_key=? AND claimed=0""",
+            (user["user_id"], achievement_key)
+        )
+        if updated.rowcount != 1:
+            raise HTTPException(400, "Награда уже получена")
+
+        con.execute(
+            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            (achievement["reward"], user["user_id"])
+        )
+
+    return {"ok": True, "reward": achievement["reward"]}
 
 
 # =========================================================
@@ -926,8 +1056,11 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
         reward = 0  # За выпадение номера монеты не начисляются.
 
         con.execute(
-            "UPDATE users SET total_spins=total_spins+1 WHERE user_id=?",
-            (uid,)
+            """UPDATE users
+            SET total_spins=total_spins+1,
+                rare_plates=rare_plates+?
+            WHERE user_id=?""",
+            (1 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0, uid)
         )
 
         cur = con.execute(

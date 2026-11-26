@@ -604,7 +604,6 @@ function renderCollection() {
                     <small>${escapeHtml(p.rarity)}</small>
                     ${renderTags(p.tags)}
                 </div>
-                <strong>#${p.id}</strong>
                 <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed
                     ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'

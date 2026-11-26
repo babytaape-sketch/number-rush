@@ -1,0 +1,16 @@
+priority,condition,current_tier,details
+1,special_series_region_match AND digits_in_BEAUTIFUL_DIGITS,Mythic,Special series and one of 23 beautiful patterns
+2,special_series_region_match AND digits_not_in_BEAUTIFUL_DIGITS,Legendary,Special series alone
+3,digits_in_000_or_777,Legendary,After special-series checks
+4,digits_in_SPECIAL_DIGITS OR all_three_digits_equal,Epic,000 and 777 already captured
+5,digits_in_LADDER_DIGITS OR first_digit_equals_third_digit,Rare,Ladder or outer-digit mirror
+6,adjacent_equal_digits OR adjacent_equal_letters,Uncommon,Adjacent pair in either segment
+7,no_previous_condition,Common,Default
+
+tier,generator_pool_or_rule,candidate_count,valid_count,notes
+Common,random_digits_and_ordinary_letters_filtered_until_common,filtered,filtered,Internal loop
+Uncommon,110;112;122;211;221;233;344;455;566;677;788;899,12,12,Ordinary letters
+Rare,101;202;303;404;505;606;707;808;909;123;234;345;456;567;678;789,16,16,Ordinary letters
+Epic,111;222;333;444;555;666;888;999;001;007;100;200;300;500;700;800;900,17,14,200 300 500 classify Uncommon
+Legendary,65pct_special_series_plus_non_beautiful_random_digits;35pct_ordinary_letters_plus_000_or_777,2,2,Two branches
+Mythic,special_series_plus_23_BEAUTIFUL_DIGITS,23,23,All beautiful digits in a matching special series

@@ -2757,14 +2757,3 @@ header { margin-bottom: 8px; }
     #plate.spin-reveal .plate-main,
     .rarity[class*="rarity-reveal-"] { animation: none !important; }
 }
-
-/* Колесо удачи */
-.roulette-card{width:min(100%,560px);margin:24px auto 0;padding:22px 16px;border:1px solid #354b70;border-radius:22px;background:linear-gradient(145deg,#17263d,#0c1627);text-align:center}
-.roulette-card h2{margin:0 0 6px;font-size:22px}.roulette-card p{margin:0 0 18px;color:var(--muted);font-size:13px}
-.roulette-pointer{position:relative;z-index:2;margin-bottom:-9px;color:#f7c95c;font-size:27px;text-shadow:0 2px 8px #000}
-.roulette-wheel-wrap{width:min(78vw,330px);aspect-ratio:1;margin:0 auto 18px;padding:8px;border:3px solid #d9b45c;border-radius:50%;background:#0a1220;box-shadow:0 0 28px rgba(217,180,92,.2)}
-.roulette-wheel{position:relative;width:100%;height:100%;overflow:hidden;border-radius:50%;background:conic-gradient(from -36deg,#b9822d 0deg 72deg,#294d80 72deg 144deg,#713c91 144deg 216deg,#245d63 216deg 288deg,#9b6728 288deg 360deg);transition:transform 5s cubic-bezier(.12,.72,.12,1);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35)}
-.roulette-wheel span{position:absolute;top:50%;left:50%;width:42%;color:#fff;font-size:clamp(10px,2.8vw,14px);font-weight:900;line-height:1.1;text-align:center;text-shadow:0 2px 4px #000;transform-origin:0 0}
-.roulette-wheel span:nth-child(1){transform:rotate(-54deg) translate(9%,-50%)}.roulette-wheel span:nth-child(2){transform:rotate(18deg) translate(9%,-50%)}.roulette-wheel span:nth-child(3){transform:rotate(90deg) translate(9%,-50%)}.roulette-wheel span:nth-child(4){transform:rotate(162deg) translate(9%,-50%)}.roulette-wheel span:nth-child(5){transform:rotate(234deg) translate(9%,-50%);font-size:clamp(8px,2.2vw,11px)}
-#roulette-button{width:min(100%,420px);padding:16px;border:1px solid #d8b45c;border-radius:14px;color:#17120a;background:linear-gradient(110deg,#d7a642,#ffe39a);font-weight:900;cursor:pointer}#roulette-button:disabled{opacity:.58;cursor:default}
-.roulette-result{min-height:24px;margin-top:14px;color:#ffda82;font-weight:900}

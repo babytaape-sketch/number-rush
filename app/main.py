@@ -1036,11 +1036,12 @@ def generate_plate_details(forced_rarity=None):
 
     elif rarity == "Legendary":
         if random.random() < 0.65:
+            # Специальная серия с НЕмифическими цифрами остаётся Legendary.
+            # Красивые комбинации в специальной серии классифицируются как Mythic.
             letters, region_code, region_name = pick_special_series()
-            digits = random.choice([
-                "123", "234", "345", "456",
-                "567", "678", "789"
-            ])
+            digits = random_digits()
+            while digits in BEAUTIFUL_DIGITS:
+                digits = random_digits()
         else:
             letters = random_letters(ordinary=True)
             digits = random.choice(["000", "777"])

@@ -2380,3 +2380,13 @@ header { margin-bottom: 8px; }
     }
 }
 
+/* Региональный блок не должен выступать за край таблички */
+.plate-region,
+.mini-plate-region {
+    box-sizing: border-box;
+    flex: 0 0 25%;
+    width: 25%;
+    max-width: 25%;
+    min-width: 0;
+    overflow: hidden;
+}

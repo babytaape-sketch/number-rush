@@ -126,9 +126,33 @@
     </section>
 
     <section id="shop" class="panel hidden">
-      <h2>Магазин рублей</h2>
-      <p class="daily-tasks-note">Выбирай набор и пополняй баланс через безопасную оплату Telegram Stars.</p>
-      <div id="shop-packages" class="shop-packages">Загрузка магазина...</div>
+      <div class="shop-hero">
+        <div>
+          <span class="shop-eyebrow">NUMBER RUSH STORE</span>
+          <h2>Магазин</h2>
+          <p>Пополняй баланс или забирай номера редкой серии</p>
+        </div>
+        <div class="shop-hero-mark" aria-hidden="true">★</div>
+      </div>
+      <div class="shop-switch" role="tablist" aria-label="Раздел магазина">
+        <button type="button" class="shop-switch-button active" data-shop-view="rubles" role="tab" aria-selected="true">🪙 Рубли за Stars</button>
+        <button type="button" class="shop-switch-button" data-shop-view="plates" role="tab" aria-selected="false">▣ Номера</button>
+      </div>
+      <div id="shop-rubles-view" class="shop-view">
+        <div class="shop-section-heading">
+          <h3>Пополнение баланса</h3>
+          <p>Выбери подходящий набор рублей</p>
+        </div>
+        <div id="shop-packages" class="shop-packages">Загрузка магазина...</div>
+      </div>
+      <div id="shop-plates-view" class="shop-view hidden">
+        <div class="shop-section-heading">
+          <h3>Уникальные номера</h3>
+          <p>Гарантированная редкость. Номер сразу попадёт в коллекцию</p>
+        </div>
+        <div id="shop-plate-packages" class="shop-plate-packages">Загрузка номеров...</div>
+      </div>
+      <p class="shop-security">🛡️ Безопасная оплата через Telegram Stars</p>
     </section>
 
     <section id="profile" class="panel hidden">
@@ -139,6 +163,6 @@
     <footer>NUMBER RUSH <span>•</span> COLLECT YOUR STYLE</footer>
   </div>
 
-  <script src="/static/app.js?v=40"></script>
+  <script src="/static/app.js?v=41"></script>
 </body>
 </html>

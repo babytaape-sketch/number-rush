@@ -2480,3 +2480,35 @@ header { margin-bottom: 8px; }
 #collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Epic"] { border: 2px solid #17191b !important; box-shadow: 0 0 0 1px #777, 0 0 0 2px #080808, 0 0 12px rgba(174,99,255,.84), inset 0 1px 3px #fff !important; }
 #collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Legendary"] { border: 2px solid #17191b !important; box-shadow: 0 0 0 1px #777, 0 0 0 2px #080808, 0 0 13px rgba(255,194,71,.88), inset 0 1px 3px #fff !important; }
 #collection .collection-item .collection-plate-wrap .mini-plate[data-rarity="Mythic"] { border: 2px solid #17191b !important; box-shadow: 0 0 0 1px #777, 0 0 0 2px #080808, 0 0 15px rgba(255,86,63,.92), inset 0 1px 3px #fff !important; }
+
+
+/* Rare spin moments: visual drama only, never changes the generated result */
+#plate.spin-mood-suspense {
+    animation: spinSuspenseGlow 1.15s ease-in-out 2;
+}
+#plate.spin-mood-showtime {
+    animation: spinShowtimeGlow 1.25s ease-in-out 2;
+}
+#plate.spin-mood-cinematic {
+    animation: spinCinematicGlow 1.55s ease-in-out 2;
+}
+#plate.spin-beautiful {
+    animation: spinBeautifulGlow 1.1s ease-out 1;
+}
+@keyframes spinSuspenseGlow {
+    0%, 100% { filter: none; }
+    50% { filter: drop-shadow(0 0 12px rgba(110,170,255,.55)); }
+}
+@keyframes spinShowtimeGlow {
+    0%, 100% { filter: none; }
+    45% { filter: drop-shadow(0 0 18px rgba(255,194,71,.78)) brightness(1.08); }
+}
+@keyframes spinCinematicGlow {
+    0%, 100% { filter: none; }
+    35%, 65% { filter: drop-shadow(0 0 24px rgba(255,194,71,.95)) brightness(1.14); }
+}
+@keyframes spinBeautifulGlow {
+    0% { filter: none; transform: scale(1); }
+    45% { filter: drop-shadow(0 0 22px rgba(255,215,100,.95)) brightness(1.16); transform: scale(1.025); }
+    100% { filter: none; transform: scale(1); }
+}

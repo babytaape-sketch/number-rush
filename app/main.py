@@ -19,6 +19,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from .plate_knowledge import analyze_standard_plate
+
 
 load_dotenv()
 
@@ -932,6 +934,12 @@ def get_number_features(number):
         return []
 
 
+@app.get("/api/plate-analysis")
+def plate_analysis(number: str, authorization: str | None = Header(default=None)):
+    current_user(authorization)
+    return analyze_standard_plate(number)
+
+
 def calculate_plate_value(number, rarity):
     """Детерминированная оценка с учётом редкости и особенностей номера."""
     base_values = {
@@ -1141,7 +1149,8 @@ def me(authorization: str | None = Header(default=None)):
         "rarest_plate": dict(rarest) if rarest else None,
         "purchases_count": purchases, "sales_count": sales,
         "free_spin_available": seconds_left == 0,
-        "free_spin_seconds": seconds_left
+        "free_spin_seconds": seconds_left,
+        "plate_analysis": analyze_standard_plate(number, rarity)
     }
 
 
@@ -1345,6 +1354,7 @@ def collection(authorization: str | None = Header(default=None)):
             item["rarity"]
         )
         item["tags"] = get_number_features(item["number"])
+        item["analysis"] = analyze_standard_plate(item["number"], item["rarity"])
         item["market_value"] = calculate_plate_value(item["number"], item["rarity"])
         item["quick_sell_price"] = calculate_quick_sell_price(item["number"], item["rarity"])
         result.append(item)
@@ -1430,6 +1440,7 @@ def market(authorization: str | None = Header(default=None)):
             item["rarity"]
         )
         item["tags"] = get_number_features(item["number"])
+        item["analysis"] = analyze_standard_plate(item["number"], item["rarity"])
         result.append(item)
 
     return result

@@ -222,8 +222,8 @@ STAR_PACKAGES = {
     "coins_5000": {"type": "coins", "coins": 5000, "stars": 25, "title": "5 000 рублей"},
     "coins_12000": {"type": "coins", "coins": 12000, "stars": 50, "title": "12 000 рублей"},
     "coins_35000": {"type": "coins", "coins": 35000, "stars": 100, "title": "35 000 рублей"},
-    "plate_legendary": {"type": "plate", "rarity": "Legendary", "stars": 250, "title": "Легендарный номер"},
-    "plate_mythic": {"type": "plate", "rarity": "Mythic", "stars": 500, "title": "Мифический номер"},
+    "plate_legendary": {"type": "plate", "coins": 0, "rarity": "Legendary", "stars": 250, "title": "Легендарный номер"},
+    "plate_mythic": {"type": "plate", "coins": 0, "rarity": "Mythic", "stars": 500, "title": "Мифический номер"},
 }
 
 

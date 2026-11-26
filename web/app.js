@@ -641,7 +641,7 @@ function renderDailyTasks(data) {
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
                     <small>${progress} / ${task.target}</small>
-                    <b>${task.claimed ? "НАГРАДА ПОЛУЧЕНА" : task.completed ? "ГОТОВО К ПОЛУЧЕНИЮ" : "В ПРОЦЕССЕ"}</b>
+                    <b>${task.claimed ? "НАГРАДА ПОЛУЧЕНА" : task.completed ? "ГОТОВО К ПОЛУЧЕНИЮ" : progress > 0 ? "В ПРОЦЕССЕ" : "НЕ НАЧАТО"}</b>
                 </div>
                 ${task.completed && !task.claimed ? `<button class="daily-task-claim" data-claim-task="${escapeHtml(task.key)}">ЗАБРАТЬ НАГРАДУ</button>` : ""}
             </article>
@@ -693,7 +693,7 @@ function renderAchievements(data) {
                 <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
                 <div class="daily-task-bottom">
                     <small>${progress.toLocaleString("ru-RU")} / ${Number(item.target).toLocaleString("ru-RU")}</small>
-                    <b>${item.claimed ? "НАГРАДА ПОЛУЧЕНА" : item.completed ? "ГОТОВО К ПОЛУЧЕНИЮ" : "В ПРОЦЕССЕ"}</b>
+                    <b>${item.claimed ? "НАГРАДА ПОЛУЧЕНА" : item.completed ? "ГОТОВО К ПОЛУЧЕНИЮ" : progress > 0 ? "В ПРОЦЕССЕ" : "НЕ НАЧАТО"}</b>
                 </div>
                 ${item.completed && !item.claimed ? `<button class="daily-task-claim" data-claim-achievement="${escapeHtml(item.key)}">ЗАБРАТЬ НАГРАДУ</button>` : ""}
             </article>

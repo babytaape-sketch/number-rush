@@ -91,7 +91,9 @@ def init_db():
             created_at INTEGER NOT NULL,
             last_free_spin_at INTEGER NOT NULL DEFAULT 0,
             total_spins INTEGER NOT NULL DEFAULT 0,
-            rare_plates INTEGER NOT NULL DEFAULT 0
+            rare_plates INTEGER NOT NULL DEFAULT 0,
+            telegram_chat_id TEXT,
+            free_spin_notified_for INTEGER NOT NULL DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS plates (
@@ -164,6 +166,12 @@ with db() as con:
             "ALTER TABLE users ADD COLUMN rare_plates "
             "INTEGER NOT NULL DEFAULT 0"
         )
+
+    if "telegram_chat_id" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN telegram_chat_id TEXT")
+
+    if "free_spin_notified_for" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN free_spin_notified_for INTEGER NOT NULL DEFAULT 0")
 
     if "daily_streak" not in columns:
         con.execute(
@@ -1164,7 +1172,9 @@ def spin(free: bool = False, authorization: str | None = Header(default=None)):
                 raise HTTPException(400, "Бесплатный спин пока недоступен.")
             used_free_spin = True
             con.execute(
-                "UPDATE users SET last_free_spin_at=? WHERE user_id=?",
+                """UPDATE users
+                SET last_free_spin_at=?, free_spin_notified_for=0
+                WHERE user_id=?""",
                 (now, uid)
             )
 
@@ -1595,6 +1605,39 @@ def telegram_polling():
                 {"offset": offset, "timeout": 25}
             )
 
+            # Проверяем, кому пора отправить напоминание о бесплатном спине.
+            now = int(time.time())
+            with db() as con:
+                due_users = con.execute(
+                    """SELECT user_id, telegram_chat_id, last_free_spin_at
+                    FROM users
+                    WHERE telegram_chat_id IS NOT NULL
+                      AND last_free_spin_at > 0
+                      AND ? - last_free_spin_at >= 86400
+                      AND free_spin_notified_for != last_free_spin_at""",
+                    (now,)
+                ).fetchall()
+
+                for due in due_users:
+                    try:
+                        telegram_request("sendMessage", {
+                            "chat_id": due["telegram_chat_id"],
+                            "text": "🎁 Бесплатный спин NUMBER RUSH снова доступен! Заходи и испытай удачу.",
+                            "reply_markup": {
+                                "inline_keyboard": [[{
+                                    "text": "🎮 Открыть NUMBER RUSH",
+                                    "web_app": {"url": WEB_APP_URL}
+                                }]]
+                            }
+                        })
+                        con.execute(
+                            "UPDATE users SET free_spin_notified_for=? WHERE user_id=?",
+                            (due["last_free_spin_at"], due["user_id"])
+                        )
+                    except Exception as exc:
+                        print(f"Free spin notification error for {due['user_id']}: {exc}")
+                con.commit()
+
             for update in result.get("result", []):
                 offset = update["update_id"] + 1
 
@@ -1658,6 +1701,12 @@ def telegram_polling():
                 message_text = message.get("text", "")
 
                 if message_text.startswith("/start"):
+                    with db() as con:
+                        con.execute(
+                            "UPDATE users SET telegram_chat_id=? WHERE user_id=?",
+                            (str(chat_id), str(message.get("from", {}).get("id", "")))
+                        )
+
                     keyboard = {
                         "inline_keyboard": [[
                             {

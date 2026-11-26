@@ -791,14 +791,23 @@ $("achievement-list")?.addEventListener("click", event => {
 function renderShop(packages) {
     const root = $("shop-packages");
     if (!root) return;
-    root.innerHTML = (packages || []).map(pack => `
-        <article class="shop-package">
-            <div class="shop-package-icon">РУБЛИ</div>
-            <strong>${formatRubles(pack.coins)}</strong>
-            <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
-            <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ ЗА STARS</button>
-        </article>
-    `).join("");
+    root.innerHTML = (packages || []).map(pack => {
+        const isPlate = pack.type === "plate";
+        const label = isPlate
+            ? (pack.rarity === "Mythic" ? "МИФИЧЕСКИЙ НОМЕР" : "ЛЕГЕНДАРНЫЙ НОМЕР")
+            : "РУБЛИ";
+        const value = isPlate
+            ? (pack.rarity === "Mythic" ? "Мифическая редкость" : "Легендарная редкость")
+            : formatRubles(pack.coins);
+        return `
+            <article class="shop-package">
+                <div class="shop-package-icon">${label}</div>
+                <strong>${value}</strong>
+                <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
+                <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ ЗА STARS</button>
+            </article>
+        `;
+    }).join("");
 }
 
 async function buyStarPackage(packageId, button) {
@@ -811,7 +820,7 @@ async function buyStarPackage(packageId, button) {
         const invoice = await api(`/api/shop/${encodeURIComponent(packageId)}/invoice`, { method: "POST" });
         tg.openInvoice(invoice.invoice_url, async status => {
             if (status === "paid") {
-                alert("Оплата принята! Рубли скоро появятся на балансе.");
+                alert("Оплата принята! Покупка будет добавлена в игру после обработки платежа.");
                 await refresh();
             } else if (status === "failed") {
                 alert("Не удалось провести оплату. Попробуй ещё раз.");

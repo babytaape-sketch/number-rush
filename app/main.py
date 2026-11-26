@@ -1463,6 +1463,11 @@ def buy_listing(
                 "You cannot buy your own listing"
             )
 
+        sold_plate = con.execute(
+            "SELECT number, rarity FROM plates WHERE id=?",
+            (listing["plate_id"],)
+        ).fetchone()
+
         buyer = con.execute(
             "SELECT coins FROM users WHERE user_id=?",
             (uid,)
@@ -1502,6 +1507,20 @@ def buy_listing(
         update_daily_task(con, listing["seller_id"], "sell_1", int(time.time()))
 
         con.commit()
+
+    if BOT_TOKEN and sold_plate:
+        try:
+            telegram_request("sendMessage", {
+                "chat_id": int(listing["seller_id"]),
+                "text": (
+                    "🎉 Твой номер продан на рынке!\n"
+                    f"Номер: {sold_plate['number']}\n"
+                    f"Редкость: {RARITY_NAMES.get(sold_plate['rarity'], sold_plate['rarity'])}\n"
+                    f"Получено: {listing['price']:,} 🪙".replace(",", " ")
+                )
+            })
+        except Exception as exc:
+            print(f"Market sale notification error: {exc}")
 
     return {"ok": True}
     

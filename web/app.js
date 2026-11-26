@@ -333,8 +333,8 @@ async function animatePlate(finalPlate, rarity) {
     await Promise.all(
         regionSlots.map((slot, index) =>
             rollSlot(slot, regionChars[index], {
-                duration: 1350,
-                totalSymbols: 10
+                duration: 1800,
+                totalSymbols: 14
             })
         )
     );
@@ -363,9 +363,9 @@ async function animatePlate(finalPlate, rarity) {
         Mythic: 5
     }[rarity] ?? 0;
 
-    const baseDuration = 1500 + rarityLevel * 130;
-    const stopInterval = 230 + rarityLevel * 25;
-    const suspenseExtra = 650 + rarityLevel * 260;
+    const baseDuration = 1950 + rarityLevel * 160;
+    const stopInterval = 290 + rarityLevel * 30;
+    const suspenseExtra = 850 + rarityLevel * 300;
 
     // Все символы начинают вращаться одновременно.
     // Обычные останавливаются по очереди, выбранные буква и цифра
@@ -378,14 +378,14 @@ async function animatePlate(finalPlate, rarity) {
                 ? Math.floor(Math.random() * 500)
                 : 0;
             const finalTwoExtra = isFinalTwo
-                ? 900 + rarityLevel * 220 + Math.floor(Math.random() * 350)
+                ? 1150 + rarityLevel * 260 + Math.floor(Math.random() * 400)
                 : 0;
 
             return rollSlot(slot, mainChars[index], {
                 duration: baseDuration + index * stopInterval +
                     (isSuspense ? suspenseExtra + randomExtra : 0) +
                     finalTwoExtra,
-                totalSymbols: 10
+                totalSymbols: 14
             });
         })
     );

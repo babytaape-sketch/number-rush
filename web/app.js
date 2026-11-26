@@ -425,18 +425,24 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
 let freeSpinTimer = null;
 let freeSpinSeconds = 0;
 let currentCoins = 0;
+let spinInProgress = false;
 
 function updateSpinAvailability() {
     const button = $("spin");
     const notice = $("spin-cost-notice");
     const insufficient = currentCoins < 1000;
-    if (button) button.disabled = insufficient;
+    if (button) button.disabled = spinInProgress || insufficient;
     if (notice) notice.hidden = !insufficient;
 }
 
 function updateFreeSpinTimer() {
     const button = $("free-spin-button");
     if (!button) return;
+
+    if (spinInProgress) {
+        button.disabled = true;
+        return;
+    }
 
     if (freeSpinSeconds <= 0) {
         button.textContent = "🎁 БЕСПЛАТНЫЙ СПИН";
@@ -1060,11 +1066,15 @@ async function refresh() {
 // =========================================================
 
 async function runSpin(useFree) {
+    if (spinInProgress) return;
+    spinInProgress = true;
     spinHaptic(useFree);
     const spinButton = $("spin");
     const freeButton = $("free-spin-button");
-    spinButton.disabled = true;
-    freeButton.disabled = true;
+    updateSpinAvailability();
+    updateFreeSpinTimer();
+    if (spinButton) spinButton.disabled = true;
+    if (freeButton) freeButton.disabled = true;
     if ($("hint")) $("hint").textContent = "🎰 Барабаны вращаются...";
 
     try {
@@ -1095,6 +1105,7 @@ async function runSpin(useFree) {
         if ($("hint")) $("hint").textContent = e.message;
         await refresh().catch(() => {});
     } finally {
+        spinInProgress = false;
         updateSpinAvailability();
         updateFreeSpinTimer();
     }

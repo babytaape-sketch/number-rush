@@ -44,6 +44,7 @@
     <nav>
       <button class="tab active" data-tab="collection">Коллекция</button>
       <button class="tab" data-tab="market">Рынок</button>
+      <button class="tab" data-tab="leaderboard">Топ игроков</button>
       <button class="tab" data-tab="daily-tasks">Задания <span id="daily-task-badge" class="tab-badge" hidden>0</span></button>
       <button class="tab" data-tab="achievements">Достижения <span id="achievement-badge" class="tab-badge" hidden>0</span></button>
       <button class="tab" data-tab="shop">Магазин</button>
@@ -105,6 +106,12 @@
       <div id="market-items" class="items">Загрузка...</div>
     </section>
 
+    <section id="leaderboard" class="panel hidden">
+      <h2>🏆 Топ игроков</h2>
+      <p class="daily-tasks-note">Соревнуйся с другими игроками по балансу и количеству прокруток.</p>
+      <div id="leaderboard-content" class="leaderboard-content">Загрузка рейтинга...</div>
+    </section>
+
     <section id="daily-tasks" class="panel hidden">
       <h2>Ежедневные задания</h2>
       <p class="daily-tasks-note">Выполняй задания каждый день и получай рубли. Прогресс обновляется автоматически.</p>
@@ -132,6 +139,6 @@
     <footer>NUMBER RUSH <span>•</span> COLLECT YOUR STYLE</footer>
   </div>
 
-  <script src="/static/app.js?v=38"></script>
+  <script src="/static/app.js?v=39"></script>
 </body>
 </html>

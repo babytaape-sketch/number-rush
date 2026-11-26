@@ -173,18 +173,21 @@ function renderPlateAnalysis(analysis) {
         .filter(Boolean);
     add("Серия", history);
 
-    const marketNames = {
-        three_identical_digits: "Три одинаковые цифры",
-        first_decade: "Число из первой десятки",
-        mirror_digits: "Зеркальные цифры",
-        round_hundreds: "Круглая сотня",
-        777: "Комбинация 777",
-        007: "Комбинация 007"
+    const marketLabel = category => {
+        if (category === "three_identical_digits") return "Тройные цифры";
+        if (category === "three_identical_letters") return "Тройные буквы";
+        if (category === "mirror_digits") return "Зеркальные цифры";
+        if (category === "round_hundreds") return "Круглая сотня";
+        if (category === "first_decade_001_010") return "Число из первой десятки";
+        if (category === "word_KOT") return "Читаемое слово «КОТ»";
+        if (category.endsWith("_digits")) return "Рыночная комбинация " + category.slice(0, -7);
+        if (category.endsWith("_letters")) return "Рыночная серия " + category.slice(0, -7);
+        return "";
     };
     const market = (analysis.market_evidence || [])
-        .map(item => marketNames[item.category] || "")
+        .map(item => marketLabel(String(item.category || "")))
         .filter(Boolean);
-    add("Особые комбинации", market);
+    add("Особенности сочетания", market);
 
     if (!items.length) return "";
     return `

@@ -8,12 +8,12 @@ class StructuralRarityCandidateTests(unittest.TestCase):
         expected = {
             "А314ВЕ 23": "Common",
             "А777ВЕ 23": "Rare",
-            "А911ЕКХ 77": "Uncommon",
-            "А070ААА 70": "Epic",
-            "А456АВА 77": "Epic",
-            "А123ААА 77": "Legendary",
-            "А001ААА 77": "Legendary",
-            "А777ААА 77": "Legendary",
+            "Е911КХ 77": "Uncommon",
+            "А070АА 70": "Epic",
+            "А456ВА 77": "Epic",
+            "А123АА 77": "Legendary",
+            "А001АА 77": "Legendary",
+            "А777АА 77": "Legendary",
         }
         for number, tier in expected.items():
             with self.subTest(number=number):
@@ -24,7 +24,7 @@ class StructuralRarityCandidateTests(unittest.TestCase):
 
     def test_market_and_history_do_not_change_structural_tier(self):
         ordinary = analyze_standard_plate("А777ВЕ 23")
-        special_context = analyze_standard_plate("А777ЕКХ 77")
+        special_context = analyze_standard_plate("Е777КХ 77")
         self.assertEqual(ordinary["structural_rarity_candidate"], "Rare")
         self.assertEqual(special_context["structural_rarity_candidate"], "Rare")
 

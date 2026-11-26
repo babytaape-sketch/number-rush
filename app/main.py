@@ -4,6 +4,7 @@ import hmac
 import json
 import os
 import random
+import secrets
 import re
 import sqlite3
 import time
@@ -118,6 +119,15 @@ def init_db():
             created_at INTEGER NOT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS star_payments (
+            telegram_charge_id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            package_id TEXT NOT NULL,
+            coins INTEGER NOT NULL,
+            stars INTEGER NOT NULL,
+            created_at INTEGER NOT NULL
+        );
+
         CREATE TABLE IF NOT EXISTS daily_task_progress (
             user_id TEXT NOT NULL,
             task_date TEXT NOT NULL,
@@ -198,6 +208,51 @@ def daily_task_date(now=None):
 
 
 DAILY_STREAK_REWARDS = [100, 150, 200, 250, 300, 350, 500]
+
+
+STAR_PACKAGES = {
+    "coins_5000": {"coins": 5000, "stars": 25, "title": "5 000 монет"},
+    "coins_12000": {"coins": 12000, "stars": 50, "title": "12 000 монет"},
+    "coins_35000": {"coins": 35000, "stars": 100, "title": "35 000 монет"},
+}
+
+
+@app.get("/api/shop")
+def get_shop(authorization: str | None = Header(default=None)):
+    current_user(authorization)
+    return [{"id": key, **value} for key, value in STAR_PACKAGES.items()]
+
+
+@app.post("/api/shop/{package_id}/invoice")
+def create_star_invoice(package_id: str, authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    package = STAR_PACKAGES.get(package_id)
+    if not package:
+        raise HTTPException(404, "Набор не найден")
+    if not BOT_TOKEN:
+        raise HTTPException(503, "Оплата Stars временно недоступна")
+    payload = json.dumps({
+        "user_id": str(user["user_id"]),
+        "package_id": package_id,
+        "nonce": secrets.token_urlsafe(12)
+    }, separators=(",", ":"))
+    try:
+        result = telegram_request("createInvoiceLink", {
+            "title": package["title"],
+            "description": f"Пополнение баланса NUMBER RUSH на {package['coins']:,} монет".replace(",", " "),
+            "payload": payload,
+            "provider_token": "",
+            "currency": "XTR",
+            "prices": [{"label": package["title"], "amount": package["stars"]}]
+        })
+    except Exception as exc:
+        print(f"Stars invoice error: {exc}")
+        raise HTTPException(502, "Не удалось создать счёт Telegram Stars")
+    if not result.get("ok") or not result.get("result"):
+        raise HTTPException(502, "Telegram не создал счёт на оплату")
+    return {"invoice_url": result["result"]}
+
+
 
 
 @app.get("/api/daily-streak")
@@ -1523,7 +1578,59 @@ def telegram_polling():
 
             for update in result.get("result", []):
                 offset = update["update_id"] + 1
+
+                pre_checkout = update.get("pre_checkout_query")
+                if pre_checkout:
+                    valid = False
+                    try:
+                        payload = json.loads(pre_checkout.get("invoice_payload", "{}"))
+                        package = STAR_PACKAGES.get(payload.get("package_id"))
+                        valid = bool(
+                            package
+                            and str(payload.get("user_id")) == str(pre_checkout["from"]["id"])
+                            and pre_checkout.get("currency") == "XTR"
+                            and int(pre_checkout.get("total_amount", 0)) == package["stars"]
+                        )
+                    except Exception:
+                        valid = False
+                    telegram_request("answerPreCheckoutQuery", {
+                        "pre_checkout_query_id": pre_checkout["id"],
+                        "ok": valid,
+                        **({"error_message": "Счёт недействителен. Открой магазин и попробуй снова."} if not valid else {})
+                    })
+                    continue
+
                 message = update.get("message")
+                if message and message.get("successful_payment"):
+                    payment = message["successful_payment"]
+                    try:
+                        payload = json.loads(payment.get("invoice_payload", "{}"))
+                        package = STAR_PACKAGES.get(payload.get("package_id"))
+                        uid = str(payload.get("user_id", ""))
+                        if (package and uid == str(message["from"]["id"])
+                                and payment.get("currency") == "XTR"
+                                and int(payment.get("total_amount", 0)) == package["stars"]):
+                            with db() as con:
+                                con.execute("BEGIN IMMEDIATE")
+                                cur = con.execute(
+                                    """INSERT OR IGNORE INTO star_payments
+                                    (telegram_charge_id, user_id, package_id, coins, stars, created_at)
+                                    VALUES (?, ?, ?, ?, ?, ?)""",
+                                    (payment["telegram_payment_charge_id"], uid,
+                                     payload["package_id"], package["coins"],
+                                     package["stars"], int(time.time()))
+                                )
+                                if cur.rowcount:
+                                    con.execute("UPDATE users SET coins=coins+? WHERE user_id=?",
+                                                (package["coins"], uid))
+                                con.commit()
+                            telegram_request("sendMessage", {
+                                "chat_id": message["chat"]["id"],
+                                "text": f"Оплата прошла успешно! Начислено {package['coins']:,} монет.".replace(",", " ")
+                            })
+                    except Exception as exc:
+                        print(f"Stars payment processing error: {exc}")
+                    continue
 
                 if not message:
                     continue

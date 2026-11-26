@@ -1859,3 +1859,21 @@ nav .tab.active {
 html, body, button, a, input, select, textarea {
     touch-action: manipulation;
 }
+
+
+/* Единый значок внутриигрового рубля */
+.ruble-coin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.12em;
+    height: 1.12em;
+    margin-left: 2px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    font-size: .82em;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: -0.06em;
+    box-sizing: border-box;
+}

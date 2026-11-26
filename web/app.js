@@ -1092,6 +1092,8 @@ async function refresh() {
 async function runSpin(spinType = "paid") {
     const useFree = spinType === "daily" || spinType === "bonus";
     if (spinInProgress) return;
+    const previousSellButton = $("spin-result-sell");
+    if (previousSellButton) previousSellButton.hidden = true;
     spinInProgress = true;
     spinHaptic(useFree);
     const spinButton = $("spin");

@@ -352,13 +352,13 @@ function updateFreeSpinTimer() {
 // МИНИАТЮРА НОМЕРА
 // =========================================================
 
-function createMiniPlate(number) {
+function createMiniPlate(number, rarity = "Common") {
     const parts = String(number).split(" ");
     const main = parts[0] || "";
     const region = parts[1] || "";
 
     return `
-        <div class="mini-plate">
+        <div class="mini-plate" data-rarity="${escapeHtml(rarity)}">
             <div class="mini-plate-main">${escapeHtml(main)}</div>
             <div class="mini-plate-region">
                 <div class="mini-region-code">${escapeHtml(region)}</div>
@@ -411,7 +411,7 @@ function renderMarket() {
             return `
                 <div class="item market-item">
                     <div class="market-item-info">
-                        <div class="market-plate-wrap">${createMiniPlate(p.number)}</div>
+                        <div class="market-plate-wrap">${createMiniPlate(p.number, p.rarity)}</div>
                         <div class="market-meta">
                             <span class="market-rarity" data-rarity="${escapeHtml(p.rarity)}">${escapeHtml(rarityNames[p.rarity] || p.rarity)}</span>
                             ${renderTags(p.tags)}

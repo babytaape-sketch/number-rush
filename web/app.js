@@ -591,7 +591,7 @@ function askMarketPrice() {
             }
             const digit = event.target.closest("[data-digit]");
             if (digit) {
-                if (value.length < 7) value += digit.dataset.digit;
+                if (value.length < 8) value += digit.dataset.digit;
                 display.innerHTML = `${formatRubles(value || 0)}`;
             }
             if (event.target.closest("[data-clear]")) {
@@ -600,7 +600,7 @@ function askMarketPrice() {
             }
             if (event.target.closest("[data-submit]")) {
                 const price = Number(value);
-                if (Number.isInteger(price) && price >= 1 && price <= 1000000) finish(price);
+                if (Number.isInteger(price) && price >= 1 && price <= 10000000) finish(price);
             }
         });
         document.body.appendChild(overlay);

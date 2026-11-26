@@ -1,0 +1,7 @@
+rarity,target_probability_pct,simulated_count,simulated_probability_pct,configured_reward
+Common,65.0,650244,65.0244,10
+Uncommon,22.0,219551,21.9551,25
+Rare,9.0,90262,9.0262,60
+Epic,3.0,30111,3.0111,150
+Legendary,0.8,7867,0.7867,500
+Mythic,0.2,1965,0.1965,2000

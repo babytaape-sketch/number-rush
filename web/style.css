@@ -2527,3 +2527,61 @@ header { margin-bottom: 8px; }
 .collection-item .plate-analysis, .market-item .plate-analysis { margin-top: 5px; }
 .collection-item .plate-analysis summary, .market-item .plate-analysis summary { padding: 7px 9px; font-size: 10px; }
 .collection-item .plate-analysis-content, .market-item .plate-analysis-content { padding: 0 9px 9px; font-size: 10px; }
+
+
+/* Cinematic spin: moving light sweep, tension glow and rarity reveal */
+#plate { position: relative; isolation: isolate; }
+#plate::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    top: -35%;
+    bottom: -35%;
+    left: -65%;
+    width: 34%;
+    pointer-events: none;
+    opacity: 0;
+    transform: skewX(-18deg);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), rgba(255,255,255,.12), transparent);
+}
+#plate.spin-active { animation: plateCharge .9s ease-in-out infinite alternate; }
+#plate.spin-active::after {
+    opacity: .9;
+    animation: plateLightSweep 1.35s ease-in-out infinite;
+}
+#plate.spin-active .slot-cell { text-shadow: 0 0 12px rgba(70,145,255,.42); }
+#plate.spin-reveal {
+    animation: plateReveal 850ms cubic-bezier(.16,.8,.25,1) both;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 5px #080808,
+        0 0 24px var(--rarity-color), 0 0 58px color-mix(in srgb, var(--rarity-color) 65%, transparent),
+        inset 0 2px 5px #fff;
+}
+#plate.spin-reveal::after {
+    left: -65%;
+    opacity: 1;
+    animation: plateRevealSweep 780ms ease-out both;
+}
+@keyframes plateCharge {
+    from { filter: drop-shadow(0 0 4px rgba(74,137,255,.24)); transform: scale(1); }
+    to { filter: drop-shadow(0 0 17px rgba(74,137,255,.68)); transform: scale(1.008); }
+}
+@keyframes plateLightSweep {
+    0% { left: -65%; }
+    75%, 100% { left: 135%; }
+}
+@keyframes plateReveal {
+    0% { transform: scale(.965); filter: brightness(1.8); }
+    48% { transform: scale(1.035); filter: brightness(1.35); }
+    72% { transform: scale(.995); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+@keyframes plateRevealSweep {
+    0% { left: -65%; opacity: 0; }
+    20% { opacity: 1; }
+    100% { left: 135%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #plate.spin-active, #plate.spin-active::after, #plate.spin-reveal, #plate.spin-reveal::after {
+        animation: none !important;
+    }
+}

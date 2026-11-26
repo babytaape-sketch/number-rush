@@ -260,11 +260,11 @@ function chooseSpinMood() {
 }
 
 function isBeautifulPlate(number) {
-    const main = String(number).trim().split(/\\s+/)[0] || "";
+    const main = String(number).trim().split(/\s+/)[0] || "";
     const digits = main.replace(/[А-ЯЁ]/g, "");
     if (digits.length < 3) return false;
 
-    if (/^(\\d)\\1+$/.test(digits)) return true;
+    if (/^(\d)\1+$/.test(digits)) return true;
     if (/012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210/.test(digits)) return true;
     if (digits.length >= 4 && digits === digits.split("").reverse().join("")) return true;
     return false;

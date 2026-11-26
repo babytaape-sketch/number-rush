@@ -1147,46 +1147,36 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
 
     with db() as con:
         rows = con.execute(
-            """
-            SELECT
-                u.user_id,
-                u.username,
-                COUNT(p.id) AS plates_count,
-                SUM(CASE p.rarity
-                    WHEN 'Common' THEN 1
-                    WHEN 'Uncommon' THEN 2
-                    WHEN 'Rare' THEN 4
-                    WHEN 'Epic' THEN 8
-                    WHEN 'Legendary' THEN 16
-                    WHEN 'Mythic' THEN 32
-                    ELSE 0
-                END) AS score,
-                SUM(CASE WHEN p.rarity IN ('Rare', 'Epic', 'Legendary', 'Mythic')
-                    THEN 1 ELSE 0 END) AS rare_count
-            FROM users u
-            JOIN plates p ON p.owner_id = u.user_id
-            GROUP BY u.user_id, u.username
-            ORDER BY score DESC, plates_count DESC, rare_count DESC,
-                     u.username COLLATE NOCASE ASC
-            """
+            """SELECT user_id, username, coins, total_spins
+            FROM users
+            ORDER BY coins DESC, total_spins DESC, username COLLATE NOCASE ASC"""
         ).fetchall()
 
-    ranked = [
-        {
-            "rank": index + 1,
-            "username": row["username"],
-            "plates_count": int(row["plates_count"]),
-            "score": int(row["score"] or 0),
-            "rare_count": int(row["rare_count"] or 0),
-            "is_me": row["user_id"] == user["user_id"],
+    players = [dict(row) for row in rows]
+
+    def make_ranking(field, limit=10):
+        ordered = sorted(
+            players,
+            key=lambda item: (-int(item[field] or 0), str(item["username"]).lower())
+        )
+        result = [
+            {
+                "rank": index + 1,
+                "username": item["username"],
+                "value": int(item[field] or 0),
+                "is_me": item["user_id"] == user["user_id"],
+            }
+            for index, item in enumerate(ordered)
+        ]
+        return {
+            "top": result[:limit],
+            "my_rank": next((item for item in result if item["is_me"]), None),
         }
-        for index, row in enumerate(rows)
-    ]
 
     return {
-        "players": ranked[:50],
-        "my_rank": next((item for item in ranked if item["is_me"]), None),
-        "total_players": len(ranked),
+        "money": make_ranking("coins"),
+        "spins": make_ranking("total_spins"),
+        "total_players": len(players),
     }
 
 

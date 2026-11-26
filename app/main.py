@@ -1175,9 +1175,7 @@ def me(authorization: str | None = Header(default=None)):
         "rarest_plate": dict(rarest) if rarest else None,
         "purchases_count": purchases, "sales_count": sales,
         "free_spin_available": seconds_left == 0,
-        "free_spin_seconds": seconds_left,
-        "roulette_available": seconds_left == 0,
-        "roulette_seconds": seconds_left
+        "free_spin_seconds": seconds_left
     }
 
 
@@ -1229,7 +1227,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
 # =========================================================
 
 @app.post("/api/spin")
-def spin(authorization: str | None = Header(default=None)):
+def spin(free: bool = False, authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]
     now = int(time.time())
@@ -1245,10 +1243,27 @@ def spin(authorization: str | None = Header(default=None)):
             (uid,)
         ).fetchone()
 
+        free_spin_ready = (
+            row["last_free_spin_at"] == 0
+            or now - row["last_free_spin_at"] >= 86400
+        )
+
         used_free_spin = False
         used_paid_spin = False
 
-        if row["spins"] > 0:
+        if free:
+            if not free_spin_ready:
+                con.rollback()
+                raise HTTPException(400, "Бесплатный спин пока недоступен.")
+            used_free_spin = True
+            con.execute(
+                """UPDATE users
+                SET last_free_spin_at=?, free_spin_notified_for=0
+                WHERE user_id=?""",
+                (now, uid)
+            )
+
+        elif row["spins"] > 0:
             con.execute(
                 "UPDATE users SET spins=spins-1 WHERE user_id=?",
                 (uid,)
@@ -1330,46 +1345,6 @@ def spin(authorization: str | None = Header(default=None)):
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left,
         "plate_analysis": analyze_standard_plate(number, rarity)
-    }
-
-
-
-@app.post("/api/roulette")
-def spin_roulette(authorization: str | None = Header(default=None)):
-    user = current_user(authorization)
-    uid = user["user_id"]
-    now = int(time.time())
-    prizes = [
-        {"label": "1 000", "coins": 1000},
-        {"label": "3 000", "coins": 3000},
-        {"label": "5 000", "coins": 5000},
-        {"label": "15 000", "coins": 15000},
-        {"label": "ЛЕГЕНДАРНЫЙ ПРОКРУТ", "coins": 0},
-    ]
-    with db() as con:
-        con.execute("BEGIN IMMEDIATE")
-        row = con.execute(
-            "SELECT last_free_spin_at FROM users WHERE user_id=?", (uid,)
-        ).fetchone()
-        if row["last_free_spin_at"] and now - row["last_free_spin_at"] < 86400:
-            con.rollback()
-            raise HTTPException(400, "Колесо удачи пока недоступно.")
-        prize = random.choice(prizes)
-        con.execute(
-            """UPDATE users
-            SET coins=coins+?, last_free_spin_at=?, free_spin_notified_for=0
-            WHERE user_id=?""",
-            (prize["coins"], now, uid)
-        )
-        coins = con.execute(
-            "SELECT coins FROM users WHERE user_id=?", (uid,)
-        ).fetchone()["coins"]
-        con.commit()
-    return {
-        "prize": prize["label"],
-        "coins_awarded": prize["coins"],
-        "coins": coins,
-        "roulette_seconds": 86400,
     }
 
 
@@ -1735,7 +1710,7 @@ def telegram_polling():
                     try:
                         telegram_request("sendMessage", {
                             "chat_id": due["telegram_chat_id"],
-                            "text": "🎡 Колесо удачи NUMBER RUSH снова доступно! Заходи и испытай удачу.",
+                            "text": "🎁 Бесплатный спин NUMBER RUSH снова доступен! Заходи и испытай удачу.",
                             "reply_markup": {
                                 "inline_keyboard": [[{
                                     "text": "🎮 Открыть NUMBER RUSH",

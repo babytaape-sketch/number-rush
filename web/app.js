@@ -789,26 +789,64 @@ $("achievement-list")?.addEventListener("click", event => {
 
 
 function renderShop(packages) {
-    const root = $("shop-packages");
-    if (!root) return;
-    root.innerHTML = (packages || []).map(pack => {
-        const isPlate = pack.type === "plate";
-        const label = isPlate
-            ? (pack.rarity === "Mythic" ? "МИФИЧЕСКИЙ НОМЕР" : "ЛЕГЕНДАРНЫЙ НОМЕР")
-            : "РУБЛИ";
-        const value = isPlate
-            ? (pack.rarity === "Mythic" ? "Мифическая редкость" : "Легендарная редкость")
-            : formatRubles(pack.coins);
+    const rublesRoot = $("shop-packages");
+    const platesRoot = $("shop-plate-packages");
+    if (!rublesRoot || !platesRoot) return;
+
+    const rublePackages = (packages || []).filter(pack => pack.type !== "plate");
+    const platePackages = (packages || []).filter(pack => pack.type === "plate");
+
+    rublesRoot.innerHTML = rublePackages.map((pack, index) => `
+        <article class="shop-package shop-ruble-card">
+            <div class="shop-ruble-art" aria-hidden="true"><span>${index === 0 ? "₽" : index === 1 ? "₽₽" : "₽₽₽"}</span></div>
+            <strong>${formatRubles(pack.coins)}</strong>
+            <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
+            <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ</button>
+        </article>
+    `).join("");
+
+    platesRoot.innerHTML = platePackages.map(pack => {
+        const mythic = pack.rarity === "Mythic";
+        const title = mythic ? "МИФИЧЕСКИЙ" : "ЛЕГЕНДАРНЫЙ";
+        const plateLetters = mythic ? "В 888 ВВ" : "А 777 АА";
+        const region = mythic ? "88" : "77";
         return `
-            <article class="shop-package">
-                <div class="shop-package-icon">${label}</div>
-                <strong>${value}</strong>
-                <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
-                <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ ЗА STARS</button>
+            <article class="shop-plate-card ${mythic ? "is-mythic" : "is-legendary"}">
+                <div class="shop-plate-copy">
+                    <span class="shop-rarity-label">${mythic ? "✦ МИФИЧЕСКАЯ СЕРИЯ" : "◆ ЛЕГЕНДАРНАЯ СЕРИЯ"}</span>
+                    <h4>${title} НОМЕР</h4>
+                    <p>Гарантированная редкость</p>
+                    <div class="shop-plate-price">⭐ <b>${Number(pack.stars)} Stars</b></div>
+                    <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ НОМЕР</button>
+                </div>
+                <div class="shop-plate-visual" aria-label="Пример номерного знака">
+                    <div class="shop-license-plate">
+                        <span class="shop-plate-main">${plateLetters}</span>
+                        <span class="shop-plate-region"><b>${region}</b><small>RUS</small></span>
+                    </div>
+                    <span class="shop-plate-caption">ПРИМЕР НОМЕРА</span>
+                </div>
             </article>
         `;
     }).join("");
 }
+
+$("shop")?.addEventListener("click", event => {
+    const tab = event.target.closest("[data-shop-view]");
+    if (tab) {
+        const view = tab.dataset.shopView;
+        document.querySelectorAll("[data-shop-view]").forEach(button => {
+            const active = button === tab;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-selected", String(active));
+        });
+        $("shop-rubles-view")?.classList.toggle("hidden", view !== "rubles");
+        $("shop-plates-view")?.classList.toggle("hidden", view !== "plates");
+        return;
+    }
+    const buyButton = event.target.closest("[data-buy-package]");
+    if (buyButton) buyStarPackage(buyButton.dataset.buyPackage, buyButton);
+});
 
 async function buyStarPackage(packageId, button) {
     if (!tg || typeof tg.openInvoice !== "function") {

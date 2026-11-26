@@ -464,7 +464,7 @@ function renderMarket() {
             String(p.number).toLowerCase().includes(query) ||
             String(p.rarity_ru || p.rarity).toLowerCase().includes(query) ||
             (p.tags || []).some(tag => String(tag).toLowerCase().includes(query));
-        const matchesRarity = rarity === "all" || p.rarity === rarity;
+        const matchesRarity = rarity === "all" || p.rarity === rarity || (rarity === "Legendary" && p.rarity === "Mythic");
         const matchesFavorite = !favoritesOnly || marketFavorites.has(String(p.listing_id));
         return matchesSearch && matchesRarity && matchesFavorite;
     });
@@ -656,7 +656,7 @@ function renderCollection() {
     if (sort === "cheap") rows.sort((a,b) => Number(a.market_value || 0) - Number(b.market_value || 0));
     if (sort === "expensive") rows.sort((a,b) => Number(b.market_value || 0) - Number(a.market_value || 0));
     if (sort === "rarity") {
-        const rank = {Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:5};
+        const rank = {Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:4};
         rows.sort((a,b) => (rank[b.rarity] || 0) - (rank[a.rarity] || 0));
     }
     if (sort === "newest") rows.sort((a,b) => Number(b.id) - Number(a.id));

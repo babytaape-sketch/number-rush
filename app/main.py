@@ -740,7 +740,6 @@ SPECIAL_SERIES = {
     "ЕКХ": ["77", "97", "99", "177", "197", "199"],
     "СКР": ["197", "199"],
     "ХКХ": ["77"],
-    "ОВЕ": ["77"],
     "ВВВ": ["77"],
     "КОО": ["77"],
     "АКР": ["177"],
@@ -884,6 +883,32 @@ def classify_plate(letters, digits, region_code):
         return "Uncommon"
 
     return "Common"
+
+
+# OVE 77 is not a special Legendary series; recalculate existing plates.
+with db() as con:
+    migration_id = "remove_ove_77_legendary_series_2026_11"
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", (migration_id,)).fetchone():
+        rows = con.execute(
+            "SELECT id, number FROM plates WHERE rarity='Legendary' AND number LIKE '%ОВЕ 77'"
+        ).fetchall()
+        for row in rows:
+            parts = str(row["number"] or "").strip().split()
+            if len(parts) != 2 or len(parts[0]) != 6:
+                continue
+            body, region_code = parts
+            letters, digits = body[0] + body[4:6], body[1:4]
+            if letters == "ОВЕ" and region_code == "77":
+                new_rarity = classify_plate(letters, digits, region_code)
+                con.execute("UPDATE plates SET rarity=? WHERE id=?", (new_rarity, row["id"]))
+        con.execute(
+            """UPDATE users SET rare_plates=(
+                SELECT COUNT(*) FROM plates
+                WHERE plates.owner_id=users.user_id
+                AND plates.rarity IN ('Rare','Epic','Legendary','Mythic')
+            )"""
+        )
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (migration_id, int(time.time())))
 
 
 # Reclassify existing non-special 777 plates: triple digits are Epic, not Legendary.

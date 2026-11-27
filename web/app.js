@@ -809,7 +809,6 @@ function renderDailyStreak(data) {
                             ${isNext ? 'data-claim-streak="1" role="button" tabindex="0" aria-label="Забрать награду за день ' + (index + 1) + '"' : ""}>
                             <small>ДЕНЬ ${index + 1}</small>
                             <b>+${formatRubles(reward)}</b>
-                            ${isNext ? '<span class="streak-day-hint">НАЖМИ, ЧТОБЫ ЗАБРАТЬ</span>' : ""}
                         </div>
                     `;
                 }).join("")}

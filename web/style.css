@@ -3208,3 +3208,15 @@ header { margin-bottom: 8px; }
     height: 14px !important;
     border-width: 1px !important;
 }
+
+
+/* Main generated plate: preserve the current character spacing and make glyph strokes slightly lighter */
+#plate .plate-main {
+    font-family: "GOSTPlate", Arial, sans-serif !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+}
+#plate .plate-main > .slot-cell .slot-symbol {
+    -webkit-text-stroke: 0.35px #f4f4f4;
+    paint-order: stroke fill;
+}

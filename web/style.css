@@ -3177,7 +3177,7 @@ header { margin-bottom: 8px; }
     border-radius: 12px !important;
 }
 .plate-details-modal .mini-plate-main {
-    font-family: "Arial Narrow", "Roboto Condensed", Arial, sans-serif !important;
+    font-family: "GOSTPlate", Arial, sans-serif !important;
     font-size: clamp(48px, 10.5vw, 108px) !important;
     font-weight: 500 !important;
     line-height: 1 !important;
@@ -3189,7 +3189,7 @@ header { margin-bottom: 8px; }
     column-gap: 5px !important;
 }
 .plate-details-modal .mini-region-code {
-    font-family: "Arial Narrow", "Roboto Condensed", Arial, sans-serif !important;
+    font-family: "GOSTPlate", Arial, sans-serif !important;
     font-size: clamp(25px, 4.5vw, 54px) !important;
     font-weight: 600 !important;
     line-height: 1 !important;

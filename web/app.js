@@ -755,6 +755,51 @@ function renderCollection() {
 
 let garageData = null;
 
+function garageCarArt(car) {
+    const type = String(car.class || "sedan");
+    const body = type === "vaz2107"
+      ? "M34 88 L39 65 Q41 59 51 57 L89 55 L111 31 Q117 25 128 25 L205 25 Q214 26 220 34 L239 57 L275 61 Q286 63 290 73 L294 88 L282 96 L42 96 Z"
+      : type === "sport"
+      ? "M30 88 L42 72 Q48 65 65 63 L111 55 L145 34 Q153 28 170 29 L225 42 L254 62 L282 68 Q292 72 294 87 L282 96 L42 96 Z"
+      : type === "suv"
+      ? "M30 88 L35 57 Q37 48 49 47 L84 46 L105 27 Q111 22 123 22 L220 22 Q232 23 239 34 L251 49 L278 54 Q290 57 294 72 L296 88 L282 97 L42 97 Z"
+      : type === "supercar"
+      ? "M27 88 L45 73 Q54 66 76 64 L126 55 L158 38 Q169 31 188 33 L231 45 L259 64 L284 69 Q294 73 296 87 L282 96 L42 96 Z"
+      : "M34 88 L40 64 Q43 57 55 56 L92 54 L116 31 Q122 25 135 25 L207 25 Q218 26 225 36 L243 57 L278 62 Q290 65 293 76 L294 88 L282 96 L42 96 Z";
+    const windows = type === "vaz2107"
+      ? "M96 54 L116 33 Q120 29 130 29 L155 29 L155 54 Z M162 29 L202 29 Q210 30 216 38 L230 54 L162 54 Z"
+      : "M99 55 L119 34 Q125 29 137 29 L166 30 L160 55 Z M174 31 L205 36 Q214 38 222 55 L168 55 Z";
+    const paint = type === "vaz2107" ? "#d7dce2" : type === "sport" ? "#d93c36" : type === "suv" ? "#647d58" : type === "supercar" ? "#e3b52e" : "#4c86bd";
+    return `<div class="garage-car-art garage-car-${escapeHtml(type)}">
+      <svg class="garage-car-svg" viewBox="0 0 320 140" role="img" aria-label="${escapeHtml(car.name)}">
+        <defs>
+          <linearGradient id="carpaint-${escapeHtml(type)}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".55"/><stop offset=".35" stop-color="${paint}"/><stop offset="1" stop-color="#17202b"/></linearGradient>
+          <linearGradient id="glass-${escapeHtml(type)}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8d7e8"/><stop offset="1" stop-color="#253c53"/></linearGradient>
+        </defs>
+        <ellipse cx="164" cy="111" rx="126" ry="10" fill="#000" opacity=".42"/>
+        <path d="${body}" fill="url(#carpaint-${escapeHtml(type)})" stroke="#101820" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="${windows}" fill="url(#glass-${escapeHtml(type)})" stroke="#263746" stroke-width="2"/>
+        <path d="M158 29 L158 89 M235 58 L239 88 M91 57 L85 88" stroke="#273746" stroke-width="2" opacity=".8"/>
+        <path d="M42 79 L78 79 M246 78 L282 79" stroke="#fff" stroke-width="2" opacity=".28"/>
+        <path d="M37 83 L52 83 L50 90 L35 89 Z" fill="#f7f1d0" stroke="#6e7780"/>
+        <path d="M280 76 L292 78 L292 85 L281 85 Z" fill="#e64b3d"/>
+        <path d="M48 91 L278 91" stroke="#111923" stroke-width="3"/>
+        <rect x="151" y="63" width="15" height="3" rx="1.5" fill="#202a33"/>
+        <rect x="218" y="63" width="12" height="3" rx="1.5" fill="#202a33"/>
+        <path d="M286 84 L292 84 L292 88 L286 88 Z" fill="#cbd5df"/>
+        <g fill="#18212b" stroke="#090e14" stroke-width="2">
+          <circle cx="88" cy="91" r="20"/><circle cx="246" cy="91" r="20"/>
+        </g>
+        <g fill="#aeb8c1" stroke="#3a4651" stroke-width="3">
+          <circle cx="88" cy="91" r="11"/><circle cx="246" cy="91" r="11"/>
+        </g>
+        <g fill="#4b5965"><circle cx="88" cy="91" r="4"/><circle cx="246" cy="91" r="4"/></g>
+        <path d="M68 91 A20 20 0 0 1 108 91 M226 91 A20 20 0 0 1 266 91" fill="none" stroke="#d5dce2" stroke-width="2" opacity=".6"/>
+        <path d="M55 103 L274 103" stroke="#fff" stroke-width="1" opacity=".18"/>
+      </svg>
+    </div>`;
+}
+
 function renderGarage(data = garageData) {
     const root = $("garage-content");
     if (!root || !data) return;
@@ -767,7 +812,7 @@ function renderGarage(data = garageData) {
       <h3 class="garage-subtitle">Мои автомобили</h3>
       ${owned.length ? '<div class="garage-grid">' + owned.map(car => `
         <article class="garage-car-card">
-          <div class="garage-car-art garage-car-${escapeHtml(car.class)}"><span>${escapeHtml(car.emoji)}</span></div>
+          ${garageCarArt(car)}
           <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>В вашем гараже</small></div>
           <div class="garage-mounted-plate">${car.plate_number ? createMiniPlate(car.plate_number, car.plate_rarity) : '<span>Номер не установлен</span>'}</div>
           <label class="garage-select-label" for="garage-plate-${car.id}">Установить номер</label>

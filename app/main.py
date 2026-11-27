@@ -1015,6 +1015,8 @@ def get_plate_tags(letters, digits, region_code=None):
 
         if analysis.get("historical_associations"):
             tags.append("Есть историческая ассоциация серии (не текущий статус ведомства)")
+        if analysis.get("market_evidence"):
+            tags.append("Комбинация отмечена в рыночном справочнике")
 
         # Keep region identity distinct from digit-pattern labels.
         if analysis.get("region"):

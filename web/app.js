@@ -894,12 +894,17 @@ $("daily-task-list")?.addEventListener("click", event => {
 });
 
 
+let knownCompletedAchievementKeys = null;
+
 function renderAchievements(data) {
     const root = $("achievement-list");
     if (!root) return;
 
     const achievements = data.achievements || [];
     const readyCount = achievements.filter(item => item.completed && !item.claimed).length;
+    const completedKeys = new Set(achievements.filter(item => item.completed).map(item => String(item.key)));
+    const newlyCompletedKey = knownCompletedAchievementKeys === null ? null : [...completedKeys].find(key => !knownCompletedAchievementKeys.has(key));
+    knownCompletedAchievementKeys = completedKeys;
     const badge = $("achievement-badge");
     if (badge) {
         badge.textContent = readyCount > 9 ? "9+" : String(readyCount);
@@ -912,7 +917,7 @@ function renderAchievements(data) {
         const progress = Math.min(Number(item.progress || 0), Number(item.target || 1));
         const percent = Math.round(progress / Math.max(1, Number(item.target)) * 100);
         return `
-            <article class="daily-task-card achievement-card ${item.completed ? "is-completed" : ""} ${item.claimed ? "is-claimed" : ""}">
+            <article data-achievement-key="${escapeHtml(item.key)}" class="daily-task-card achievement-card ${item.completed ? "is-completed" : ""} ${item.claimed ? "is-claimed" : ""}">
                 <div class="daily-task-top">
                     <div>
                         <strong>🏆 ${escapeHtml(item.title)}</strong>
@@ -929,6 +934,24 @@ function renderAchievements(data) {
             </article>
         `;
     }).join("");
+
+    if (newlyCompletedKey !== null) {
+        const achievementsTab = document.querySelector('.tab[data-tab="achievements"]');
+        achievementsTab?.click();
+        if (moreNav) moreNav.classList.add("hidden");
+        if (moreToggle) {
+            moreToggle.setAttribute("aria-expanded", "false");
+            moreToggle.classList.remove("active");
+        }
+        requestAnimationFrame(() => {
+            const card = [...root.querySelectorAll("[data-achievement-key]")].find(el => el.dataset.achievementKey === newlyCompletedKey);
+            card?.scrollIntoView({ behavior: "smooth", block: "center" });
+            if (card) {
+                card.classList.add("achievement-just-unlocked");
+                setTimeout(() => card.classList.remove("achievement-just-unlocked"), 2400);
+            }
+        });
+    }
 }
 
 async function claimAchievement(key, button) {

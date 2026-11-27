@@ -958,50 +958,88 @@ with db() as con:
         con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (migration_id, int(time.time())))
 
 
-def get_plate_tags(letters, digits, region_code=None):
+def get_legacy_plate_tags(letters, digits, region_code=None):
+    """Keep the original compact feature count for the in-game price formula."""
     tags = []
-
     if digits == "000":
         tags.append("Три нуля")
-
     if len(set(digits)) == 1:
         tags.append("Три одинаковые цифры")
     elif digits[0] == digits[2]:
         tags.append("Зеркальные цифры")
-
     if digits in LADDER_DIGITS:
         tags.append("Цифровая лесенка")
-
     if digits in SPECIAL_DIGITS:
         tags.append("Особая комбинация")
-
     if digits.startswith("00") or digits.endswith("00"):
         tags.append("Круглые цифры")
-
     if digits[0] == digits[1] or digits[1] == digits[2]:
         if len(set(digits)) != 1:
             tags.append("Парные цифры")
-
     if region_code and is_special_series(letters, region_code):
         tags.append("Специальная серия")
-
     elif letters in SPECIAL_SERIES:
         tags.append("Известная серия")
-
     elif letters in GOLD_SERIES:
         tags.append("Тройные буквы")
-
     if letters in WORD_SERIES:
         tags.append("Словесная серия")
-
-    if (
-        letters[0] == letters[1]
-        or letters[1] == letters[2]
-    ):
-        if letters not in GOLD_SERIES:
-            tags.append("Повтор букв")
-
+    if (letters[0] == letters[1] or letters[1] == letters[2]) and letters not in GOLD_SERIES:
+        tags.append("Повтор букв")
     return tags
+
+
+def get_plate_tags(letters, digits, region_code=None):
+    """Return every applicable, non-duplicated structural and contextual feature."""
+    region_code = str(region_code or "").strip()
+    number = f"{letters[0]}{digits}{letters[1:]} {region_code}".strip()
+    analysis = analyze_standard_plate(number)
+    tags = []
+
+    if analysis.get("supported"):
+        digit_patterns = analysis.get("digit_patterns", [])
+        letter_patterns = analysis.get("letter_patterns", [])
+        tags.extend(digit_patterns)
+        tags.extend(letter_patterns)
+
+        # Common collector vocabulary for the first/last adjacent pair.
+        if digits[0] == digits[1] and len(set(digits)) > 1:
+            tags.append("Голова — первые две цифры одинаковые")
+        if digits[1] == digits[2] and len(set(digits)) > 1:
+            tags.append("Хвост — последние две цифры одинаковые")
+        if letters[0] == letters[1] and len(set(letters)) > 1:
+            tags.append("Голова букв — первые две буквы одинаковые")
+        if letters[1] == letters[2] and len(set(letters)) > 1:
+            tags.append("Хвост букв — последние две буквы одинаковые")
+
+        lexical = analysis.get("lexical")
+        if lexical and lexical.get("reading") and lexical.get("confidence") in {"high", "medium"}:
+            reading = lexical["reading"].strip()
+            meaning = lexical.get("meaning", "").strip()
+            label = f"Буквенное сочетание: «{reading}»"
+            if meaning:
+                label += f" — {meaning}"
+            tags.append(label)
+
+        if analysis.get("historical_associations"):
+            tags.append("Есть историческая ассоциация серии (не текущий статус ведомства)")
+
+        # Keep region identity distinct from digit-pattern labels.
+        if analysis.get("region"):
+            tags.append(f"Регион: {analysis['region']} (код {region_code})")
+
+    # Retain established game-specific series labels, without generic duplicate pair labels.
+    if region_code and is_special_series(letters, region_code):
+        tags.append("Специальная серия")
+    elif letters in SPECIAL_SERIES:
+        tags.append("Известная серия")
+    if letters in GOLD_SERIES and "Три одинаковые буквы" not in tags:
+        tags.append("Тройные буквы")
+    if letters in WORD_SERIES and not any("Буквенное сочетание:" in tag for tag in tags):
+        tags.append("Словесная серия")
+
+    # Preserve order while removing duplicate labels.
+    return list(dict.fromkeys(tags))
 
 
 def get_number_features(number):
@@ -1090,7 +1128,7 @@ def calculate_plate_value(number, rarity):
     if region in {"77", "97", "99", "177", "197", "199", "777", "799"}:
         value *= 1.2
 
-    value *= 1 + min(len(tags), 5) * 0.08
+    value *= 1 + min(len(get_legacy_plate_tags(letters, digits, region)), 5) * 0.08
     return max(100, int(round(value / 50) * 50))
 
 

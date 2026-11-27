@@ -1828,8 +1828,8 @@ def buy_listing(
                     "🎉 Твой номер продан на рынке!\n"
                     f"Номер: {sold_plate['number']}\n"
                     f"Редкость: {RARITY_NAMES.get(sold_plate['rarity'], sold_plate['rarity'])}\n"
-                    f"Цена продажи: {listing['price']:,} ₽\\n"
-                    f"Комиссия рынка (5%): {listing['price'] - seller_payout:,} ₽\\n"
+                    f"Цена продажи: {listing['price']:,} ₽\n"
+                    f"Комиссия рынка (5%): {listing['price'] - seller_payout:,} ₽\n"
                     f"Получено: {seller_payout:,} ₽".replace(",", " ")
                 )
             })

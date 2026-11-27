@@ -824,23 +824,31 @@ function garageSceneCar(car) {
           <path d="M245 174 L555 174" stroke="#11171c" stroke-width="5" stroke-linecap="round"/>
           <path d="M130 182 Q146 174 180 174 L620 174 Q654 174 670 182 L729 315 Q739 341 714 359 L86 359 Q61 341 71 315Z" fill="url(#vaz-paint)" stroke="#777d80" stroke-width="5"/>
           <path d="M177 185 Q400 173 623 185 L670 300 Q400 318 130 300Z" fill="#f7f7f4" opacity=".45"/>
+          <path d="M292 177 Q400 163 508 177 L520 285 Q400 301 280 285Z" fill="url(#vaz-paint)" stroke="#aeb4b6" stroke-width="2"/>
+          <path d="M400 169 L400 294" stroke="#fff" stroke-width="3" opacity=".75"/>
+          <path d="M286 181 L278 285 M514 181 L522 285" stroke="#9ca3a6" stroke-width="2" opacity=".45"/>
           <path d="M165 202 Q400 190 635 202" stroke="#fff" stroke-width="5" opacity=".65"/>
           <path d="M115 305 Q400 322 685 305" stroke="#9da2a4" stroke-width="3" opacity=".55"/>
           <rect x="105" y="250" width="139" height="112" rx="3" fill="#454d52" stroke="#171c20" stroke-width="7"/>
           <rect x="556" y="250" width="139" height="112" rx="3" fill="#454d52" stroke="#171c20" stroke-width="7"/>
-          <rect x="113" y="258" width="123" height="96" rx="2" fill="url(#vaz-lamp)" stroke="#8c9498" stroke-width="3"/>
-          <rect x="564" y="258" width="123" height="96" rx="2" fill="url(#vaz-lamp)" stroke="#8c9498" stroke-width="3"/>
+          <rect x="113" y="258" width="94" height="96" rx="2" fill="url(#vaz-lamp)" stroke="#8c9498" stroke-width="3"/><rect x="209" y="258" width="27" height="96" fill="#d88b38" stroke="#8c9498" stroke-width="2"/>
+          <path d="M119 266 H201 M119 346 H201" stroke="#fff" stroke-width="2" opacity=".65"/>
+          <rect x="564" y="258" width="94" height="96" rx="2" fill="url(#vaz-lamp)" stroke="#8c9498" stroke-width="3"/><rect x="661" y="258" width="26" height="96" fill="#d88b38" stroke="#8c9498" stroke-width="2"/>
+          <path d="M570 266 H652 M570 346 H652" stroke="#fff" stroke-width="2" opacity=".65"/>
           <path d="M174 260 V354 M625 260 V354 M114 306 H235 M565 306 H686" stroke="#929b9f" stroke-width="3" opacity=".75"/>
-          <rect x="116" y="365" width="116" height="24" rx="3" fill="#d58a37" stroke="#70451f" stroke-width="3"/><rect x="568" y="365" width="116" height="24" rx="3" fill="#d58a37" stroke="#70451f" stroke-width="3"/>
+          
           <path d="M105 290 L270 290 M530 290 L695 290" stroke="#fff" stroke-width="3" opacity=".7"/>
           <rect x="289" y="260" width="222" height="112" rx="5" fill="url(#vaz-chrome)" stroke="#62696d" stroke-width="5"/>
           <rect x="300" y="270" width="200" height="92" fill="#141a1e" stroke="#d4d7d7" stroke-width="3"/>
-          <g stroke="#c4c8c9" stroke-width="5"><path d="M302 285 H498 M302 303 H498 M302 321 H498 M302 339 H498 M302 356 H498"/></g>
+          <g stroke="#c4c8c9" stroke-width="4"><path d="M302 285 H498 M302 303 H498 M302 321 H498 M302 339 H498 M302 356 H498"/></g>
+          <g stroke="#aeb5b8" stroke-width="3"><path d="M313 272 V360 M329 272 V360 M345 272 V360 M361 272 V360 M377 272 V360 M423 272 V360 M439 272 V360 M455 272 V360 M471 272 V360 M487 272 V360"/></g>
           <rect x="379" y="286" width="42" height="58" rx="5" fill="url(#vaz-chrome)" stroke="#42494d" stroke-width="3"/>
           <path d="M385 326 L400 294 L415 326 L400 317Z" fill="#353d42" stroke="#f1f2f1" stroke-width="2"/>
           <path d="M176 184 L164 274 M624 184 L636 274" stroke="#a9afb1" stroke-width="3" opacity=".65"/>
-          <path d="M77 365 Q400 380 723 365 L733 394 Q400 411 67 394Z" fill="url(#vaz-chrome)" stroke="#5c6367" stroke-width="4"/>
+          <path d="M77 365 Q400 380 723 365 L733 394 Q400 411 67 394Z" fill="#202529" stroke="#090d10" stroke-width="4"/>
+          <path d="M78 369 Q400 384 722 369" stroke="url(#vaz-chrome)" stroke-width="7" fill="none"/>
           <path d="M69 395 Q400 414 731 395 L724 424 Q400 444 76 424Z" fill="#171b1e" stroke="#050607" stroke-width="5"/>
+          <path d="M94 411 Q400 432 706 411" stroke="#454d52" stroke-width="3" fill="none"/>
           <path d="M79 398 Q400 417 721 398" stroke="#747b7f" stroke-width="4"/>
           <rect x="325" y="389" width="150" height="43" rx="4" fill="#f9f9f6" stroke="#25292c" stroke-width="5"/>
           <rect x="331" y="394" width="138" height="33" rx="2" fill="#fff" stroke="#c7cbcd" stroke-width="1.5"/>

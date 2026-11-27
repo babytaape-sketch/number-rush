@@ -1207,6 +1207,8 @@ async function runSpin(spinType = "paid") {
         showCollectionFullModal();
         return;
     }
+    // Закрываем подробности предыдущего номера сразу при старте новой прокрутки.
+    document.querySelectorAll(".plate-details-overlay:not(.collection-full-overlay)").forEach(overlay => overlay.remove());
     spinInProgress = true;
     spinHaptic(useFree);
     const spinButton = $("spin");

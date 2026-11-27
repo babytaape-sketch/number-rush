@@ -19,7 +19,7 @@ DIGIT_LABELS = {
     "pair_first_two": "Голова — первые две цифры одинаковые",
     "pair_outer": "Одинаковые крайние цифры",
     "round_ten": "Окончание на 0",
-    "round_hundred": "Круглая сотня",
+    "round_hundred": "Круглые сотни",
     "first_decade": "Число из первой десятки",
     "ascending_run": "Возрастающая лесенка",
     "descending_run": "Убывающая лесенка",

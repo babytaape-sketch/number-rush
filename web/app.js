@@ -667,7 +667,7 @@ function renderCollection() {
     if (sort === "newest") rows.sort((a,b) => Number(b.id) - Number(a.id));
 
     const count = $("collection-count");
-    if (count) count.textContent = rows.length + " из " + collectionCache.length + " номеров";
+    if (count) count.textContent = collectionCache.length + " из 50 номеров";
 
     root.innerHTML = rows.length
         ? rows.map(p => `

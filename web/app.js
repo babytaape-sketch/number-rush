@@ -913,7 +913,8 @@ function renderAchievements(data) {
     const moreIndicator = $("more-achievement-indicator");
     if (moreIndicator) moreIndicator.hidden = readyCount === 0;
 
-    root.innerHTML = achievements.map(item => {
+    const orderedAchievements = [...achievements].sort((a, b) => Number(b.completed && !b.claimed) - Number(a.completed && !a.claimed) || Number(b.completed) - Number(a.completed));
+    root.innerHTML = orderedAchievements.map(item => {
         const progress = Math.min(Number(item.progress || 0), Number(item.target || 1));
         const percent = Math.round(progress / Math.max(1, Number(item.target)) * 100);
         return `

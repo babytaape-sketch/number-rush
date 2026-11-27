@@ -3210,18 +3210,18 @@ header { margin-bottom: 8px; }
 }
 
 
-/* Slightly tighten generated plate character spacing */
+/* Fine adjustment: spread generated plate characters by 2.5% */
 #plate .plate-main > .slot-cell {
     flex-basis: .55em !important;
     width: .55em !important;
     min-width: .55em !important;
-    margin-right: -.05em !important;
+    margin-right: -.0375em !important;
 }
 
-/* Bring two-digit region characters a little closer without changing 3-digit regions */
+/* Two-digit region only; three-digit regions remain unchanged */
 #plate .region-code:has(> .slot-cell:nth-child(2)):not(:has(> .slot-cell:nth-child(3))) > .slot-cell {
     flex-basis: .75em !important;
     width: .75em !important;
     min-width: .75em !important;
-    margin-right: -.015em !important;
+    margin-right: .003em !important;
 }

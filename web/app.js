@@ -800,6 +800,54 @@ function garageCarArt(car) {
     </div>`;
 }
 
+function garageSceneCar(car) {
+    const plate = car.plate_number ? escapeHtml(car.plate_number) : "";
+    return \`
+      <div class="garage-real-car-wrap">
+        <svg class="garage-real-car" viewBox="0 0 800 470" role="img" aria-label="Белый ВАЗ-2107, вид спереди">
+          <defs>
+            <linearGradient id="vaz-paint" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".45" stop-color="#e9e9e6"/><stop offset=".78" stop-color="#c7c9c9"/><stop offset="1" stop-color="#85898b"/></linearGradient>
+            <linearGradient id="vaz-glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#29333b"/><stop offset=".55" stop-color="#101820"/><stop offset="1" stop-color="#3b4850"/></linearGradient>
+            <linearGradient id="vaz-chrome" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".28" stop-color="#858b90"/><stop offset=".55" stop-color="#f4f5f5"/><stop offset="1" stop-color="#666d72"/></linearGradient>
+            <linearGradient id="vaz-lamp" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#d9e1e3"/><stop offset="1" stop-color="#929da1"/></linearGradient>
+          </defs>
+          <ellipse cx="400" cy="425" rx="300" ry="25" fill="#000" opacity=".58"/>
+          <path d="M105 333 Q75 350 80 425 L155 435 L188 355Z M695 333 Q725 350 720 425 L645 435 L612 355Z" fill="#15191d" stroke="#050607" stroke-width="8"/>
+          <path d="M104 370 L151 382 M95 394 L149 405 M93 416 L147 426 M696 370 L649 382 M705 394 L651 405 M707 416 L653 426" stroke="#596067" stroke-width="5"/>
+          <path d="M125 150 L63 130 Q48 128 43 143 L43 178 Q45 190 62 184 L137 172Z M675 150 L737 130 Q752 128 757 143 L757 178 Q755 190 738 184 L663 172Z" fill="#171d22" stroke="#080b0e" stroke-width="6"/>
+          <path d="M55 143 L116 158 L60 173Z M745 143 L684 158 L740 173Z" fill="#202a31"/>
+          <path d="M154 54 Q170 25 213 22 L587 22 Q630 25 646 54 L681 185 L119 185Z" fill="url(#vaz-chrome)" stroke="#5e6468" stroke-width="5"/>
+          <path d="M174 61 Q188 39 218 38 L582 38 Q612 39 626 61 L653 170 L147 170Z" fill="url(#vaz-glass)" stroke="#10161b" stroke-width="7"/>
+          <path d="M400 39 L400 170 M168 165 Q270 176 400 170 Q530 176 632 165" fill="none" stroke="#6c7479" stroke-width="4"/>
+          <path d="M210 46 L190 162 M590 46 L610 162" stroke="#a9b0b3" stroke-width="3" opacity=".35"/>
+          <rect x="366" y="49" width="68" height="30" rx="7" fill="#111820" stroke="#555d62" stroke-width="3"/>
+          <path d="M245 174 L555 174" stroke="#11171c" stroke-width="5" stroke-linecap="round"/>
+          <path d="M130 182 Q146 174 180 174 L620 174 Q654 174 670 182 L729 315 Q739 341 714 359 L86 359 Q61 341 71 315Z" fill="url(#vaz-paint)" stroke="#777d80" stroke-width="5"/>
+          <path d="M177 185 Q400 173 623 185 L670 300 Q400 318 130 300Z" fill="#f7f7f4" opacity=".45"/>
+          <path d="M165 202 Q400 190 635 202" stroke="#fff" stroke-width="5" opacity=".65"/>
+          <path d="M115 305 Q400 322 685 305" stroke="#9da2a4" stroke-width="3" opacity=".55"/>
+          <rect x="89" y="274" width="196" height="91" rx="7" fill="#171b1e" stroke="#050708" stroke-width="7"/>
+          <rect x="515" y="274" width="196" height="91" rx="7" fill="#171b1e" stroke="#050708" stroke-width="7"/>
+          <rect x="99" y="283" width="176" height="72" rx="4" fill="url(#vaz-lamp)" stroke="#8c9498" stroke-width="3"/>
+          <rect x="525" y="283" width="176" height="72" rx="4" fill="url(#vaz-lamp)" stroke="#8c9498" stroke-width="3"/>
+          <path d="M145 285 L145 353 M228 285 L228 353 M572 285 L572 353 M655 285 L655 353" stroke="#7c878c" stroke-width="3" opacity=".8"/>
+          <path d="M105 290 L270 290 M530 290 L695 290" stroke="#fff" stroke-width="3" opacity=".7"/>
+          <rect x="289" y="260" width="222" height="112" rx="5" fill="url(#vaz-chrome)" stroke="#62696d" stroke-width="5"/>
+          <rect x="300" y="270" width="200" height="92" fill="#141a1e" stroke="#d4d7d7" stroke-width="3"/>
+          <g stroke="#c4c8c9" stroke-width="5"><path d="M302 285 H498 M302 303 H498 M302 321 H498 M302 339 H498 M302 356 H498"/></g>
+          <rect x="386" y="297" width="28" height="42" rx="3" fill="#bfc4c5" stroke="#42494d" stroke-width="3"/>
+          <path d="M392 329 L400 306 L408 329Z" fill="#353d42"/>
+          <path d="M77 365 Q400 380 723 365 L733 394 Q400 411 67 394Z" fill="url(#vaz-chrome)" stroke="#5c6367" stroke-width="4"/>
+          <path d="M69 395 Q400 414 731 395 L724 424 Q400 444 76 424Z" fill="#171b1e" stroke="#050607" stroke-width="5"/>
+          <path d="M79 398 Q400 417 721 398" stroke="#747b7f" stroke-width="4"/>
+          <rect x="325" y="389" width="150" height="43" rx="4" fill="#f9f9f6" stroke="#25292c" stroke-width="5"/>
+          <rect x="331" y="394" width="138" height="33" rx="2" fill="#fff" stroke="#c7cbcd" stroke-width="1.5"/>
+          <text x="400" y="416" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" font-weight="700" letter-spacing="1.2" fill="#111">\${plate || " "}</text>
+          <path d="M190 438 L610 438" stroke="#171b1e" stroke-width="4"/>
+        </svg>
+      </div>\`;
+}
+
 function renderGarage(data = garageData) {
     const root = $("garage-content");
     if (!root || !data) return;
@@ -807,30 +855,49 @@ function renderGarage(data = garageData) {
     const owned = data.cars || [];
     const shop = data.shop || [];
     const plates = data.plates || [];
-    root.innerHTML = `
-      <div class="garage-balance">Баланс: <b>${formatRubles(data.coins)}</b></div>
-      <h3 class="garage-subtitle">Мои автомобили</h3>
-      ${owned.length ? '<div class="garage-grid">' + owned.map(car => `
+    const mainCar = owned.find(car => car.key === "sedan") || owned[0];
+    const otherCars = owned.filter(car => !mainCar || car.id !== mainCar.id);
+    root.innerHTML = \`
+      <div class="garage-balance">Баланс: <b>\${formatRubles(data.coins)}</b></div>
+      <div class="garage-scene">
+        <div class="garage-scene-ceiling"><span></span><span></span><span></span></div>
+        <div class="garage-scene-sign">NUMBER RUSH <small>PRIVATE MOTOR GARAGE</small></div>
+        <div class="garage-scene-backwall"><div class="garage-toolwall"></div></div>
+        <div class="garage-scene-floor"><div class="garage-floor-lines"></div></div>
+        \${mainCar ? \`
+          <div class="garage-scene-car-name"><b>\${escapeHtml(mainCar.name)}</b><span>ВАШ АВТОМОБИЛЬ</span></div>
+          <div class="garage-car-platform">\${garageSceneCar(mainCar)}</div>
+          <div class="garage-scene-controls">
+            <label for="garage-plate-\${mainCar.id}">ГОСУДАРСТВЕННЫЙ НОМЕР</label>
+            <select class="market-select garage-plate-select" id="garage-plate-\${mainCar.id}" data-garage-plate="\${mainCar.id}">
+              <option value="">Снять номер</option>
+              \${mainCar.plate_id ? '<option value="' + mainCar.plate_id + '" selected>' + escapeHtml(mainCar.plate_number || "Текущий номер") + '</option>' : ''}
+              \${plates.map(p => \`<option value="\${p.id}">\${escapeHtml(p.number)} · \${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>\`).join("")}
+            </select>
+            <small>Номер устанавливается прямо на передний бампер автомобиля</small>
+          </div>\` : '<div class="garage-no-car">Машина появится здесь автоматически</div>'}
+      </div>
+      \${otherCars.length ? '<h3 class="garage-subtitle">Другие автомобили</h3><div class="garage-grid">' + otherCars.map(car => \`
         <article class="garage-car-card">
-          ${garageCarArt(car)}
-          <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>В вашем гараже</small></div>
-          <div class="garage-mounted-plate">${car.plate_number ? createMiniPlate(car.plate_number, car.plate_rarity) : '<span>Номер не установлен</span>'}</div>
-          <label class="garage-select-label" for="garage-plate-${car.id}">Установить номер</label>
-          <select class="market-select garage-plate-select" id="garage-plate-${car.id}" data-garage-plate="${car.id}">
+          \${garageCarArt(car)}
+          <div class="garage-car-info"><b>\${escapeHtml(car.name)}</b><small>В вашем гараже</small></div>
+          <div class="garage-mounted-plate">\${car.plate_number ? createMiniPlate(car.plate_number, car.plate_rarity) : '<span>Номер не установлен</span>'}</div>
+          <label class="garage-select-label" for="garage-plate-\${car.id}">Установить номер</label>
+          <select class="market-select garage-plate-select" id="garage-plate-\${car.id}" data-garage-plate="\${car.id}">
             <option value="">Снять номер</option>
-            ${plates.map(p => `<option value="${p.id}">${escapeHtml(p.number)} · ${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>`).join("")}
-            ${car.plate_id ? '<option value="' + car.plate_id + '" selected>Текущий номер</option>' : ''}
+            \${plates.map(p => \`<option value="\${p.id}">\${escapeHtml(p.number)} · \${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>\`).join("")}
+            \${car.plate_id ? '<option value="' + car.plate_id + '" selected>Текущий номер</option>' : ''}
           </select>
-        </article>`).join("") + '</div>' : '<div class="empty">Пока нет машин. Выбери первую в магазине ниже.</div>'}
+        </article>\`).join("") + '</div>' : ''}
       <h3 class="garage-subtitle">Автосалон</h3>
       <div class="garage-grid">
-        ${shop.map(car => `
+        \${shop.filter(car => car.key !== "sedan").map(car => \`
           <article class="garage-car-card garage-shop-card">
-            ${garageCarArt(car)}
-            <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>${formatRubles(car.price)}</small></div>
-            <button class="market-action garage-buy" data-buy-car="${escapeHtml(car.key)}" ${car.owned ? "disabled" : ""}>${car.owned ? "КУПЛЕНО" : "КУПИТЬ"}</button>
-          </article>`).join("")}
-      </div>`;
+            \${garageCarArt(car)}
+            <div class="garage-car-info"><b>\${escapeHtml(car.name)}</b><small>\${formatRubles(car.price)}</small></div>
+            <button class="market-action garage-buy" data-buy-car="\${escapeHtml(car.key)}" \${car.owned ? "disabled" : ""}>\${car.owned ? "КУПЛЕНО" : "КУПИТЬ"}</button>
+          </article>\`).join("")}
+      </div>\`;
 }
 
 async function loadGarage() {

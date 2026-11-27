@@ -149,6 +149,9 @@ with db() as con:
         for row in con.execute("PRAGMA table_info(users)").fetchall()
     ]
 
+    if "rescue_fund_last_claim_at" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN rescue_fund_last_claim_at INTEGER NOT NULL DEFAULT 0")
+
     if "xp" not in columns:
         con.execute("ALTER TABLE users ADD COLUMN xp INTEGER NOT NULL DEFAULT 0")
 
@@ -1349,8 +1352,30 @@ def me(authorization: str | None = Header(default=None)):
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left,
         "bonus_spin_progress": int(row["bonus_spin_progress"]),
-        "bonus_spins_pending": int(row["bonus_spins_pending"])
+        "bonus_spins_pending": int(row["bonus_spins_pending"]),
+        "rescue_fund_seconds": max(0, 180 - (now - int(user["rescue_fund_last_claim_at"] or 0)))
     }
+
+
+@app.post("/api/rescue-fund/claim")
+def claim_rescue_fund(authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    now = int(time.time())
+    uid = user["user_id"]
+    with db() as con:
+        con.execute("BEGIN IMMEDIATE")
+        row = con.execute("SELECT coins, rescue_fund_last_claim_at FROM users WHERE user_id=?", (uid,)).fetchone()
+        plate_count = con.execute("SELECT COUNT(*) n FROM plates WHERE owner_id=?", (uid,)).fetchone()["n"]
+        if int(row["coins"]) >= 1000 or plate_count > 0:
+            con.rollback()
+            raise HTTPException(400, "Фонд спасения доступен, только если баланс меньше 1 000 монет и в коллекции нет номеров.")
+        seconds_left = max(0, 180 - (now - int(row["rescue_fund_last_claim_at"] or 0)))
+        if seconds_left:
+            con.rollback()
+            raise HTTPException(400, f"Повторно получить помощь можно через {seconds_left} сек.")
+        con.execute("UPDATE users SET coins=coins+1000, rescue_fund_last_claim_at=? WHERE user_id=?", (now, uid))
+        con.commit()
+    return {"ok": True, "coins_added": 1000, "cooldown_seconds": 180}
 
 
 # =========================================================

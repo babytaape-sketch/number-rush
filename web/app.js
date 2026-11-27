@@ -149,59 +149,6 @@ function setRarityEffect(rarity) {
     rarityLabel.textContent = rarityNames[rarity] || rarity.toUpperCase();
 }
 
-function renderPlateAnalysis(analysis) {
-    if (!analysis || !analysis.supported) return "";
-
-    const items = [];
-    const add = (label, values) => {
-        if (!Array.isArray(values) || !values.length) return;
-        const unique = [...new Set(values.map(value => String(value || "").trim()).filter(Boolean))];
-        if (unique.length) items.push(
-            `<p><b>${escapeHtml(label)}:</b> ${unique.map(escapeHtml).join(" · ")}</p>`
-        );
-    };
-
-    const regionName = String(analysis.region || "").trim();
-    const regionCode = String(analysis.region_code || "").trim();
-    if (regionName || regionCode) {
-        items.push(`<p><b>Регион:</b> ${escapeHtml(regionName || regionCode)}${regionName && regionCode ? ` (${escapeHtml(regionCode)})` : ""}</p>`);
-    }
-
-    add("Цифры", analysis.digit_patterns);
-    add("Буквы", analysis.letter_patterns);
-
-    if (analysis.lexical && analysis.lexical.reading) {
-        const meaning = String(analysis.lexical.meaning || "").trim();
-        items.push(`<p><b>Читается:</b> ${escapeHtml(analysis.lexical.reading)}${meaning ? ` — ${escapeHtml(meaning)}` : ""}</p>`);
-    }
-
-    const history = (analysis.historical_associations || [])
-        .map(item => String(item.association || "").trim())
-        .filter(Boolean);
-    add("Серия", history);
-
-    const marketLabel = category => {
-        if (category === "three_identical_digits") return "Тройные цифры";
-        if (category === "three_identical_letters") return "Тройные буквы";
-        if (category === "mirror_digits") return "Зеркальные цифры";
-        if (category === "round_hundreds") return "Круглая сотня";
-        if (category === "first_decade_001_010") return "Число из первой десятки";
-        if (category === "word_KOT") return "Читаемое слово «КОТ»";
-        if (category.endsWith("_digits")) return "Рыночная комбинация " + category.slice(0, -7);
-        if (category.endsWith("_letters")) return "Рыночная серия " + category.slice(0, -8);
-        return "";
-    };
-    if (!items.length) return "";
-    return `
-        <details class="plate-analysis">
-            <summary>Описание номера</summary>
-            <div class="plate-analysis-content">
-                ${items.join("")}
-            </div>
-        </details>
-    `;
-}
-
 function renderTags(tags) {
     if (!Array.isArray(tags) || tags.length === 0) {
         return "";
@@ -548,7 +495,6 @@ function renderMarket() {
                         <div class="market-meta">
                             <span class="market-rarity" data-rarity="${escapeHtml(p.rarity)}">${escapeHtml(rarityNames[p.rarity] || p.rarity)}</span>
                             ${renderTags(p.tags)}
-                            ${renderPlateAnalysis(p.analysis)}
                         </div>
                     </div>
                     <div class="market-price">
@@ -730,7 +676,6 @@ function renderCollection() {
                     ${createMiniPlate(p.number, p.rarity)}
                     <small>${escapeHtml(rarityNames[p.rarity] || p.rarity)}</small>
                     ${renderTags(p.tags)}
-                    ${renderPlateAnalysis(p.analysis)}
                 </div>
                 <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed

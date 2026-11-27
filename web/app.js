@@ -1248,8 +1248,19 @@ async function runSpin(spinType = "paid") {
         showCollectionFullModal();
         return;
     }
-    // Закрываем подробности предыдущего номера сразу при старте новой прокрутки.
+    // Сразу убираем описание и редкость предыдущего номера на время новой прокрутки.
     document.querySelectorAll(".plate-details-overlay:not(.collection-full-overlay)").forEach(overlay => overlay.remove());
+    const previousRarity = $("rarity");
+    if (previousRarity) {
+        previousRarity.textContent = "";
+        previousRarity.style.color = "";
+        previousRarity.classList.remove(
+            "rarity-reveal-common", "rarity-reveal-uncommon", "rarity-reveal-rare",
+            "rarity-reveal-epic", "rarity-reveal-legendary"
+        );
+    }
+    const previousAnalysis = $("plate-analysis");
+    if (previousAnalysis) previousAnalysis.innerHTML = "";
     spinInProgress = true;
     spinHaptic(useFree);
     const spinButton = $("spin");

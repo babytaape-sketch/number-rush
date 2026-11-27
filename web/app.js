@@ -1096,10 +1096,11 @@ function renderLeaderboard(data) {
                 }).join("") || '<p class="daily-tasks-note">Пока здесь никого нет.</p>'}
             </div>
         </section>`;
+    // Порядок колонок: прокрутки слева, лучший номер по центру, деньги справа.
     root.innerHTML =
+        renderTable("По прокруткам", data.spins, "спинов", "🎰") +
         bestSection +
-        renderTable("По балансу", data.money, "руб.", "💰") +
-        renderTable("По прокруткам", data.spins, "спинов", "🎰");
+        renderTable("По балансу", data.money, "руб.", "💰");
 }
 
 async function refresh() {

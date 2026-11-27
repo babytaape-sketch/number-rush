@@ -1541,7 +1541,7 @@ def buy_garage_car(payload: GaragePurchaseRequest, authorization: str | None = H
 
 
 class GaragePlateRequest(BaseModel):
-    plate_id: int
+    plate_id: int | None = None
 
 
 @app.post("/api/garage/{garage_id}/plate")
@@ -1554,14 +1554,15 @@ def mount_garage_plate(garage_id: int, payload: GaragePlateRequest, authorizatio
         if not garage:
             con.rollback()
             raise HTTPException(404, "Машина не найдена в гараже")
-        plate = con.execute("SELECT id FROM plates WHERE id=? AND owner_id=?", (payload.plate_id, uid)).fetchone()
-        if not plate:
-            con.rollback()
-            raise HTTPException(404, "Номер не найден в коллекции")
-        if con.execute("SELECT 1 FROM listings WHERE plate_id=?", (payload.plate_id,)).fetchone():
-            con.rollback()
-            raise HTTPException(409, "Номер выставлен на рынок")
-        con.execute("UPDATE user_garages SET plate_id=NULL WHERE user_id=? AND plate_id=?", (uid, payload.plate_id))
+        if payload.plate_id is not None:
+            plate = con.execute("SELECT id FROM plates WHERE id=? AND owner_id=?", (payload.plate_id, uid)).fetchone()
+            if not plate:
+                con.rollback()
+                raise HTTPException(404, "Номер не найден в коллекции")
+            if con.execute("SELECT 1 FROM listings WHERE plate_id=?", (payload.plate_id,)).fetchone():
+                con.rollback()
+                raise HTTPException(409, "Номер выставлен на рынок")
+            con.execute("UPDATE user_garages SET plate_id=NULL WHERE user_id=? AND plate_id=?", (uid, payload.plate_id))
         con.execute("UPDATE user_garages SET plate_id=? WHERE id=? AND user_id=?", (payload.plate_id, garage_id, uid))
         con.commit()
     return {"ok": True}

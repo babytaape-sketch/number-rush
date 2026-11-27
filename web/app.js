@@ -816,11 +816,11 @@ function garageSceneCar(car) {
           <path d="M104 370 L151 382 M95 394 L149 405 M93 416 L147 426 M696 370 L649 382 M705 394 L651 405 M707 416 L653 426" stroke="#596067" stroke-width="5"/>
           <path d="M125 150 L63 130 Q48 128 43 143 L43 178 Q45 190 62 184 L137 172Z M675 150 L737 130 Q752 128 757 143 L757 178 Q755 190 738 184 L663 172Z" fill="#171d22" stroke="#080b0e" stroke-width="6"/>
           <path d="M55 143 L116 158 L60 173Z M745 143 L684 158 L740 173Z" fill="#202a31"/>
-          <path d="M154 91 Q170 64 213 61 L587 61 Q630 64 646 91 L681 185 L119 185Z" fill="url(#vaz-chrome)" stroke="#5e6468" stroke-width="5"/>
-          <path d="M174 96 Q188 76 218 75 L582 75 Q612 76 626 96 L653 170 L147 170Z" fill="url(#vaz-glass)" stroke="#10161b" stroke-width="7"/>
-          <path d="M400 76 L400 170 M168 165 Q270 176 400 170 Q530 176 632 165" fill="none" stroke="#6c7479" stroke-width="4"/>
-          <path d="M210 82 L190 162 M590 82 L610 162" stroke="#a9b0b3" stroke-width="3" opacity=".35"/>
-          <rect x="366" y="91" width="68" height="25" rx="6" fill="#111820" stroke="#555d62" stroke-width="3"/>
+          <path d="M154 116 Q170 91 213 88 L587 88 Q630 91 646 116 L681 185 L119 185Z" fill="url(#vaz-chrome)" stroke="#5e6468" stroke-width="5"/>
+          <path d="M174 121 Q188 103 218 102 L582 102 Q612 103 626 121 L653 170 L147 170Z" fill="url(#vaz-glass)" stroke="#10161b" stroke-width="7"/>
+          <path d="M400 103 L400 170 M168 165 Q270 176 400 170 Q530 176 632 165" fill="none" stroke="#6c7479" stroke-width="4"/>
+          <path d="M210 108 L190 162 M590 108 L610 162" stroke="#a9b0b3" stroke-width="3" opacity=".35"/>
+          <rect x="366" y="112" width="68" height="22" rx="5" fill="#111820" stroke="#555d62" stroke-width="3"/>
           <path d="M245 174 L555 174" stroke="#11171c" stroke-width="5" stroke-linecap="round"/>
           <path d="M130 182 Q146 174 180 174 L620 174 Q654 174 670 182 L729 315 Q739 341 714 359 L86 359 Q61 341 71 315Z" fill="url(#vaz-paint)" stroke="#777d80" stroke-width="5"/>
           <path d="M177 185 Q400 173 623 185 L670 300 Q400 318 130 300Z" fill="#f7f7f4" opacity=".45"/>

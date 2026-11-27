@@ -421,7 +421,11 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
         : rarity === "Epic" ? 2100
         : rarity === "Rare" ? 1250
         : rarity === "Uncommon" ? 950 : 750;
-    await sleep(Math.max(revealDuration, mood === "cinematic" ? 1050 : mood === "showtime" ? 850 : 650));
+    // Возвращаем кнопку генерации на секунду раньше после раскрытия номера.
+    await sleep(Math.max(0, Math.max(
+        revealDuration,
+        mood === "cinematic" ? 1050 : mood === "showtime" ? 850 : 650
+    ) - 1000));
     if (plate) plate.classList.remove("spin-reveal", rarityClass);
 }
 

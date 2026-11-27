@@ -27,6 +27,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = BASE_DIR / "web"
 DB_PATH = os.getenv("DATABASE_PATH", str(BASE_DIR / "number_rush.db"))
+MAX_COLLECTION_SIZE = 50
 DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 
@@ -252,6 +253,14 @@ def create_star_invoice(package_id: str, authorization: str | None = Header(defa
     package = STAR_PACKAGES.get(package_id)
     if not package:
         raise HTTPException(404, "Набор не найден")
+    if package["type"] == "plate":
+        with db() as con:
+            count = con.execute(
+                "SELECT COUNT(*) FROM plates WHERE owner_id=?",
+                (user["user_id"],)
+            ).fetchone()[0]
+        if count >= MAX_COLLECTION_SIZE:
+            raise HTTPException(400, "Коллекция заполнена: сначала освободи место для нового номера.")
     if not BOT_TOKEN:
         raise HTTPException(503, "Оплата Stars временно недоступна")
     payload = json.dumps({
@@ -1328,6 +1337,17 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
             (uid,)
         ).fetchone()
 
+        collection_size = con.execute(
+            "SELECT COUNT(*) FROM plates WHERE owner_id=?",
+            (uid,)
+        ).fetchone()[0]
+        if collection_size >= MAX_COLLECTION_SIZE:
+            con.rollback()
+            raise HTTPException(
+                400,
+                "Коллекция заполнена: максимум 50 номеров. Продай номер, чтобы освободить место."
+            )
+
         free_spin_ready = (
             row["last_free_spin_at"] == 0
             or now - row["last_free_spin_at"] >= 86400
@@ -1671,6 +1691,14 @@ def buy_listing(
                 "You cannot buy your own listing"
             )
 
+        collection_size = con.execute(
+            "SELECT COUNT(*) FROM plates WHERE owner_id=?",
+            (uid,)
+        ).fetchone()[0]
+        if collection_size >= MAX_COLLECTION_SIZE:
+            con.rollback()
+            raise HTTPException(400, "Коллекция заполнена: продай номер, чтобы освободить место.")
+
         sold_plate = con.execute(
             "SELECT number, rarity FROM plates WHERE id=?",
             (listing["plate_id"],)
@@ -1851,6 +1879,13 @@ def telegram_polling():
                             and pre_checkout.get("currency") == "XTR"
                             and int(pre_checkout.get("total_amount", 0)) == package["stars"]
                         )
+                        if valid and package["type"] == "plate":
+                            with db() as con:
+                                count = con.execute(
+                                    "SELECT COUNT(*) FROM plates WHERE owner_id=?",
+                                    (str(payload["user_id"]),)
+                                ).fetchone()[0]
+                            valid = count < MAX_COLLECTION_SIZE
                     except Exception:
                         valid = False
                     telegram_request("answerPreCheckoutQuery", {
@@ -1887,6 +1922,30 @@ def telegram_polling():
                                                     (credited_coins, uid))
                                         success_text = f"Оплата прошла успешно! Начислено {credited_coins:,} рублей.".replace(",", " ")
                                     else:
+                                        collection_size = con.execute(
+                                            "SELECT COUNT(*) FROM plates WHERE owner_id=?",
+                                            (uid,)
+                                        ).fetchone()[0]
+                                        if collection_size >= MAX_COLLECTION_SIZE:
+                                            con.execute(
+                                                "DELETE FROM star_payments WHERE telegram_charge_id=?",
+                                                (payment["telegram_payment_charge_id"],)
+                                            )
+                                            con.rollback()
+                                            try:
+                                                telegram_request("refundStarPayment", {
+                                                    "user_id": int(uid),
+                                                    "telegram_payment_charge_id": payment["telegram_payment_charge_id"]
+                                                })
+                                                success_text = "Коллекция уже заполнена. Оплата за номер возвращена."
+                                            except Exception as refund_exc:
+                                                print(f"Stars refund error: {refund_exc}")
+                                                success_text = "Коллекция заполнена. Напиши в поддержку для возврата оплаты."
+                                            telegram_request("sendMessage", {
+                                                "chat_id": message["chat"]["id"],
+                                                "text": success_text
+                                            })
+                                            continue
                                         plate = generate_plate_details(package["rarity"])
                                         con.execute(
                                             "INSERT INTO plates(owner_id, number, rarity, created_at) VALUES (?, ?, ?, ?)",

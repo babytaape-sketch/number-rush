@@ -218,9 +218,9 @@ with db() as con:
 
 
 DAILY_TASKS = [
-    {"key": "spin_5", "title": "Сделать 5 прокруток", "description": "Используй бесплатные или платные прокрутки", "target": 5, "reward": 1500},
-    {"key": "sell_1", "title": "Продать 1 номер", "description": "Продай номер через рынок или быструю продажу", "target": 1, "reward": 1000},
-    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи номер редкости «Редкая» или выше", "target": 1, "reward": 2500},
+    {"key": "spin_5", "title": "Сделать 5 прокруток", "description": "Используй бесплатные или платные прокрутки", "target": 5, "reward": 500},
+    {"key": "sell_1", "title": "Продать 1 номер", "description": "Продай номер через рынок или быструю продажу", "target": 1, "reward": 400},
+    {"key": "rare_1", "title": "Получить редкий номер", "description": "Получи номер редкости «Редкая» или выше", "target": 1, "reward": 800},
 ]
 
 
@@ -229,6 +229,8 @@ def daily_task_date(now=None):
 
 
 DAILY_STREAK_REWARDS = [1000, 1500, 2000, 2500, 3000, 3500, 5000]
+
+MARKET_SELLER_FEE_RATE = 0.05
 
 
 STAR_PACKAGES = {
@@ -465,26 +467,26 @@ def claim_daily_task(task_key: str, authorization: str | None = Header(default=N
 # =========================================================
 
 ACHIEVEMENTS = [
-    {"key": "collect_10", "title": "Первая коллекция", "description": "Получи 10 номеров в генераторе", "target": 10, "reward": 2500, "stat": "total_spins"},
-    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров редкости «Редкая» или выше", "target": 5, "reward": 5000, "stat": "rare_plates"},
-    {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 7500, "stat": "total_spins"},
-    {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 10000, "stat": "sales"},
-    {"key": "coins_10000", "title": "Богач", "description": "Накопи 100 000 рублей одновременно", "target": 100000, "reward": 15000, "stat": "coins"},
-    {"key": "spin_25", "title": "Разогрев", "description": "Сделай 25 прокруток", "target": 25, "reward": 1500, "stat": "total_spins"},
-    {"key": "spin_250", "title": "Без остановки", "description": "Сделай 250 прокруток", "target": 250, "reward": 12000, "stat": "total_spins"},
-    {"key": "spin_500", "title": "Мастер генератора", "description": "Сделай 500 прокруток", "target": 500, "reward": 25000, "stat": "total_spins"},
-    {"key": "spin_1000", "title": "Тысяча попыток", "description": "Сделай 1 000 прокруток", "target": 1000, "reward": 60000, "stat": "total_spins"},
-    {"key": "spin_2500", "title": "Легенда прокруток", "description": "Сделай 2 500 прокруток", "target": 2500, "reward": 150000, "stat": "total_spins"},
-    {"key": "rare_1", "title": "Первая удача", "description": "Получи первый номер редкости «Редкая» или выше", "target": 1, "reward": 1000, "stat": "rare_plates"},
-    {"key": "rare_10", "title": "Коллекционер редкостей", "description": "Получи 10 номеров редкости «Редкая» или выше", "target": 10, "reward": 12000, "stat": "rare_plates"},
-    {"key": "rare_25", "title": "Ценитель редких серий", "description": "Получи 25 номеров редкости «Редкая» или выше", "target": 25, "reward": 30000, "stat": "rare_plates"},
-    {"key": "rare_50", "title": "Охотник за легендами", "description": "Получи 50 номеров редкости «Редкая» или выше", "target": 50, "reward": 75000, "stat": "rare_plates"},
-    {"key": "sell_1", "title": "Первая сделка", "description": "Продай первый номер через рынок или быструю продажу", "target": 1, "reward": 1000, "stat": "sales"},
-    {"key": "sell_25", "title": "Активный продавец", "description": "Продай 25 номеров через рынок или быструю продажу", "target": 25, "reward": 25000, "stat": "sales"},
-    {"key": "sell_50", "title": "Король рынка", "description": "Продай 50 номеров через рынок или быструю продажу", "target": 50, "reward": 60000, "stat": "sales"},
-    {"key": "coins_250000", "title": "Крупный капитал", "description": "Накопи 250 000 рублей одновременно", "target": 250000, "reward": 30000, "stat": "coins"},
-    {"key": "coins_500000", "title": "Рублёвый магнат", "description": "Накопи 500 000 рублей одновременно", "target": 500000, "reward": 65000, "stat": "coins"},
-    {"key": "coins_1000000", "title": "Миллионер", "description": "Накопи 1 000 000 рублей одновременно", "target": 1000000, "reward": 150000, "stat": "coins"},
+    {"key": "collect_10", "title": "Первая коллекция", "description": "Получи 10 номеров в генераторе", "target": 10, "reward": 1750, "stat": "total_spins"},
+    {"key": "rare_5", "title": "Охотник за редкостью", "description": "Получи 5 номеров редкости «Редкая» или выше", "target": 5, "reward": 3500, "stat": "rare_plates"},
+    {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 5250, "stat": "total_spins"},
+    {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 7000, "stat": "sales"},
+    {"key": "coins_10000", "title": "Богач", "description": "Накопи 100 000 рублей одновременно", "target": 100000, "reward": 10500, "stat": "coins"},
+    {"key": "spin_25", "title": "Разогрев", "description": "Сделай 25 прокруток", "target": 25, "reward": 1050, "stat": "total_spins"},
+    {"key": "spin_250", "title": "Без остановки", "description": "Сделай 250 прокруток", "target": 250, "reward": 8400, "stat": "total_spins"},
+    {"key": "spin_500", "title": "Мастер генератора", "description": "Сделай 500 прокруток", "target": 500, "reward": 17500, "stat": "total_spins"},
+    {"key": "spin_1000", "title": "Тысяча попыток", "description": "Сделай 1 000 прокруток", "target": 1000, "reward": 42000, "stat": "total_spins"},
+    {"key": "spin_2500", "title": "Легенда прокруток", "description": "Сделай 2 500 прокруток", "target": 2500, "reward": 105000, "stat": "total_spins"},
+    {"key": "rare_1", "title": "Первая удача", "description": "Получи первый номер редкости «Редкая» или выше", "target": 1, "reward": 700, "stat": "rare_plates"},
+    {"key": "rare_10", "title": "Коллекционер редкостей", "description": "Получи 10 номеров редкости «Редкая» или выше", "target": 10, "reward": 8400, "stat": "rare_plates"},
+    {"key": "rare_25", "title": "Ценитель редких серий", "description": "Получи 25 номеров редкости «Редкая» или выше", "target": 25, "reward": 21000, "stat": "rare_plates"},
+    {"key": "rare_50", "title": "Охотник за легендами", "description": "Получи 50 номеров редкости «Редкая» или выше", "target": 50, "reward": 52500, "stat": "rare_plates"},
+    {"key": "sell_1", "title": "Первая сделка", "description": "Продай первый номер через рынок или быструю продажу", "target": 1, "reward": 700, "stat": "sales"},
+    {"key": "sell_25", "title": "Активный продавец", "description": "Продай 25 номеров через рынок или быструю продажу", "target": 25, "reward": 17500, "stat": "sales"},
+    {"key": "sell_50", "title": "Король рынка", "description": "Продай 50 номеров через рынок или быструю продажу", "target": 50, "reward": 42000, "stat": "sales"},
+    {"key": "coins_250000", "title": "Крупный капитал", "description": "Накопи 250 000 рублей одновременно", "target": 250000, "reward": 21000, "stat": "coins"},
+    {"key": "coins_500000", "title": "Рублёвый магнат", "description": "Накопи 500 000 рублей одновременно", "target": 500000, "reward": 45500, "stat": "coins"},
+    {"key": "coins_1000000", "title": "Миллионер", "description": "Накопи 1 000 000 рублей одновременно", "target": 1000000, "reward": 105000, "stat": "coins"},
 ]
 
 
@@ -1791,9 +1793,10 @@ def buy_listing(
             (listing["price"], uid)
         )
 
+        seller_payout = int(listing["price"] * (1 - MARKET_SELLER_FEE_RATE))
         con.execute(
             "UPDATE users SET coins=coins+? WHERE user_id=?",
-            (listing["price"], listing["seller_id"])
+            (seller_payout, listing["seller_id"])
         )
 
         con.execute(
@@ -1825,7 +1828,9 @@ def buy_listing(
                     "🎉 Твой номер продан на рынке!\n"
                     f"Номер: {sold_plate['number']}\n"
                     f"Редкость: {RARITY_NAMES.get(sold_plate['rarity'], sold_plate['rarity'])}\n"
-                    f"Получено: {listing['price']:,} ₽".replace(",", " ")
+                    f"Цена продажи: {listing['price']:,} ₽\\n"
+                    f"Комиссия рынка (5%): {listing['price'] - seller_payout:,} ₽\\n"
+                    f"Получено: {seller_payout:,} ₽".replace(",", " ")
                 )
             })
         except Exception as exc:

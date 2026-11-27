@@ -1082,8 +1082,8 @@ def plate_analysis(number: str, authorization: str | None = Header(default=None)
 def calculate_plate_value(number, rarity):
     """Детерминированная оценка с учётом редкости и особенностей номера."""
     base_values = {
-        "Common": 720, "Uncommon": 1440, "Rare": 2880,
-        "Epic": 6000, "Legendary": 16000, "Mythic": 16000
+        "Common": 504, "Uncommon": 1008, "Rare": 2016,
+        "Epic": 4200, "Legendary": 11200, "Mythic": 11200
     }
     parts = str(number).strip().split()
     if len(parts) != 2 or len(parts[0]) != 6:

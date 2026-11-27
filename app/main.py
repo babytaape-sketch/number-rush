@@ -1027,6 +1027,10 @@ def get_plate_tags(letters, digits, region_code=None):
         # Keep region identity distinct from digit-pattern labels.
         if analysis.get("region"):
             tags.append(f"Регион: {analysis['region']} (код {region_code})")
+        if region_code and digits == region_code:
+            tags.append("Цифры полностью совпадают с кодом региона")
+        elif len(region_code) == 2 and digits == region_code.zfill(3):
+            tags.append("Цифры совпадают с кодом региона с ведущим нулём")
 
     # Retain established game-specific series labels, without generic duplicate pair labels.
     if region_code and is_special_series(letters, region_code):

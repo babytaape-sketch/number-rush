@@ -1152,15 +1152,29 @@ $("free-spin-button").addEventListener("click", () => {
 // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
 // =========================================================
 
+const moreToggle = $("more-toggle");
+const moreNav = $("more-nav");
+
+if (moreToggle && moreNav) {
+    moreToggle.addEventListener("click", () => {
+        const isOpen = moreNav.classList.toggle("hidden") === false;
+        moreToggle.setAttribute("aria-expanded", String(isOpen));
+        moreToggle.classList.toggle("active", isOpen);
+    });
+}
+
 document.querySelectorAll(".tab").forEach(btn => {
     btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(b =>
-            b.classList.toggle("active", b === btn)
-        );
-
+        document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b === btn));
         ["collection", "market", "garage", "leaderboard", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
-            $(id).classList.toggle("hidden", btn.dataset.tab !== id);
+            const panel = $(id);
+            if (panel) panel.classList.toggle("hidden", btn.dataset.tab !== id);
         });
+        if (moreNav) moreNav.classList.add("hidden");
+        if (moreToggle) {
+            moreToggle.setAttribute("aria-expanded", "false");
+            moreToggle.classList.remove("active");
+        }
     });
 });
 

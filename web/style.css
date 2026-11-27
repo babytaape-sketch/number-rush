@@ -3004,3 +3004,24 @@ header { margin-bottom: 8px; }
     font-size: 13px;
     line-height: 1.5;
 }
+
+
+/* Принудительно держим три рейтинга в одной горизонтальной строке */
+#leaderboard #leaderboard-content {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    align-items: start;
+    gap: 10px;
+    width: 100%;
+}
+#leaderboard #leaderboard-content > .leaderboard-section {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+}
+@media (max-width: 480px) {
+    #leaderboard #leaderboard-content { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 5px; }
+    #leaderboard #leaderboard-content > .leaderboard-section { padding: 6px 4px; }
+    #leaderboard #leaderboard-content > .leaderboard-section h3 { font-size: 11px; overflow-wrap: anywhere; }
+}

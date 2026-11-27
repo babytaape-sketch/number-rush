@@ -1131,9 +1131,13 @@ async function refresh() {
     }
 
    
-    // КОЛЛЕКЦИЯ
-    collectionCache = await api("/api/collection");
-    renderCollection();
+    // Во время прокрутки не показываем выпавший номер в коллекции
+    // до завершения анимации — иначе продажа старого номера раскрывает результат.
+    const latestCollection = await api("/api/collection");
+    if (!spinInProgress) {
+        collectionCache = latestCollection;
+        renderCollection();
+    }
 
     // РЫНОК
     marketCache = await api("/api/market");

@@ -1561,22 +1561,6 @@ footer {
     text-align: center;
     white-space: nowrap;
 }
-.daily-task-card.is-reward-ready {
-    cursor: pointer;
-    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-.daily-task-card.is-reward-ready:active {
-    transform: scale(.985);
-    box-shadow: 0 0 0 2px rgba(54, 212, 119, .2);
-}
-.daily-task-card.is-reward-ready:focus-visible {
-    outline: 2px solid #36d477;
-    outline-offset: 3px;
-}
-.daily-task-card.is-reward-ready[aria-busy="true"] {
-    opacity: .65;
-    pointer-events: none;
-}
 .daily-task-progress {
     height: 8px;
     margin: 14px 0 9px;
@@ -1782,7 +1766,12 @@ nav .tab.active {
     background: #111d2e;
 }
 .streak-day small { color: #91a2bb; font-size: 9px; font-weight: 800; }
-.streak-day b { color: #dce5f4; font-size: 12px; }
+.streak-day b { display: block; width: 100%; color: #dce5f4; font-size: 12px; text-align: center; }
+.streak-day-hint { color: #ffd36a; font-size: 8px; font-weight: 900; line-height: 1.2; text-align: center; }
+.streak-day.is-claimable { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+.streak-day.is-claimable:active { transform: scale(.96); box-shadow: 0 0 0 2px rgba(255,194,71,.2); }
+.streak-day.is-claimable:focus-visible { outline: 2px solid #ffc247; outline-offset: 3px; }
+.streak-day.is-claimable[aria-busy="true"] { opacity: .6; pointer-events: none; }
 .streak-day span { font-size: 11px; }
 .streak-day.is-next {
     border-color: #ffc247;

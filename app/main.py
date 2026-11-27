@@ -1343,9 +1343,48 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
             "my_rank": next((item for item in result if item["is_me"]), None),
         }
 
+    plate_rows = con.execute(
+        """SELECT p.owner_id, p.number, p.rarity, u.username
+        FROM plates p JOIN users u ON u.user_id=p.owner_id"""
+    ).fetchall()
+    best_by_player = {}
+    for plate in plate_rows:
+        value = calculate_plate_value(plate["number"], plate["rarity"])
+        current = best_by_player.get(plate["owner_id"])
+        if current is None or value > current["value"]:
+            best_by_player[plate["owner_id"]] = {
+                "user_id": plate["owner_id"],
+                "username": plate["username"],
+                "number": plate["number"],
+                "rarity": plate["rarity"],
+                "rarity_ru": RARITY_NAMES.get(plate["rarity"], plate["rarity"]),
+                "value": value,
+            }
+
+    best_ordered = sorted(
+        best_by_player.values(),
+        key=lambda item: (-item["value"], str(item["username"]).lower())
+    )
+    best_result = [
+        {
+            "rank": index + 1,
+            "username": item["username"],
+            "number": item["number"],
+            "rarity": item["rarity"],
+            "rarity_ru": item["rarity_ru"],
+            "value": item["value"],
+            "is_me": item["user_id"] == user["user_id"],
+        }
+        for index, item in enumerate(best_ordered)
+    ]
+
     return {
         "money": make_ranking("coins"),
         "spins": make_ranking("total_spins"),
+        "best_plate": {
+            "top": best_result[:10],
+            "my_rank": next((item for item in best_result if item["is_me"]), None),
+        },
         "total_players": len(players),
     }
 

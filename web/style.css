@@ -2778,4 +2778,4 @@ header { margin-bottom: 8px; }
 .garage-plate-select { width:100%; }
 .garage-buy { width:100%; min-height:42px; }
 .garage-buy:disabled { opacity:.55; cursor:default; }
-@media(max-width:520px) { #garage.panel { padding:13px; } .garage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; } .garage-car-card { padding:9px; } .garage-car-art { min-height:90px; } .garage-car-art span { font-size:58px; } }
+@media(max-width:520px) { #garage.panel { padding:13px; } .garage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; } .garage-car-card { padding:9px; } .garage-car-art { min-height:90px; } .garage-car-svg { max-height:110px; } }

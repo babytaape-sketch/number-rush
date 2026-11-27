@@ -813,7 +813,7 @@ $("garage-content")?.addEventListener("change", async event => {
     select.disabled = true;
     try {
         await api("/api/garage/" + select.dataset.garagePlate + "/plate", {
-            method:"POST", body:JSON.stringify({plate_id:Number(select.value || 0)})
+            method:"POST", body:JSON.stringify({plate_id:select.value ? Number(select.value) : null})
         });
         await loadGarage();
     } catch (error) {

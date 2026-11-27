@@ -750,6 +750,80 @@ function renderCollection() {
 });
 
 // =========================================================
+// ГАРАЖ
+// =========================================================
+
+let garageData = null;
+
+function renderGarage(data = garageData) {
+    const root = $("garage-content");
+    if (!root || !data) return;
+    garageData = data;
+    const owned = data.cars || [];
+    const shop = data.shop || [];
+    const plates = data.plates || [];
+    root.innerHTML = `
+      <div class="garage-balance">Баланс: <b>${formatRubles(data.coins)}</b></div>
+      <h3 class="garage-subtitle">Мои автомобили</h3>
+      ${owned.length ? '<div class="garage-grid">' + owned.map(car => `
+        <article class="garage-car-card">
+          <div class="garage-car-art garage-car-${escapeHtml(car.class)}"><span>${escapeHtml(car.emoji)}</span></div>
+          <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>В вашем гараже</small></div>
+          <div class="garage-mounted-plate">${car.plate_number ? createMiniPlate(car.plate_number, car.plate_rarity) : '<span>Номер не установлен</span>'}</div>
+          <label class="garage-select-label" for="garage-plate-${car.id}">Установить номер</label>
+          <select class="market-select garage-plate-select" id="garage-plate-${car.id}" data-garage-plate="${car.id}">
+            <option value="">Снять номер</option>
+            ${plates.map(p => `<option value="${p.id}">${escapeHtml(p.number)} · ${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>`).join("")}
+            ${car.plate_id ? '<option value="' + car.plate_id + '" selected>Текущий номер</option>' : ''}
+          </select>
+        </article>`).join("") + '</div>' : '<div class="empty">Пока нет машин. Выбери первую в магазине ниже.</div>'}
+      <h3 class="garage-subtitle">Автосалон</h3>
+      <div class="garage-grid">
+        ${shop.map(car => `
+          <article class="garage-car-card garage-shop-card">
+            <div class="garage-car-art garage-car-${escapeHtml(car.class)}"><span>${escapeHtml(car.emoji)}</span></div>
+            <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>${formatRubles(car.price)}</small></div>
+            <button class="market-action garage-buy" data-buy-car="${escapeHtml(car.key)}" ${car.owned ? "disabled" : ""}>${car.owned ? "КУПЛЕНО" : "КУПИТЬ"}</button>
+          </article>`).join("")}
+      </div>`;
+}
+
+async function loadGarage() {
+    const data = await api("/api/garage");
+    renderGarage(data);
+}
+
+$("garage-content")?.addEventListener("click", async event => {
+    const button = event.target.closest("[data-buy-car]");
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    try {
+        await api("/api/garage/buy", {method:"POST", body:JSON.stringify({car_key:button.dataset.buyCar})});
+        await refresh();
+        await loadGarage();
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+    }
+});
+
+$("garage-content")?.addEventListener("change", async event => {
+    const select = event.target.closest("[data-garage-plate]");
+    if (!select) return;
+    select.disabled = true;
+    try {
+        await api("/api/garage/" + select.dataset.garagePlate + "/plate", {
+            method:"POST", body:JSON.stringify({plate_id:Number(select.value || 0)})
+        });
+        await loadGarage();
+    } catch (error) {
+        alert(error.message);
+        await loadGarage();
+    }
+    select.disabled = false;
+});
+
+// =========================================================
 // ОБНОВЛЕНИЕ ИГРЫ
 // =========================================================
 
@@ -1087,6 +1161,8 @@ async function refresh() {
 
     const shopPackages = await api("/api/shop");
     renderShop(shopPackages);
+
+    await loadGarage();
 }
 
 // =========================================================
@@ -1158,7 +1234,7 @@ document.querySelectorAll(".tab").forEach(btn => {
             b.classList.toggle("active", b === btn)
         );
 
-        ["collection", "market", "leaderboard", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
+        ["collection", "market", "garage", "leaderboard", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
             $(id).classList.toggle("hidden", btn.dataset.tab !== id);
         });
     });

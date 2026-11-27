@@ -28,6 +28,24 @@ document.addEventListener("click", event => {
     if (target) triggerTapHaptic(target);
 });
  
+// Виброотклик при прохождении символов в анимации прокрутки номера.
+let lastSlotHapticAt = 0;
+
+function slotStepHaptic(progress) {
+    const now = performance.now();
+    if (now - lastSlotHapticAt < 90) return;
+    lastSlotHapticAt = now;
+    try {
+        tg?.HapticFeedback?.impactOccurred(progress > 0.82 ? "light" : "soft");
+    } catch (_) {}
+}
+
+function spinHaptic(useFree) {
+    try {
+        tg?.HapticFeedback?.impactOccurred(useFree ? "medium" : "heavy");
+    } catch (_) {}
+}
+
 const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };
 
@@ -222,6 +240,7 @@ async function rollSlot(element, finalChar, options = {}) {
                 Math.floor(progress * totalSymbols + 0.0001)
             );
             if (crossedSymbol > lastCrossedSymbol) {
+                slotStepHaptic(elapsed);
                 lastCrossedSymbol = crossedSymbol;
             }
 
@@ -1106,6 +1125,7 @@ async function runSpin(spinType = "paid") {
     const useFree = spinType === "daily" || spinType === "bonus";
     if (spinInProgress) return;
     spinInProgress = true;
+    spinHaptic(useFree);
     const spinButton = $("spin");
     const freeButton = $("free-spin-button");
     updateSpinAvailability();

@@ -3038,3 +3038,22 @@ header { margin-bottom: 8px; }
     background: linear-gradient(110deg, #315caa, #477ee0); cursor: pointer;
 }
 .collection-full-action:active { transform: scale(.98); }
+
+
+/* Прогресс уровней игрока */
+.level-card {
+    margin: 0 0 14px;
+    padding: 16px;
+    border: 1px solid rgba(112, 160, 255, .35);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(38, 72, 120, .42), rgba(15, 29, 49, .9));
+}
+.level-card-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.level-card-top small { display:block; color:#9baac1; font-size:11px; font-weight:800; letter-spacing:1px; }
+.level-card-top strong { display:block; margin-top:5px; font-size:25px; }
+.level-title { padding:7px 10px; border:1px solid rgba(200,255,0,.35); border-radius:20px; color:#d5ff62; background:rgba(200,255,0,.08); font-size:12px; font-weight:800; text-align:center; }
+.level-progress-track { height:10px; margin-top:16px; overflow:hidden; border-radius:10px; background:#091323; box-shadow:inset 0 1px 3px rgba(0,0,0,.45); }
+.level-progress-track span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#4d8dff,#c8ff00); transition:width .35s ease; }
+.level-progress-meta { display:flex; justify-content:space-between; gap:8px; margin-top:8px; color:#dce7fa; font-size:11px; font-weight:700; }
+.level-howto { margin:12px 0 0; color:#9baac1; font-size:12px; line-height:1.45; }
+@media (max-width:360px) { .level-progress-meta { font-size:10px; } .level-title { font-size:10px; } }

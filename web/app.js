@@ -1077,7 +1077,27 @@ function renderLeaderboard(data) {
         `;
     };
 
+    const best = data.best_plate;
+    const bestRows = best?.top || [];
+    const bestSection = `
+        <section class="leaderboard-section">
+            <h3>🏆 По лучшему номеру</h3>
+            ${best?.my_rank ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО</strong><b>№${best.my_rank.rank}</b><small>${escapeHtml(best.my_rank.number)} · ${Number(best.my_rank.value).toLocaleString("ru-RU")} ₽</small></div>` : ""}
+            <div class="leaderboard-list">
+                ${bestRows.map(player => {
+                    const place = player.rank === 1 ? "🥇" : player.rank === 2 ? "🥈" : player.rank === 3 ? "🥉" : `#${player.rank}`;
+                    return `
+                        <article class="leaderboard-player ${player.is_me ? "is-me" : ""}">
+                            <span class="leaderboard-place">${place}</span>
+                            <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}<small style="display:block;color:var(--muted,#91a0b5);font-weight:500">${escapeHtml(player.number)} · ${escapeHtml(player.rarity_ru)}</small></strong>
+                            <b class="leaderboard-score">${Number(player.value).toLocaleString("ru-RU")} <small>₽</small></b>
+                        </article>
+                    `;
+                }).join("") || '<p class="daily-tasks-note">Пока здесь никого нет.</p>'}
+            </div>
+        </section>`;
     root.innerHTML =
+        bestSection +
         renderTable("По балансу", data.money, "руб.", "💰") +
         renderTable("По прокруткам", data.spins, "спинов", "🎰");
 }
@@ -1217,10 +1237,16 @@ document.querySelectorAll(".tab").forEach(btn => {
             const panel = $(id);
             if (panel) panel.classList.toggle("hidden", btn.dataset.tab !== id);
         });
-        if (moreNav) moreNav.classList.add("hidden");
-        if (moreToggle) {
-            moreToggle.setAttribute("aria-expanded", "false");
-            moreToggle.classList.remove("active");
+        // При выборе раздела из меню «Ещё» оставляем подменю раскрытым.
+        if (!btn.closest("#more-nav")) {
+            if (moreNav) moreNav.classList.add("hidden");
+            if (moreToggle) {
+                moreToggle.setAttribute("aria-expanded", "false");
+                moreToggle.classList.remove("active");
+            }
+        } else if (moreToggle) {
+            moreToggle.setAttribute("aria-expanded", "true");
+            moreToggle.classList.add("active");
         }
     });
 });

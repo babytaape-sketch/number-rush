@@ -31,8 +31,8 @@ LETTER_LABELS = {
     "triple_same": "Три одинаковые буквы",
     "pair_first_two": "Повтор первых двух букв",
     "pair_last_two": "Повтор последних двух букв",
-    "mirror_outer": "Одинаковые крайние буквы",
-    "palindrome_outer": "Одинаковые крайние буквы",
+    "mirror_outer": "Зеркальные буквы",
+    "palindrome_outer": "Зеркальные буквы",
 }
 
 def _read_csv(filename):
@@ -119,6 +119,9 @@ def _labels(raw, mapping):
     }):
         tags.remove("repeated_digit")
 
+    # A palindrome already expresses the matching outer positions; do not repeat it as a pair.
+    if "palindrome_outer" in tags:
+        tags = [tag for tag in tags if tag != "pair_outer"]
     # The two research tags describe the same first/last-letter match.
     if mapping is LETTER_LABELS and "palindrome_outer" in tags:
         tags = [tag for tag in tags if tag != "mirror_outer"]

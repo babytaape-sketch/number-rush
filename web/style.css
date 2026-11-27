@@ -2849,3 +2849,23 @@ header { margin-bottom: 8px; }
     box-shadow: 0 0 22px rgba(246, 196, 83, 0.38);
     transition: outline-color 0.25s ease, box-shadow 0.25s ease;
 }
+
+
+/* Компактная шапка и панель фильтров коллекции */
+#collection .collection-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+#collection .collection-title-row h2{margin:0;min-width:0}
+#collection .collection-count{flex:0 0 auto;color:#91adff;font-size:12px;font-weight:850;white-space:nowrap;padding:5px 9px;border:1px solid #304765;border-radius:9px;background:#112139}
+#collection .market-tools.collection-tools{display:grid;gap:8px;margin:0 0 14px;padding:0;border:0;border-radius:0;background:transparent}
+.collection-search-row{display:flex;align-items:center;gap:7px;min-width:0}
+.collection-search-row .market-search{flex:1;min-width:0;padding:9px 11px;font-size:12px}
+.collection-filter-heading{flex:0 0 auto}
+.collection-filter-toggle{min-height:37px;gap:6px;padding:7px 10px;border-radius:9px;font-size:11px;white-space:nowrap}
+.collection-filter-toggle>span{font-size:15px}
+.collection-filter-panel{gap:7px;padding:0}
+.collection-filter-panel .market-select{padding:9px 10px;font-size:12px}
+@media(max-width:380px){
+ #collection .collection-count{font-size:11px;padding:4px 7px}
+ .collection-search-row{gap:6px}
+ .collection-search-row .market-search{padding:8px 9px;font-size:11px}
+ .collection-filter-toggle{padding:7px 8px;font-size:10px}
+}

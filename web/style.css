@@ -1552,11 +1552,30 @@ footer {
     line-height: 1.4;
 }
 .daily-task-reward {
-    flex: 0 0 auto;
+    display: block;
+    width: 100%;
+    margin: 10px auto 0;
     color: #ffc247;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 900;
+    text-align: center;
     white-space: nowrap;
+}
+.daily-task-card.is-reward-ready {
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.daily-task-card.is-reward-ready:active {
+    transform: scale(.985);
+    box-shadow: 0 0 0 2px rgba(54, 212, 119, .2);
+}
+.daily-task-card.is-reward-ready:focus-visible {
+    outline: 2px solid #36d477;
+    outline-offset: 3px;
+}
+.daily-task-card.is-reward-ready[aria-busy="true"] {
+    opacity: .65;
+    pointer-events: none;
 }
 .daily-task-progress {
     height: 8px;

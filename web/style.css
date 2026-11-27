@@ -1903,8 +1903,8 @@ html, body, button, a, input, select, textarea {
 
 
 /* Рейтинг игроков */
-.leaderboard-content { display: grid; gap: 18px; }
-.leaderboard-section { display: flex; flex-direction: column; gap: 10px; }
+.leaderboard-content { display: flex; flex-direction: column; align-items: stretch; gap: 18px; width: 100%; }
+.leaderboard-section { display: flex; flex-direction: column; gap: 10px; width: 100%; min-width: 0; padding: 15px; border: 1px solid rgba(255,255,255,.09); border-radius: 16px; background: linear-gradient(145deg, rgba(24,38,56,.82), rgba(11,18,29,.92)); }
 .leaderboard-section h3 { margin: 4px 0; font-size: 17px; }
 .leaderboard-me {
     display: grid; grid-template-columns: 1fr auto; gap: 4px 10px;

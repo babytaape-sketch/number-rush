@@ -990,9 +990,12 @@ def get_legacy_plate_tags(letters, digits, region_code=None):
         tags.append("Цифровая лесенка")
     if digits in SPECIAL_DIGITS:
         tags.append("Особая комбинация")
-    if digits.startswith("00") or digits.endswith("00"):
-        tags.append("Круглые цифры")
-    if digits[0] == digits[1] or digits[1] == digits[2]:
+    is_round_hundred = digits.endswith("00")
+    if digits.startswith("00") or is_round_hundred:
+        tags.append("Круглые сотни" if is_round_hundred else "Круглые цифры")
+    # Последние две одинаковые цифры у круглой сотни — часть того же признака.
+    # Не начисляем за них второй бонус в общем счётчике особенностей.
+    if (digits[0] == digits[1] or digits[1] == digits[2]) and not is_round_hundred:
         if len(set(digits)) != 1:
             tags.append("Парные цифры")
     if region_code and is_special_series(letters, region_code):

@@ -835,6 +835,18 @@ def is_special_series(letters, region_code):
     )
 
 
+def has_rare_letter_feature(letters):
+    # Лесенка становится Rare только вместе с выразительным рисунком букв.
+    return letters in WORD_SERIES or letters[0] == letters[2]
+
+
+def random_rare_letters():
+    while True:
+        letters = random_letters(ordinary=True)
+        if has_rare_letter_feature(letters):
+            return letters
+
+
 def classify_plate(letters, digits, region_code):
     special = is_special_series(letters, region_code)
 
@@ -857,7 +869,10 @@ def classify_plate(letters, digits, region_code):
     ):
         return "Epic"
 
-    if digits in LADDER_DIGITS or digits[0] == digits[2]:
+    if digits in LADDER_DIGITS:
+        return "Rare" if has_rare_letter_feature(letters) else "Uncommon"
+
+    if digits[0] == digits[2]:
         return "Rare"
 
     if (
@@ -1061,7 +1076,8 @@ def generate_plate_details(forced_rarity=None):
         uncommon_patterns = [
             "110", "112", "122", "211",
             "221", "233", "344", "455",
-            "566", "677", "788", "899"
+            "566", "677", "788", "899",
+            "123", "234", "345", "456", "567", "678", "789"
         ]
         # Slightly favor the more immediately recognizable paired patterns.
         featured = {"112", "122", "211", "221"}
@@ -1071,6 +1087,9 @@ def generate_plate_details(forced_rarity=None):
             k=1
         )[0]
         letters = random_letters(ordinary=True)
+        if digits in LADDER_DIGITS:
+            while has_rare_letter_feature(letters):
+                letters = random_letters(ordinary=True)
 
     elif rarity == "Rare":
         rare_patterns = [
@@ -1078,14 +1097,9 @@ def generate_plate_details(forced_rarity=None):
             "505", "606", "707", "808", "909",
             "123", "234", "345", "456", "567", "678", "789"
         ]
-        # Sequences and 001 get a modest 1.5x preference.
-        featured = {"001", "123", "234", "345", "456", "567", "678", "789"}
-        digits = random.choices(
-            rare_patterns,
-            weights=[1.5 if value in featured else 1 for value in rare_patterns],
-            k=1
-        )[0]
-        letters = random_letters(ordinary=True)
+        # Mirror digits and 001 are Rare; ladders need a strong letter pattern.
+        digits = random.choice(rare_patterns)
+        letters = random_rare_letters() if digits in LADDER_DIGITS else random_letters(ordinary=True)
 
     elif rarity == "Epic":
         epic_patterns = [

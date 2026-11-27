@@ -772,7 +772,17 @@ function renderProfile(me) {
         : '<div class="profile-avatar profile-avatar-placeholder">👤</div>';
     const date = me.created_at ? new Date(me.created_at * 1000).toLocaleDateString("ru-RU") : "—";
     const rarest = me.rarest_plate ? createMiniPlate(me.rarest_plate.number) + '<small>' + escapeHtml(rarityNames[me.rarest_plate.rarity] || me.rarest_plate.rarity) + '</small>' : '<small>Пока нет номеров</small>';
+    const xp = Number(me.xp || 0);
+    const level = Number(me.level || 1);
+    const progress = Number(me.progress_percent || 0);
+    const nextXp = Number(me.xp_to_next || 0);
     root.innerHTML = '<div class="profile-heading">' + avatar + '<div><strong>' + escapeHtml(name || "Игрок") + '</strong><small>ID: ' + escapeHtml(me.id) + '</small></div></div>' +
+      '<section class="level-card">' +
+      '<div class="level-card-top"><div><small>УРОВЕНЬ ИГРОКА</small><strong>Уровень ' + level + '</strong></div><span class="level-title">' + escapeHtml(me.title || "Новичок") + '</span></div>' +
+      '<div class="level-progress-track"><span style="width:' + progress + '%"></span></div>' +
+      '<div class="level-progress-meta"><span>' + xp.toLocaleString("ru-RU") + ' XP</span><span>' + (nextXp ? nextXp.toLocaleString("ru-RU") + ' XP до уровня ' + (level + 1) : 'Максимальный уровень') + '</span></div>' +
+      '<p class="level-howto">Опыт начисляется за прокрутки, редкие номера, сделки, задания и достижения.</p>' +
+      '</section>' +
       '<div class="profile-stats">' +
       '<div><small>Баланс</small><b>' + formatRubles(me.coins) + '</b></div>' +
       '<div><small>Номеров сейчас</small><b>' + me.collection_count + '</b></div>' +

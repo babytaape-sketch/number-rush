@@ -1095,24 +1095,24 @@ def calculate_plate_value(number, rarity):
     tags = get_plate_tags(letters, digits, region)
 
     if len(set(digits)) == 1:
-        value *= 2.8
+        value *= 1.5646
     elif digits in SPECIAL_DIGITS:
         value *= 2.2
     elif digits in LADDER_DIGITS:
-        value *= 1.9
+        value *= 1.423
     elif digits[0] == digits[2]:
-        value *= 1.55
+        value *= 1.39
     elif digits[0] == digits[1] or digits[1] == digits[2]:
-        value *= 1.25
+        value *= 1.18
     if digits in {"000", "007", "100", "777", "888", "999"}:
-        value *= 1.35
+        value *= 1.145
 
     if letters in SPECIAL_SERIES and region in SPECIAL_SERIES[letters]:
-        value *= 2.4
+        value *= 1.98
     elif letters in GOLD_SERIES:
         value *= 1.8
     elif letters in WORD_SERIES:
-        value *= 1.45
+        value *= 1.32
     elif len(set(letters)) == 1:
         value *= 1.6
     elif letters[0] == letters[1] or letters[1] == letters[2]:
@@ -1126,7 +1126,7 @@ def calculate_plate_value(number, rarity):
     if region in {"77", "97", "99", "177", "197", "199", "777", "799"}:
         value *= 1.2
 
-    value *= 1 + min(len(get_legacy_plate_tags(letters, digits, region)), 5) * 0.08
+    value *= 1 + min(len(get_legacy_plate_tags(letters, digits, region)), 5) * 0.056
     return max(100, int(round(value / 50) * 50))
 
 

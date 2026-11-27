@@ -1164,9 +1164,39 @@ async function refresh() {
 // КНОПКА СПИНА
 // =========================================================
 
+function showCollectionFullModal() {
+    const overlay = document.createElement("div");
+    overlay.className = "plate-details-overlay collection-full-overlay";
+    overlay.innerHTML = `
+        <section class="plate-details-modal collection-full-modal" role="dialog" aria-modal="true" aria-labelledby="collection-full-title">
+            <button type="button" class="plate-details-close" aria-label="Закрыть">×</button>
+            <div class="collection-full-icon">📦</div>
+            <h3 id="collection-full-title">Коллекция заполнена</h3>
+            <p>У тебя уже 50 из 50 номеров. Чтобы сделать новый спин, сначала освободи место — продай один из номеров.</p>
+            <button type="button" class="collection-full-action">Понятно</button>
+        </section>`;
+    const close = () => {
+        overlay.remove();
+        document.removeEventListener("keydown", onEscape);
+    };
+    const onEscape = event => {
+        if (event.key === "Escape" && document.body.contains(overlay)) close();
+    };
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay || event.target.closest(".plate-details-close, .collection-full-action")) close();
+    });
+    document.addEventListener("keydown", onEscape);
+    document.body.appendChild(overlay);
+    overlay.querySelector(".collection-full-action")?.focus();
+}
+
 async function runSpin(spinType = "paid") {
     const useFree = spinType === "daily" || spinType === "bonus";
     if (spinInProgress) return;
+    if (collectionCache.length >= 50) {
+        showCollectionFullModal();
+        return;
+    }
     spinInProgress = true;
     spinHaptic(useFree);
     const spinButton = $("spin");
@@ -1202,7 +1232,11 @@ async function runSpin(spinType = "paid") {
         $("rarity").textContent = message;
         if ($("hint")) $("hint").textContent = tags.length > 0 ? "✨ " + tags.join(" • ") : "Номер добавлен в коллекцию!";
     } catch (e) {
-        if ($("hint")) $("hint").textContent = e.message;
+        if (String(e.message || "").toLowerCase().includes("коллекция заполнена")) {
+            showCollectionFullModal();
+        } else if ($("hint")) {
+            $("hint").textContent = e.message;
+        }
         await refresh().catch(() => {});
     } finally {
         spinInProgress = false;

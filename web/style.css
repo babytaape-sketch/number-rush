@@ -3057,3 +3057,12 @@ header { margin-bottom: 8px; }
 .level-progress-meta { display:flex; justify-content:space-between; gap:8px; margin-top:8px; color:#dce7fa; font-size:11px; font-weight:700; }
 .level-howto { margin:12px 0 0; color:#9baac1; font-size:12px; line-height:1.45; }
 @media (max-width:360px) { .level-progress-meta { font-size:10px; } .level-title { font-size:10px; } }
+
+.rescue-fund{margin-top:12px;padding:14px;border:1px solid rgba(89,180,255,.28);border-radius:14px;background:linear-gradient(135deg,rgba(28,73,112,.42),rgba(12,24,39,.82));display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left}
+.rescue-fund[hidden]{display:none}
+.rescue-fund>div{display:flex;flex-direction:column;gap:4px}
+.rescue-fund strong{font-size:13px;color:#dceeff}
+.rescue-fund small{font-size:11px;color:#9fb2c8}
+.rescue-fund button{border:0;border-radius:10px;padding:10px 12px;color:#071321;background:linear-gradient(135deg,#7bd1ff,#3f9ff0);font-weight:800;font-size:11px;white-space:nowrap}
+.rescue-fund button:disabled{opacity:.55}
+@media(max-width:380px){.rescue-fund{align-items:stretch;flex-direction:column}}

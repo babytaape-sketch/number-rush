@@ -804,13 +804,14 @@ function garageSceneCar(car) {
     const plate = car.plate_number ? escapeHtml(car.plate_number) : "";
     return `
       <div class="garage-real-car-wrap">
-        <svg class="garage-real-car" viewBox="0 0 800 470" role="img" aria-label="Белый ВАЗ-2107, вид спереди">
+        <svg class="garage-real-car" viewBox="0 0 800 700" role="img" aria-label="Белый ВАЗ-2107, вид спереди">
           <defs>
             <linearGradient id="vaz-paint" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".45" stop-color="#e9e9e6"/><stop offset=".78" stop-color="#c7c9c9"/><stop offset="1" stop-color="#85898b"/></linearGradient>
             <linearGradient id="vaz-glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#29333b"/><stop offset=".55" stop-color="#101820"/><stop offset="1" stop-color="#3b4850"/></linearGradient>
             <linearGradient id="vaz-chrome" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".28" stop-color="#858b90"/><stop offset=".55" stop-color="#f4f5f5"/><stop offset="1" stop-color="#666d72"/></linearGradient>
             <linearGradient id="vaz-lamp" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#d9e1e3"/><stop offset="1" stop-color="#929da1"/></linearGradient>
           </defs>
+          <g transform="scale(1 1.5)">
           <ellipse cx="400" cy="425" rx="300" ry="25" fill="#000" opacity=".58"/>
           <path d="M105 333 Q75 350 80 425 L155 435 L188 355Z M695 333 Q725 350 720 425 L645 435 L612 355Z" fill="#15191d" stroke="#050607" stroke-width="8"/>
           <path d="M104 370 L151 382 M95 394 L149 405 M93 416 L147 426 M696 370 L649 382 M705 394 L651 405 M707 416 L653 426" stroke="#596067" stroke-width="5"/>
@@ -854,6 +855,7 @@ function garageSceneCar(car) {
           <rect x="331" y="394" width="138" height="33" rx="2" fill="#fff" stroke="#c7cbcd" stroke-width="1.5"/>
           <text x="400" y="416" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" font-weight="700" letter-spacing="1.2" fill="#111">${plate || " "}</text>
           <path d="M190 438 L610 438" stroke="#171b1e" stroke-width="4"/>
+          </g>
         </svg>
       </div>`;
 }

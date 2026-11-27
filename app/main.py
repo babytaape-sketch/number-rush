@@ -1459,7 +1459,7 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
 # =========================================================
 
 GARAGE_CARS = {
-    "sedan": {"name": "Городской седан", "price": 25000, "emoji": "🚘", "class": "sedan"},
+    "sedan": {"name": "ВАЗ-2107", "price": 25000, "emoji": "🚗", "class": "vaz2107"},
     "sport": {"name": "Спорткар", "price": 100000, "emoji": "🏎️", "class": "sport"},
     "suv": {"name": "Внедорожник", "price": 180000, "emoji": "🚙", "class": "suv"},
     "supercar": {"name": "Суперкар", "price": 350000, "emoji": "🏎️", "class": "supercar"},

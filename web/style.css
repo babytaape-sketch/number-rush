@@ -2757,3 +2757,25 @@ header { margin-bottom: 8px; }
     #plate.spin-reveal .plate-main,
     .rarity[class*="rarity-reveal-"] { animation: none !important; }
 }
+
+
+/* Гараж и автосалон */
+#garage.panel { padding:18px; border:1px solid #293d59; border-radius:18px; background:linear-gradient(145deg,#112139,#0a1526); }
+.garage-balance { margin:0 0 20px; padding:14px 16px; border:1px solid #304765; border-radius:13px; background:#142640; }
+.garage-balance b { color:var(--lime); }
+.garage-subtitle { margin:22px 0 12px; font-size:18px; }
+.garage-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; }
+.garage-car-card { min-width:0; padding:13px; border:1px solid #304765; border-radius:16px; background:linear-gradient(145deg,#172b45,#0c192b); display:flex; flex-direction:column; gap:11px; }
+.garage-car-art { min-height:125px; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:radial-gradient(ellipse at 50% 75%,#3c5a80,#172b45 65%,#101c30); }
+.garage-car-art span { font-size:76px; filter:drop-shadow(0 10px 8px #0008); }
+.garage-car-vaz2107 span { font-size:84px; }
+.garage-car-info { display:flex; flex-direction:column; gap:4px; }
+.garage-car-info b { font-size:16px; }
+.garage-car-info small,.garage-select-label { color:var(--muted); font-size:12px; }
+.garage-mounted-plate { min-height:38px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
+.garage-mounted-plate .mini-plate { max-width:250px; }
+.garage-select-label { font-weight:800; }
+.garage-plate-select { width:100%; }
+.garage-buy { width:100%; min-height:42px; }
+.garage-buy:disabled { opacity:.55; cursor:default; }
+@media(max-width:520px) { #garage.panel { padding:13px; } .garage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; } .garage-car-card { padding:9px; } .garage-car-art { min-height:90px; } .garage-car-art span { font-size:58px; } }

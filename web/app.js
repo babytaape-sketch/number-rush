@@ -905,6 +905,8 @@ function renderAchievements(data) {
         badge.textContent = readyCount > 9 ? "9+" : String(readyCount);
         badge.hidden = readyCount === 0;
     }
+    const moreIndicator = $("more-achievement-indicator");
+    if (moreIndicator) moreIndicator.hidden = readyCount === 0;
 
     root.innerHTML = achievements.map(item => {
         const progress = Math.min(Number(item.progress || 0), Number(item.target || 1));

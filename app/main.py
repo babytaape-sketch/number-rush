@@ -461,6 +461,21 @@ ACHIEVEMENTS = [
     {"key": "spin_100", "title": "Крутильщик", "description": "Сделай 100 прокруток", "target": 100, "reward": 7500, "stat": "total_spins"},
     {"key": "sell_10", "title": "Торговец", "description": "Продай 10 номеров через рынок или быструю продажу", "target": 10, "reward": 10000, "stat": "sales"},
     {"key": "coins_10000", "title": "Богач", "description": "Накопи 100 000 рублей одновременно", "target": 100000, "reward": 15000, "stat": "coins"},
+    {"key": "spin_25", "title": "Разогрев", "description": "Сделай 25 прокруток", "target": 25, "reward": 1500, "stat": "total_spins"},
+    {"key": "spin_250", "title": "Без остановки", "description": "Сделай 250 прокруток", "target": 250, "reward": 12000, "stat": "total_spins"},
+    {"key": "spin_500", "title": "Мастер генератора", "description": "Сделай 500 прокруток", "target": 500, "reward": 25000, "stat": "total_spins"},
+    {"key": "spin_1000", "title": "Тысяча попыток", "description": "Сделай 1 000 прокруток", "target": 1000, "reward": 60000, "stat": "total_spins"},
+    {"key": "spin_2500", "title": "Легенда прокруток", "description": "Сделай 2 500 прокруток", "target": 2500, "reward": 150000, "stat": "total_spins"},
+    {"key": "rare_1", "title": "Первая удача", "description": "Получи первый номер редкости «Редкая» или выше", "target": 1, "reward": 1000, "stat": "rare_plates"},
+    {"key": "rare_10", "title": "Коллекционер редкостей", "description": "Получи 10 номеров редкости «Редкая» или выше", "target": 10, "reward": 12000, "stat": "rare_plates"},
+    {"key": "rare_25", "title": "Ценитель редких серий", "description": "Получи 25 номеров редкости «Редкая» или выше", "target": 25, "reward": 30000, "stat": "rare_plates"},
+    {"key": "rare_50", "title": "Охотник за легендами", "description": "Получи 50 номеров редкости «Редкая» или выше", "target": 50, "reward": 75000, "stat": "rare_plates"},
+    {"key": "sell_1", "title": "Первая сделка", "description": "Продай первый номер через рынок или быструю продажу", "target": 1, "reward": 1000, "stat": "sales"},
+    {"key": "sell_25", "title": "Активный продавец", "description": "Продай 25 номеров через рынок или быструю продажу", "target": 25, "reward": 25000, "stat": "sales"},
+    {"key": "sell_50", "title": "Король рынка", "description": "Продай 50 номеров через рынок или быструю продажу", "target": 50, "reward": 60000, "stat": "sales"},
+    {"key": "coins_250000", "title": "Крупный капитал", "description": "Накопи 250 000 рублей одновременно", "target": 250000, "reward": 30000, "stat": "coins"},
+    {"key": "coins_500000", "title": "Рублёвый магнат", "description": "Накопи 500 000 рублей одновременно", "target": 500000, "reward": 65000, "stat": "coins"},
+    {"key": "coins_1000000", "title": "Миллионер", "description": "Накопи 1 000 000 рублей одновременно", "target": 1000000, "reward": 150000, "stat": "coins"},
 ]
 
 

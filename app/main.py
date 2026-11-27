@@ -1459,7 +1459,7 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
 # =========================================================
 
 GARAGE_CARS = {
-    "sedan": {"name": "ВАЗ-2107", "price": 25000, "emoji": "🚗", "class": "vaz2107"},
+    "sedan": {"name": "ВАЗ-2107", "price": 0, "emoji": "🚗", "class": "vaz2107"},
     "sport": {"name": "Спорткар", "price": 100000, "emoji": "🏎️", "class": "sport"},
     "suv": {"name": "Внедорожник", "price": 180000, "emoji": "🚙", "class": "suv"},
     "supercar": {"name": "Суперкар", "price": 350000, "emoji": "🏎️", "class": "supercar"},
@@ -1483,6 +1483,11 @@ def get_garage(authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     uid = user["user_id"]
     with db() as con:
+        # Каждому игроку автоматически выдаётся бесплатная ВАЗ-2107.
+        con.execute(
+            "INSERT OR IGNORE INTO user_garages (user_id, car_key, purchased_at) VALUES (?, ?, ?)",
+            (uid, "sedan", int(time.time()))
+        )
         owned_rows = con.execute(
             """SELECT g.id, g.car_key, g.plate_id, g.purchased_at,
                       p.number AS plate_number, p.rarity AS plate_rarity

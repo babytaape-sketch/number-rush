@@ -372,7 +372,7 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     await sleep(Math.max(0, Math.max(
         revealDuration,
         mood === "cinematic" ? 1050 : mood === "showtime" ? 850 : 650
-    ) - 1000));
+    ) - 1500));
     if (plate) plate.classList.remove("spin-reveal", rarityClass);
 }
 
@@ -1111,7 +1111,6 @@ async function runSpin(spinType = "paid") {
 
         const spinMood = chooseSpinMood();
         await animatePlate(result.plate.number, result.plate.rarity, spinMood);
-        await refresh();
 
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
         const tags = result.plate.tags || [];
@@ -1128,6 +1127,8 @@ async function runSpin(spinType = "paid") {
         spinInProgress = false;
         updateSpinAvailability();
         updateFreeSpinTimer();
+        // Обновляем остальные разделы в фоне, не задерживая кнопку следующей прокрутки.
+        refresh().catch(() => {});
     }
 }
 

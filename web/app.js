@@ -744,10 +744,36 @@ function renderCollection() {
         : '<div class="empty">По этим фильтрам номеров нет.</div>';
 }
 
-["collection-search", "collection-rarity", "collection-sort"].forEach(id => {
-    $(id)?.addEventListener("input", renderCollection);
-    $(id)?.addEventListener("change", renderCollection);
+function updateCollectionFilterIndicator() {
+    const indicator = $("collection-filter-indicator");
+    if (!indicator) return;
+    const active = Boolean(($("collection-search")?.value || "").trim()) ||
+        ($("collection-rarity")?.value || "all") !== "all" ||
+        ($("collection-sort")?.value || "newest") !== "newest";
+    indicator.hidden = !active;
+}
+
+$("collection-filter-toggle")?.addEventListener("click", () => {
+    const button = $("collection-filter-toggle");
+    const panel = $("collection-filter-panel");
+    if (!button || !panel) return;
+    const expanded = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!expanded));
+    panel.hidden = expanded;
+    button.classList.toggle("is-open", !expanded);
 });
+
+["collection-search", "collection-rarity", "collection-sort"].forEach(id => {
+    $(id)?.addEventListener("input", () => {
+        renderCollection();
+        updateCollectionFilterIndicator();
+    });
+    $(id)?.addEventListener("change", () => {
+        renderCollection();
+        updateCollectionFilterIndicator();
+    });
+});
+updateCollectionFilterIndicator();
 
 // =========================================================
 // ОБНОВЛЕНИЕ ИГРЫ

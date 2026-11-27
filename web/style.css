@@ -3167,8 +3167,8 @@ header { margin-bottom: 8px; }
 
 
 /* Номер в окне «Подробнее» повторяет масштаб генератора */
-.plate-details-modal .mini-plate {
-    width: 80% !important;
+ .plate-details-modal .mini-plate {
+    width: 100% !important;
     max-width: 560px !important;
     min-height: 0 !important;
     aspect-ratio: 520 / 112 !important;

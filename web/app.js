@@ -935,14 +935,7 @@ function renderAchievements(data) {
         `;
     }).join("");
 
-    if (newlyCompletedKey !== null) {
-        const achievementsTab = document.querySelector('.tab[data-tab="achievements"]');
-        achievementsTab?.click();
-        if (moreNav) moreNav.classList.add("hidden");
-        if (moreToggle) {
-            moreToggle.setAttribute("aria-expanded", "false");
-            moreToggle.classList.remove("active");
-        }
+    if (newlyCompletedKey !== null && !document.getElementById("achievements")?.classList.contains("hidden")) {
         requestAnimationFrame(() => {
             const card = [...root.querySelectorAll("[data-achievement-key]")].find(el => el.dataset.achievementKey === newlyCompletedKey);
             card?.scrollIntoView({ behavior: "smooth", block: "center" });

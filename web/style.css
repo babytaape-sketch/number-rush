@@ -3208,17 +3208,3 @@ header { margin-bottom: 8px; }
     height: 14px !important;
     border-width: 1px !important;
 }
-
-
-/* Слегка сближаем символы генератора на 0,08% */
-#plate .plate-main > .slot-cell {
-    flex-basis: .59952em !important;
-    width: .59952em !important;
-    min-width: .59952em !important;
-}
-
-#plate .region-code:not(:has(> .slot-cell:nth-child(3))) > .slot-cell {
-    flex-basis: .619504em !important;
-    width: .619504em !important;
-    min-width: .619504em !important;
-}

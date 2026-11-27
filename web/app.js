@@ -12,19 +12,38 @@ if (tg) {
     tg.setBackgroundColor("#080b10");
 }
 
-// Лёгкий тактильный отклик только после настоящего нажатия.
-// Событие click не срабатывает при обычном свайпе/прокрутке.
-document.addEventListener("click", event => {
+// Тактильный отклик запускается непосредственно в момент касания,
+// чтобы Telegram iOS успевал связать его с действием пользователя.
+function triggerTapHaptic(target) {
+    if (!target || target.disabled || target.id === "spin" || target.id === "free-spin-button") return;
+    const haptics = tg?.HapticFeedback;
+    if (!haptics) return;
+    try {
+        const shopControl = target.closest(".shop-buy-button, .shop-switch-button, [data-buy-package]");
+        const navigationControl = target.closest("[data-tab], .nav-item, .more-menu-item");
+        if (navigationControl && typeof haptics.selectionChanged === "function") {
+            haptics.selectionChanged();
+        } else if (typeof haptics.impactOccurred === "function") {
+            haptics.impactOccurred(shopControl ? "medium" : "light");
+        }
+    } catch (_) {
+        // Telegram clients without HapticFeedback simply skip tactile feedback.
+    }
+}
+
+// pointerdown is fired directly by the physical tap in Telegram's iOS/Android WebView.
+document.addEventListener("pointerdown", event => {
     const target = event.target?.closest(
         "button, [role='button'], .market-item, .collection-item, .achievement-card, .daily-task-card, .shop-package"
     );
-    if (!target || target.disabled || target.id === "spin" || target.id === "free-spin-button" || !tg?.HapticFeedback) return;
+    if (target) triggerTapHaptic(target);
+}, { capture: true, passive: true });
 
-    try {
-        const shopControl = target.closest(".shop-buy-button, .shop-switch-button");
-        tg.HapticFeedback.impactOccurred(shopControl ? "medium" : "light");
-    } catch (_) {
-        // Haptic feedback недоступен на некоторых клиентах Telegram.
+// Keyboard/assistive-technology activation fallback; pointer taps are handled above.
+document.addEventListener("click", event => {
+    if (event.detail === 0) {
+        const target = event.target?.closest("button, [role='button']");
+        if (target) triggerTapHaptic(target);
     }
 });
 

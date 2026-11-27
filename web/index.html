@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#080b10">
   <title>NUMBER RUSH</title>
-  <link rel="stylesheet" href="/static/style.css?v=64">
+  <link rel="stylesheet" href="/static/style.css?v=65">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -58,22 +58,29 @@
     <section id="collection" class="panel">
       <h2>Моя коллекция</h2>
       <div class="market-tools collection-tools">
-        <input id="collection-search" class="market-search" type="search" placeholder="Поиск номера или особенности...">
-        <div class="market-filter-row">
-          <select id="collection-rarity" class="market-select">
-            <option value="all">Любая редкость</option>
-            <option value="Common">Обычный</option>
-            <option value="Uncommon">Необычный</option>
-            <option value="Rare">Редкий</option>
-            <option value="Epic">Эпический</option>
-            <option value="Legendary">Легендарный</option>
-          </select>
-          <select id="collection-sort" class="market-select">
-            <option value="newest">Сначала новые</option>
-            <option value="cheap">Сначала дешевле</option>
-            <option value="expensive">Сначала дороже</option>
-            <option value="rarity">По редкости</option>
-          </select>
+        <div class="collection-filter-heading">
+          <button type="button" id="collection-filter-toggle" class="collection-filter-toggle" aria-expanded="false" aria-controls="collection-filter-panel">
+            <span>☷</span> Фильтры <i id="collection-filter-indicator" hidden></i>
+          </button>
+        </div>
+        <div id="collection-filter-panel" class="collection-filter-panel" hidden>
+          <input id="collection-search" class="market-search" type="search" placeholder="Поиск номера или особенности...">
+          <div class="market-filter-row">
+            <select id="collection-rarity" class="market-select">
+              <option value="all">Любая редкость</option>
+              <option value="Common">Обычный</option>
+              <option value="Uncommon">Необычный</option>
+              <option value="Rare">Редкий</option>
+              <option value="Epic">Эпический</option>
+              <option value="Legendary">Легендарный</option>
+            </select>
+            <select id="collection-sort" class="market-select">
+              <option value="newest">Сначала новые</option>
+              <option value="cheap">Сначала дешевле</option>
+              <option value="expensive">Сначала дороже</option>
+              <option value="rarity">По редкости</option>
+            </select>
+          </div>
         </div>
         <div class="market-tools-bottom"><span id="collection-count">0 номеров</span></div>
       </div>
@@ -165,6 +172,6 @@
     <footer>NUMBER RUSH <span>•</span> COLLECT YOUR STYLE</footer>
   </div>
 
-  <script src="/static/app.js?v=89"></script>
+  <script src="/static/app.js?v=90"></script>
 </body>
 </html>

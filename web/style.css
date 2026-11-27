@@ -2842,3 +2842,10 @@ header { margin-bottom: 8px; }
 .main-nav #more-toggle{position:relative;}
 .more-achievement-indicator{display:inline-block;width:7px;height:7px;margin-left:2px;border-radius:50%;background:#ffc247;box-shadow:0 0 9px rgba(255,194,71,.9);vertical-align:middle;}
 .more-achievement-indicator[hidden]{display:none!important;}
+
+
+.achievement-card.achievement-just-unlocked {
+    outline: 2px solid #f6c453;
+    box-shadow: 0 0 22px rgba(246, 196, 83, 0.38);
+    transition: outline-color 0.25s ease, box-shadow 0.25s ease;
+}

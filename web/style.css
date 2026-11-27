@@ -2814,3 +2814,15 @@ header { margin-bottom: 8px; }
   .garage-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
   .garage-car-card { padding:9px; }
 }
+
+/* Компактная навигация NUMBER RUSH — прежняя тёмно-синяя палитра */
+.main-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:14px 0 12px;padding:6px;border:1px solid #293d59;border-radius:18px;background:linear-gradient(180deg,#111e32,#0d192a)}
+.main-nav .tab,.main-nav #more-toggle{position:relative;display:flex;min-width:0;min-height:58px;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:7px 3px;border:1px solid transparent;border-radius:12px;color:#aab7cb;background:transparent;font:inherit;font-size:11px;font-weight:800;line-height:1.15;cursor:pointer}
+.main-nav .tab.active,.main-nav #more-toggle.active{color:#a9beff;border-color:#405985;background:linear-gradient(180deg,#1d3151,#14233b);box-shadow:inset 0 0 0 1px rgba(120,152,232,.18),0 0 10px rgba(120,152,232,.08)}
+.main-nav .nav-icon{color:#91adff;font-size:19px;font-weight:900;line-height:1}
+.more-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 22px;padding:10px;border:1px solid #293d59;border-radius:15px;background:#0d192a}
+.more-nav.hidden{display:none!important}
+.more-nav .tab{min-width:0;padding:12px 5px;border:1px solid #304765;border-radius:11px;color:#c4d0e3;background:linear-gradient(180deg,#172943,#101d31);font-size:12px;font-weight:800}
+.more-nav .tab.active{border-color:#7898e8;color:#a9beff;background:linear-gradient(180deg,#1d3151,#14233b)}
+.more-nav .tab-badge{margin-left:3px}
+@media(max-width:380px){.main-nav{gap:3px;padding:4px}.main-nav .tab,.main-nav #more-toggle{font-size:10px;min-height:54px}.more-nav{gap:5px;padding:7px}.more-nav .tab{font-size:10px}}

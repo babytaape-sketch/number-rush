@@ -754,9 +754,11 @@ function renderCollection() {
             <article class="item collection-item">
                 <div class="collection-plate-wrap">
                     ${createMiniPlate(p.number, p.rarity)}
-                    <small>${escapeHtml(rarityNames[p.rarity] || p.rarity)}</small>
                 </div>
-                <button type="button" class="collection-details-button" data-plate-details="${p.id}">ПОДРОБНЕЕ <span>↗</span></button>
+                <div class="collection-plate-meta">
+                    <button type="button" class="collection-details-button" data-plate-details="${p.id}">ПОДРОБНЕЕ <span>↗</span></button>
+                    <small class="collection-rarity-label">${escapeHtml(rarityNames[p.rarity] || p.rarity)}</small>
+                </div>
                 <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed
                     ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'

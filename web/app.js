@@ -12,59 +12,22 @@ if (tg) {
     tg.setBackgroundColor("#080b10");
 }
 
-// Тактильный отклик запускается непосредственно в момент касания,
-// чтобы Telegram iOS успевал связать его с действием пользователя.
+// Тактильный отклик только по завершённому нажатию кнопки.
+// Свайпы, прокрутка и анимация слотов не вызывают вибрацию.
 function triggerTapHaptic(target) {
-    if (!target || target.disabled || target.id === "spin" || target.id === "free-spin-button") return;
-    const haptics = tg?.HapticFeedback;
-    if (!haptics) return;
+    if (!target || target.disabled) return;
     try {
-        const shopControl = target.closest(".shop-buy-button, .shop-switch-button, [data-buy-package]");
-        const navigationControl = target.closest("[data-tab], .nav-item, .more-menu-item");
-        if (navigationControl && typeof haptics.selectionChanged === "function") {
-            haptics.selectionChanged();
-        } else if (typeof haptics.impactOccurred === "function") {
-            haptics.impactOccurred(shopControl ? "medium" : "light");
-        }
+        tg?.HapticFeedback?.impactOccurred("light");
     } catch (_) {
         // Telegram clients without HapticFeedback simply skip tactile feedback.
     }
 }
 
-// pointerdown is fired directly by the physical tap in Telegram's iOS/Android WebView.
-document.addEventListener("pointerdown", event => {
-    const target = event.target?.closest(
-        "button, [role='button'], .market-item, .collection-item, .achievement-card, .daily-task-card, .shop-package"
-    );
-    if (target) triggerTapHaptic(target);
-}, { capture: true, passive: true });
-
-// Keyboard/assistive-technology activation fallback; pointer taps are handled above.
 document.addEventListener("click", event => {
-    if (event.detail === 0) {
-        const target = event.target?.closest("button, [role='button']");
-        if (target) triggerTapHaptic(target);
-    }
+    const target = event.target?.closest("button, [role='button']");
+    if (target) triggerTapHaptic(target);
 });
-
-// Вибрация привязана к фактическому прохождению символом очередной позиции.
-let lastSlotHapticAt = 0;
-
-function slotStepHaptic(progress) {
-    const now = performance.now();
-    if (now - lastSlotHapticAt < 48) return;
-    lastSlotHapticAt = now;
-    try {
-        tg?.HapticFeedback?.impactOccurred(progress > 0.82 ? "light" : "soft");
-    } catch (_) {}
-}
-
-function spinHaptic(useFree) {
-    try {
-        tg?.HapticFeedback?.impactOccurred(useFree ? "medium" : "heavy");
-    } catch (_) {}
-}
-
+ 
 const initData = tg?.initData || "";
 const headers = { "Content-Type": "application/json" };
 
@@ -259,7 +222,6 @@ async function rollSlot(element, finalChar, options = {}) {
                 Math.floor(progress * totalSymbols + 0.0001)
             );
             if (crossedSymbol > lastCrossedSymbol) {
-                slotStepHaptic(elapsed);
                 lastCrossedSymbol = crossedSymbol;
             }
 
@@ -1144,7 +1106,6 @@ async function runSpin(spinType = "paid") {
     const useFree = spinType === "daily" || spinType === "bonus";
     if (spinInProgress) return;
     spinInProgress = true;
-    spinHaptic(useFree);
     const spinButton = $("spin");
     const freeButton = $("free-spin-button");
     updateSpinAvailability();

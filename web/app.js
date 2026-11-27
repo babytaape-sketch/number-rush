@@ -386,6 +386,40 @@ let freeSpinSeconds = 0;
 let bonusSpinProgress = 0;
 let bonusSpinsPending = 0;
 let currentCoins = 0;
+let rescueFundSeconds = 0;
+let rescueFundEligible = false;
+function renderRescueFund(me) {
+    const root = $("rescue-fund");
+    if (!root) return;
+    rescueFundEligible = Number(me.coins || 0) < 1000 && Number(me.collection_count || 0) === 0;
+    rescueFundSeconds = Number(me.rescue_fund_seconds || 0);
+    root.hidden = !rescueFundEligible;
+    updateRescueFundButton();
+}
+function updateRescueFundButton() {
+    const button = $("rescue-fund-button");
+    const note = $("rescue-fund-note");
+    if (!button || !note || !rescueFundEligible) return;
+    button.disabled = rescueFundSeconds > 0;
+    button.textContent = rescueFundSeconds > 0 ? "Повтор через " + Math.floor(rescueFundSeconds / 60) + ":" + String(rescueFundSeconds % 60).padStart(2, "0") : "Получить 1 000 монет";
+    note.textContent = rescueFundSeconds > 0 ? "Помощь доступна раз в 3 минуты" : "Нет денег на спин и номеров для продажи";
+}
+async function claimRescueFund() {
+    const button = $("rescue-fund-button");
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    try {
+        await api("/api/rescue-fund/claim", { method: "POST" });
+        await refresh();
+    } catch (e) {
+        alert(e.message);
+        await refresh().catch(() => {});
+    }
+}
+document.addEventListener("click", event => {
+    if (event.target?.closest("#rescue-fund-button")) claimRescueFund();
+});
+
 let spinInProgress = false;
 
 function updateSpinAvailability() {
@@ -397,6 +431,7 @@ function updateSpinAvailability() {
 }
 
 function updateFreeSpinTimer() {
+    if (rescueFundSeconds > 0) { rescueFundSeconds = Math.max(0, rescueFundSeconds - 1); updateRescueFundButton(); }
     const button = $("free-spin-button");
     if (!button) return;
 
@@ -1126,6 +1161,7 @@ async function refresh() {
     bonusSpinProgress = Number(me.bonus_spin_progress ?? 0);
     bonusSpinsPending = Number(me.bonus_spins_pending ?? 0);
     currentCoins = Number(me.coins ?? 0);
+    renderRescueFund(me);
     updateSpinAvailability();
 
     if (freeSpinTimer) {

@@ -826,7 +826,7 @@ function renderGarage(data = garageData) {
       <div class="garage-grid">
         ${shop.map(car => `
           <article class="garage-car-card garage-shop-card">
-            <div class="garage-car-art garage-car-${escapeHtml(car.class)}"><span>${escapeHtml(car.emoji)}</span></div>
+            ${garageCarArt(car)}
             <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>${formatRubles(car.price)}</small></div>
             <button class="market-action garage-buy" data-buy-car="${escapeHtml(car.key)}" ${car.owned ? "disabled" : ""}>${car.owned ? "КУПЛЕНО" : "КУПИТЬ"}</button>
           </article>`).join("")}

@@ -149,6 +149,9 @@ with db() as con:
         for row in con.execute("PRAGMA table_info(users)").fetchall()
     ]
 
+    if "xp" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN xp INTEGER NOT NULL DEFAULT 0")
+
     if "last_free_spin_at" not in columns:
         con.execute(
             "ALTER TABLE users ADD COLUMN last_free_spin_at "
@@ -215,6 +218,17 @@ with db() as con:
         con.execute("UPDATE users SET coins=coins*10")
         con.execute("UPDATE listings SET price=price*10")
         con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (economy_migration, int(time.time())))
+
+    xp_migration = "player_levels_initial_xp_2026_11"
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", (xp_migration,)).fetchone():
+        con.execute("""
+            UPDATE users
+            SET xp = total_spins * 10
+                + rare_plates * 20
+                + (SELECT COUNT(*) FROM market_transactions WHERE seller_id=users.user_id) * 15
+                + (SELECT COUNT(*) FROM market_transactions WHERE buyer_id=users.user_id) * 5
+        """)
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (xp_migration, int(time.time())))
 
 
 DAILY_TASKS = [
@@ -350,7 +364,7 @@ def claim_daily_streak(authorization: str | None = Header(default=None)):
 
         con.execute(
             """UPDATE users
-            SET daily_streak=?, last_daily_claim_date=?, coins=coins+?
+            SET daily_streak=?, last_daily_claim_date=?, coins=coins+?, xp=xp+10
             WHERE user_id=?""",
             (streak, today, reward, user["user_id"])
         )
@@ -455,7 +469,7 @@ def claim_daily_task(task_key: str, authorization: str | None = Header(default=N
         if claimed_update.rowcount != 1:
             raise HTTPException(400, "Награда уже получена")
         con.execute(
-            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            "UPDATE users SET coins=coins+?, xp=xp+10 WHERE user_id=?",
             (task["reward"], user["user_id"])
         )
 
@@ -580,7 +594,7 @@ def claim_achievement(achievement_key: str, authorization: str | None = Header(d
             raise HTTPException(400, "Награда уже получена")
 
         con.execute(
-            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            "UPDATE users SET coins=coins+?, xp=xp+25 WHERE user_id=?",
             (achievement["reward"], user["user_id"])
         )
 
@@ -1265,6 +1279,34 @@ app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 
 # =========================================================
+# УРОВНИ ИГРОКОВ
+# =========================================================
+
+def player_level_info(xp):
+    xp = max(0, int(xp or 0))
+    level = 1
+    while level < 100 and xp >= 50 * level * (level + 1):
+        level += 1
+    current_floor = 50 * (level - 1) * level
+    next_floor = 50 * level * (level + 1)
+    titles = [
+        (1, "Новичок"), (5, "Любитель номеров"), (10, "Коллекционер"),
+        (15, "Знаток дорог"), (20, "Эксперт"), (30, "Мастер номеров"),
+        (40, "Ветеран"), (50, "Легенда NUMBER RUSH")
+    ]
+    title = max((name for required, name in titles if level >= required), key=lambda x: next(required for required, name in titles if name == x))
+    return {
+        "level": level,
+        "title": title,
+        "xp": xp,
+        "level_xp": xp - current_floor,
+        "next_level_xp": next_floor - current_floor if level < 100 else 0,
+        "xp_to_next": max(0, next_floor - xp) if level < 100 else 0,
+        "progress_percent": min(100, int((xp - current_floor) * 100 / max(1, next_floor - current_floor))) if level < 100 else 100,
+    }
+
+
+# =========================================================
 # ПРОФИЛЬ ИГРОКА
 # =========================================================
 
@@ -1292,9 +1334,10 @@ def me(authorization: str | None = Header(default=None)):
             "SELECT COUNT(*) n FROM market_transactions WHERE buyer_id=?", (uid,)
         ).fetchone()["n"]
         row = con.execute(
-            "SELECT last_free_spin_at, total_spins, bonus_spin_progress, bonus_spins_pending FROM users WHERE user_id=?", (uid,)
+            "SELECT last_free_spin_at, total_spins, bonus_spin_progress, bonus_spins_pending, xp FROM users WHERE user_id=?", (uid,)
         ).fetchone()
 
+    level_info = player_level_info(row["xp"])
     seconds_left = max(0, 86400 - (now - row["last_free_spin_at"]))
     return {
         "id": uid, "username": user["username"], "coins": user["coins"],
@@ -1302,6 +1345,7 @@ def me(authorization: str | None = Header(default=None)):
         "collection_count": count, "created_at": user["created_at"],
         "rarest_plate": dict(rarest) if rarest else None,
         "purchases_count": purchases, "sales_count": sales,
+        **level_info,
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left,
         "bonus_spin_progress": int(row["bonus_spin_progress"]),
@@ -1495,6 +1539,9 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
                 (1 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0, uid)
             )
 
+        xp_gain = 10 + (20 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0)
+        con.execute("UPDATE users SET xp=xp+? WHERE user_id=?", (xp_gain, uid))
+
         cur = con.execute(
             """
             INSERT INTO plates(owner_id, number, rarity, created_at)
@@ -1621,7 +1668,7 @@ def quick_sell_plate(
 
         price = calculate_quick_sell_price(plate["number"], plate["rarity"])
         now = int(time.time())
-        con.execute("UPDATE users SET coins=coins+? WHERE user_id=?", (price, uid))
+        con.execute("UPDATE users SET coins=coins+?, xp=xp+15 WHERE user_id=?", (price, uid))
         con.execute(
             """INSERT INTO market_transactions
             (plate_id, buyer_id, seller_id, price, created_at)
@@ -1789,13 +1836,13 @@ def buy_listing(
             raise HTTPException(400, "Not enough coins")
 
         con.execute(
-            "UPDATE users SET coins=coins-? WHERE user_id=?",
+            "UPDATE users SET coins=coins-?, xp=xp+5 WHERE user_id=?",
             (listing["price"], uid)
         )
 
         seller_payout = int(listing["price"] * (1 - MARKET_SELLER_FEE_RATE))
         con.execute(
-            "UPDATE users SET coins=coins+? WHERE user_id=?",
+            "UPDATE users SET coins=coins+?, xp=xp+15 WHERE user_id=?",
             (seller_payout, listing["seller_id"])
         )
 

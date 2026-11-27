@@ -3025,3 +3025,16 @@ header { margin-bottom: 8px; }
     #leaderboard #leaderboard-content > .leaderboard-section { padding: 6px 4px; }
     #leaderboard #leaderboard-content > .leaderboard-section h3 { font-size: 11px; overflow-wrap: anywhere; }
 }
+
+
+
+.collection-full-modal { text-align: center; }
+.collection-full-modal .collection-full-icon { font-size: 42px; margin: 4px 0 12px; }
+.collection-full-modal h3 { margin: 0 34px 12px; }
+.collection-full-modal p { margin: 0 auto 20px; max-width: 340px; color: #b8c7dc; font-size: 14px; line-height: 1.55; }
+.collection-full-action {
+    width: 100%; min-height: 46px; border: 1px solid rgba(115,157,255,.55);
+    border-radius: 13px; color: #f3f7ff; font-weight: 800; font-size: 14px;
+    background: linear-gradient(110deg, #315caa, #477ee0); cursor: pointer;
+}
+.collection-full-action:active { transform: scale(.98); }

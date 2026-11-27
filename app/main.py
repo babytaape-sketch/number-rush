@@ -1004,16 +1004,6 @@ def get_plate_tags(letters, digits, region_code=None):
         if digits in SPECIAL_DIGITS and len(set(digits)) > 1 and not digits.endswith("00"):
             tags.append(f"Особая числовая комбинация ({digits})")
 
-        # Common collector vocabulary for the first/last adjacent pair.
-        if digits[0] == digits[1] and len(set(digits)) > 1:
-            tags.append("Голова — первые две цифры одинаковые")
-        if digits[1] == digits[2] and len(set(digits)) > 1:
-            tags.append("Хвост — последние две цифры одинаковые")
-        if letters[0] == letters[1] and len(set(letters)) > 1:
-            tags.append("Голова букв — первые две буквы одинаковые")
-        if letters[1] == letters[2] and len(set(letters)) > 1:
-            tags.append("Хвост букв — последние две буквы одинаковые")
-
         lexical = analysis.get("lexical")
         if lexical and lexical.get("reading") and lexical.get("confidence") in {"high", "medium"}:
             reading = lexical["reading"].strip()

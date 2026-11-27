@@ -802,7 +802,7 @@ function garageCarArt(car) {
 
 function garageSceneCar(car) {
     const plate = car.plate_number ? escapeHtml(car.plate_number) : "";
-    return \`
+    return `
       <div class="garage-real-car-wrap">
         <svg class="garage-real-car" viewBox="0 0 800 470" role="img" aria-label="Белый ВАЗ-2107, вид спереди">
           <defs>
@@ -842,10 +842,10 @@ function garageSceneCar(car) {
           <path d="M79 398 Q400 417 721 398" stroke="#747b7f" stroke-width="4"/>
           <rect x="325" y="389" width="150" height="43" rx="4" fill="#f9f9f6" stroke="#25292c" stroke-width="5"/>
           <rect x="331" y="394" width="138" height="33" rx="2" fill="#fff" stroke="#c7cbcd" stroke-width="1.5"/>
-          <text x="400" y="416" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" font-weight="700" letter-spacing="1.2" fill="#111">\${plate || " "}</text>
+          <text x="400" y="416" text-anchor="middle" font-family="Arial,sans-serif" font-size="21" font-weight="700" letter-spacing="1.2" fill="#111">${plate || " "}</text>
           <path d="M190 438 L610 438" stroke="#171b1e" stroke-width="4"/>
         </svg>
-      </div>\`;
+      </div>`;
 }
 
 function renderGarage(data = garageData) {
@@ -857,47 +857,47 @@ function renderGarage(data = garageData) {
     const plates = data.plates || [];
     const mainCar = owned.find(car => car.key === "sedan") || owned[0];
     const otherCars = owned.filter(car => !mainCar || car.id !== mainCar.id);
-    root.innerHTML = \`
-      <div class="garage-balance">Баланс: <b>\${formatRubles(data.coins)}</b></div>
+    root.innerHTML = `
+      <div class="garage-balance">Баланс: <b>${formatRubles(data.coins)}</b></div>
       <div class="garage-scene">
         <div class="garage-scene-ceiling"><span></span><span></span><span></span></div>
         <div class="garage-scene-sign">NUMBER RUSH <small>PRIVATE MOTOR GARAGE</small></div>
         <div class="garage-scene-backwall"><div class="garage-toolwall"></div></div>
         <div class="garage-scene-floor"><div class="garage-floor-lines"></div></div>
-        \${mainCar ? \`
-          <div class="garage-scene-car-name"><b>\${escapeHtml(mainCar.name)}</b><span>ВАШ АВТОМОБИЛЬ</span></div>
-          <div class="garage-car-platform">\${garageSceneCar(mainCar)}</div>
+        ${mainCar ? `
+          <div class="garage-scene-car-name"><b>${escapeHtml(mainCar.name)}</b><span>ВАШ АВТОМОБИЛЬ</span></div>
+          <div class="garage-car-platform">${garageSceneCar(mainCar)}</div>
           <div class="garage-scene-controls">
-            <label for="garage-plate-\${mainCar.id}">ГОСУДАРСТВЕННЫЙ НОМЕР</label>
-            <select class="market-select garage-plate-select" id="garage-plate-\${mainCar.id}" data-garage-plate="\${mainCar.id}">
+            <label for="garage-plate-${mainCar.id}">ГОСУДАРСТВЕННЫЙ НОМЕР</label>
+            <select class="market-select garage-plate-select" id="garage-plate-${mainCar.id}" data-garage-plate="${mainCar.id}">
               <option value="">Снять номер</option>
-              \${mainCar.plate_id ? '<option value="' + mainCar.plate_id + '" selected>' + escapeHtml(mainCar.plate_number || "Текущий номер") + '</option>' : ''}
-              \${plates.map(p => \`<option value="\${p.id}">\${escapeHtml(p.number)} · \${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>\`).join("")}
+              ${mainCar.plate_id ? '<option value="' + mainCar.plate_id + '" selected>' + escapeHtml(mainCar.plate_number || "Текущий номер") + '</option>' : ''}
+              ${plates.map(p => `<option value="${p.id}">${escapeHtml(p.number)} · ${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>`).join("")}
             </select>
             <small>Номер устанавливается прямо на передний бампер автомобиля</small>
-          </div>\` : '<div class="garage-no-car">Машина появится здесь автоматически</div>'}
+          </div>` : '<div class="garage-no-car">Машина появится здесь автоматически</div>'}
       </div>
-      \${otherCars.length ? '<h3 class="garage-subtitle">Другие автомобили</h3><div class="garage-grid">' + otherCars.map(car => \`
+      ${otherCars.length ? '<h3 class="garage-subtitle">Другие автомобили</h3><div class="garage-grid">' + otherCars.map(car => `
         <article class="garage-car-card">
-          \${garageCarArt(car)}
-          <div class="garage-car-info"><b>\${escapeHtml(car.name)}</b><small>В вашем гараже</small></div>
-          <div class="garage-mounted-plate">\${car.plate_number ? createMiniPlate(car.plate_number, car.plate_rarity) : '<span>Номер не установлен</span>'}</div>
-          <label class="garage-select-label" for="garage-plate-\${car.id}">Установить номер</label>
-          <select class="market-select garage-plate-select" id="garage-plate-\${car.id}" data-garage-plate="\${car.id}">
+          ${garageCarArt(car)}
+          <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>В вашем гараже</small></div>
+          <div class="garage-mounted-plate">${car.plate_number ? createMiniPlate(car.plate_number, car.plate_rarity) : '<span>Номер не установлен</span>'}</div>
+          <label class="garage-select-label" for="garage-plate-${car.id}">Установить номер</label>
+          <select class="market-select garage-plate-select" id="garage-plate-${car.id}" data-garage-plate="${car.id}">
             <option value="">Снять номер</option>
-            \${plates.map(p => \`<option value="\${p.id}">\${escapeHtml(p.number)} · \${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>\`).join("")}
-            \${car.plate_id ? '<option value="' + car.plate_id + '" selected>Текущий номер</option>' : ''}
+            ${plates.map(p => `<option value="${p.id}">${escapeHtml(p.number)} · ${escapeHtml(rarityNames[p.rarity] || p.rarity)}</option>`).join("")}
+            ${car.plate_id ? '<option value="' + car.plate_id + '" selected>Текущий номер</option>' : ''}
           </select>
-        </article>\`).join("") + '</div>' : ''}
+        </article>`).join("") + '</div>' : ''}
       <h3 class="garage-subtitle">Автосалон</h3>
       <div class="garage-grid">
-        \${shop.filter(car => car.key !== "sedan").map(car => \`
+        ${shop.filter(car => car.key !== "sedan").map(car => `
           <article class="garage-car-card garage-shop-card">
-            \${garageCarArt(car)}
-            <div class="garage-car-info"><b>\${escapeHtml(car.name)}</b><small>\${formatRubles(car.price)}</small></div>
-            <button class="market-action garage-buy" data-buy-car="\${escapeHtml(car.key)}" \${car.owned ? "disabled" : ""}>\${car.owned ? "КУПЛЕНО" : "КУПИТЬ"}</button>
-          </article>\`).join("")}
-      </div>\`;
+            ${garageCarArt(car)}
+            <div class="garage-car-info"><b>${escapeHtml(car.name)}</b><small>${formatRubles(car.price)}</small></div>
+            <button class="market-action garage-buy" data-buy-car="${escapeHtml(car.key)}" ${car.owned ? "disabled" : ""}>${car.owned ? "КУПЛЕНО" : "КУПИТЬ"}</button>
+          </article>`).join("")}
+      </div>`;
 }
 
 async function loadGarage() {

@@ -3210,15 +3210,15 @@ header { margin-bottom: 8px; }
 }
 
 
-/* Слегка сближаем символы генератора на 0,3% */
+/* Слегка сближаем символы генератора на 0,08% */
 #plate .plate-main > .slot-cell {
-    flex-basis: .5982em !important;
-    width: .5982em !important;
-    min-width: .5982em !important;
+    flex-basis: .59952em !important;
+    width: .59952em !important;
+    min-width: .59952em !important;
 }
 
 #plate .region-code:not(:has(> .slot-cell:nth-child(3))) > .slot-cell {
-    flex-basis: .61814em !important;
-    width: .61814em !important;
-    min-width: .61814em !important;
+    flex-basis: .619504em !important;
+    width: .619504em !important;
+    min-width: .619504em !important;
 }

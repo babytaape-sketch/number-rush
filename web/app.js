@@ -612,6 +612,11 @@ async function quickSellPlate(plateId) {
         const result = await api(`/api/plates/${plateId}/quick-sell`, {
             method: "POST"
         });
+        // Убираем проданный старый номер сразу, даже если барабаны ещё вращаются.
+        // refresh() во время спина намеренно не заменяет весь список коллекции,
+        // чтобы не показывать выпавший номер раньше завершения анимации.
+        collectionCache = collectionCache.filter(plate => Number(plate.id) !== Number(plateId));
+        renderCollection();
         await refresh();
     } catch (e) {
         alert(e.message);

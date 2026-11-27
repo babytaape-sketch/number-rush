@@ -777,7 +777,7 @@ footer {
     flex: 0 0 .56em !important;
     width: .56em !important;
     min-width: .56em;
-    margin-right: -.245em;
+    margin-right: -.045em;
     transform: scaleX(.90);
     transform-origin: center;
 }

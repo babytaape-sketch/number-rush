@@ -1092,8 +1092,6 @@ async function refresh() {
 async function runSpin(spinType = "paid") {
     const useFree = spinType === "daily" || spinType === "bonus";
     if (spinInProgress) return;
-    const previousSellButton = $("spin-result-sell");
-    if (previousSellButton) previousSellButton.hidden = true;
     spinInProgress = true;
     spinHaptic(useFree);
     const spinButton = $("spin");
@@ -1123,13 +1121,6 @@ async function runSpin(spinType = "paid") {
 
         const rarityText = rarityNames[result.plate.rarity] || result.plate.rarity.toUpperCase();
         const tags = result.plate.tags || [];
-        const resultSellButton = $("spin-result-sell");
-        if (resultSellButton) {
-            resultSellButton.hidden = false;
-            resultSellButton.disabled = false;
-            resultSellButton.dataset.plateId = String(result.plate.id);
-            resultSellButton.textContent = `ПРОДАТЬ ЗА ${formatRubles(result.plate.quick_sell_price || 0)}`;
-        }
         const analysisRoot = $("plate-analysis");
         if (analysisRoot) analysisRoot.innerHTML = renderPlateAnalysis(result.plate_analysis);
         let message = rarityText;
@@ -1145,26 +1136,6 @@ async function runSpin(spinType = "paid") {
         updateFreeSpinTimer();
     }
 }
-
-$("spin-result-sell").addEventListener("click", async event => {
-    const button = event.currentTarget;
-    const plateId = Number(button.dataset.plateId);
-    if (!plateId || button.disabled) return;
-    if (!confirm("Продать только что выпавший номер?")) return;
-    button.disabled = true;
-    try {
-        const result = await api(`/api/plates/${plateId}/quick-sell`, { method: "POST" });
-        currentCoins = Number(result.coins ?? currentCoins);
-        const coinsElement = $("coins");
-        if (coinsElement) coinsElement.textContent = formatRubles(currentCoins);
-        button.hidden = true;
-        if ($("hint")) $("hint").textContent = `💰 Номер продан за ${formatRubles(result.price)}!`;
-        await refresh();
-    } catch (e) {
-        button.disabled = false;
-        if ($("hint")) $("hint").textContent = e.message;
-    }
-});
 
 $("spin").addEventListener("click", () => runSpin(false));
 $("free-spin-button").addEventListener("click", () => {

@@ -424,10 +424,12 @@ let spinInProgress = false;
 
 function updateSpinAvailability() {
     const button = $("spin");
-    const notice = $("spin-cost-notice");
+    if (!button) return;
     const insufficient = currentCoins < 1000;
-    if (button) button.disabled = spinInProgress || insufficient;
-    if (notice) notice.hidden = !insufficient;
+    button.disabled = spinInProgress || insufficient;
+    button.innerHTML = insufficient
+        ? "1 СПИН — 1 000₽"
+        : 'ГЕНЕРИРОВАТЬ <span>↗</span>';
 }
 
 function updateFreeSpinTimer() {

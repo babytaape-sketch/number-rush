@@ -21,7 +21,8 @@ document.addEventListener("click", event => {
     if (!target || target.disabled || target.id === "spin" || target.id === "free-spin-button" || !tg?.HapticFeedback) return;
 
     try {
-        tg.HapticFeedback.impactOccurred("light");
+        const shopControl = target.closest(".shop-buy-button, .shop-switch-button");
+        tg.HapticFeedback.impactOccurred(shopControl ? "medium" : "light");
     } catch (_) {
         // Haptic feedback недоступен на некоторых клиентах Telegram.
     }
@@ -617,9 +618,46 @@ async function quickSellPlate(plateId) {
     }
 }
 
+function openCollectionPlateDetails(plateId) {
+    const plate = collectionCache.find(item => Number(item.id) === Number(plateId));
+    if (!plate) return;
+    const overlay = document.createElement("div");
+    overlay.className = "plate-details-overlay";
+    overlay.innerHTML = `
+        <section class="plate-details-modal" role="dialog" aria-modal="true" aria-labelledby="plate-details-title">
+            <button type="button" class="plate-details-close" aria-label="Закрыть">×</button>
+            <h3 id="plate-details-title">Информация о номере</h3>
+            ${createMiniPlate(plate.number, plate.rarity)}
+            <div class="plate-details-rarity">${escapeHtml(rarityNames[plate.rarity] || plate.rarity)}</div>
+            <div class="plate-details-value">Оценка: <strong>${formatRubles(plate.market_value || 0)}</strong></div>
+            <div class="plate-details-section-title">Особенности номера</div>
+            ${Array.isArray(plate.tags) && plate.tags.length
+                ? `<div class="plate-details-tags">${plate.tags.map(tag => `<span class="plate-details-tag">${escapeHtml(tag)}</span>`).join("")}</div>`
+                : '<p class="plate-details-empty">Для этого номера пока нет дополнительных особенностей.</p>'}
+            ${plate.is_listed ? '<div class="plate-details-status">Номер выставлен на продажу</div>' : ''}
+        </section>`;
+    const close = () => overlay.remove();
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay || event.target.closest(".plate-details-close")) close();
+    });
+    document.addEventListener("keydown", function onEscape(event) {
+        if (event.key === "Escape" && document.body.contains(overlay)) {
+            close();
+            document.removeEventListener("keydown", onEscape);
+        }
+    });
+    document.body.appendChild(overlay);
+    overlay.querySelector(".plate-details-close")?.focus();
+}
+
 $("items").addEventListener("click", event => {
+    const detailsButton = event.target.closest("[data-plate-details]");
     const quickButton = event.target.closest("[data-quick-sell]");
     const listButton = event.target.closest("[data-list-plate]");
+    if (detailsButton) {
+        openCollectionPlateDetails(Number(detailsButton.dataset.plateDetails));
+        return;
+    }
     if (quickButton) {
         quickSellPlate(Number(quickButton.dataset.quickSell));
         return;
@@ -671,12 +709,12 @@ function renderCollection() {
 
     root.innerHTML = rows.length
         ? rows.map(p => `
-            <div class="item collection-item">
+            <article class="item collection-item">
                 <div class="collection-plate-wrap">
                     ${createMiniPlate(p.number, p.rarity)}
                     <small>${escapeHtml(rarityNames[p.rarity] || p.rarity)}</small>
-                    ${renderTags(p.tags)}
                 </div>
+                <button type="button" class="collection-details-button" data-plate-details="${p.id}">ПОДРОБНЕЕ <span>↗</span></button>
                 <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed
                     ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
@@ -684,7 +722,7 @@ function renderCollection() {
                         <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${formatRubles(p.quick_sell_price || 0)}</button>
                         <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>
                       </div>`}
-            </div>
+            </article>
         `).join("")
         : '<div class="empty">По этим фильтрам номеров нет.</div>';
 }

@@ -1001,6 +1001,8 @@ def get_plate_tags(letters, digits, region_code=None):
         letter_patterns = analysis.get("letter_patterns", [])
         tags.extend(digit_patterns)
         tags.extend(letter_patterns)
+        if digits in SPECIAL_DIGITS and len(set(digits)) > 1 and not digits.endswith("00"):
+            tags.append(f"Особая числовая комбинация ({digits})")
 
         # Common collector vocabulary for the first/last adjacent pair.
         if digits[0] == digits[1] and len(set(digits)) > 1:

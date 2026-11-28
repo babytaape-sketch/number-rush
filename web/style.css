@@ -3505,3 +3505,36 @@ header { margin-bottom: 8px; }
 #leaderboard .leaderboard-best-plate .leaderboard-me strong {
     font-size: 10px;
 }
+
+
+/* Рейтинг лучших номеров: триколор в личном рекорде и компактные знаки в списке */
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-plate-region {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    padding: 2px 3px 3px !important;
+    overflow: visible !important;
+}
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    display: flex !important;
+    width: 12px !important;
+    height: 8px !important;
+    min-width: 12px !important;
+    aspect-ratio: 3 / 2 !important;
+    margin: 0 0 1px !important;
+    border: 1px solid #777 !important;
+    overflow: hidden !important;
+}
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag span {
+    display: block !important;
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+}
+#leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-plate-main {
+    font-size: clamp(11px, 2.2vw, 16px) !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+    transform: none !important;
+}

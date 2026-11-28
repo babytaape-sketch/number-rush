@@ -539,12 +539,6 @@ function renderMarket() {
 }
 
 
-["market-search", "market-rarity", "market-sort"].forEach(id => {
-    $(id)?.addEventListener("input", renderMarket);
-    $(id)?.addEventListener("change", renderMarket);
-});
-
-
 
 function updateMarketFilterIndicator() {
     const indicator = $("market-filter-indicator");

@@ -3586,12 +3586,13 @@ header { margin-bottom: 8px; }
 }
 
 
-/* Четыре рейтинга игроков: опыт добавлен отдельно, остальные сохранены */
+/* Рейтинги игроков располагаются вертикально */
 #leaderboard #leaderboard-content {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px;
 }
-@media (max-width: 700px) {
-    #leaderboard #leaderboard-content {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
+#leaderboard #leaderboard-content > .leaderboard-section {
+    width: 100%;
+    min-width: 0;
 }

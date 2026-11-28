@@ -3566,3 +3566,15 @@ header { margin-bottom: 8px; }
     margin: 0 1px 0 0 !important;
     transform: translate(1px, -1px) !important;
 }
+
+/* Рейтинг лучших номеров: сдвиг RUS и триколора вправо на 2 px на обеих табличках */
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-country {
+    transform: translate(4px, -1px) !important;
+}
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
+    transform: translate(3px, -1px) !important;
+}
+#leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-country,
+#leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-flag {
+    transform: translateX(2px) !important;
+}

@@ -3220,3 +3220,19 @@ header { margin-bottom: 8px; }
     -webkit-text-stroke: 0.35px #f4f4f4;
     paint-order: stroke fill;
 }
+
+
+/* Market filter controls match the collection filter layout */
+#market .collection-filter-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+#market .collection-filter-panel {
+    display: grid;
+    gap: 10px;
+}
+#market .collection-filter-panel[hidden] {
+    display: none !important;
+}

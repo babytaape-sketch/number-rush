@@ -216,8 +216,8 @@ async function rollSlot(element, finalChar, options = {}) {
     await new Promise(resolve => {
         function frame(now) {
             const elapsed = Math.min(1, (now - start) / duration);
-            const fastPhaseEnd = 0.68;
-            const fastDistance = 0.82;
+            const fastPhaseEnd = 0.62;
+            const fastDistance = 0.78;
             let progress;
 
             if (elapsed <= fastPhaseEnd) {
@@ -225,7 +225,7 @@ async function rollSlot(element, finalChar, options = {}) {
             } else {
                 const brakeProgress = (elapsed - fastPhaseEnd) / (1 - fastPhaseEnd);
                 progress = fastDistance + (1 - fastDistance) *
-                    (1 - Math.pow(1 - brakeProgress, 2));
+                    (1 - Math.pow(1 - brakeProgress, 3));
             }
 
             strip.style.transform = `translate3d(0, -${distance * progress}px, 0)`;
@@ -279,7 +279,7 @@ function buildSuspenseReels(mainChars, regionChars = [], totalSymbols = 23) {
         ["ВОР", "212"], ["АЕК", "321"], ["МРТ", "987"],
         ["ЕКХ", "789"], ["АМР", "001"], ["ВВВ", "700"]
     ];
-    const teaserIndexes = [3, 7, 11, 15, 19, 22];
+    const teaserIndexes = [3, 7, 11, 15, 19, 21, 22];
     teaserIndexes.forEach((symbolIndex, teaserIndex) => {
         const [letters, digits] = teaserPatterns[
             Math.floor(Math.random() * teaserPatterns.length)
@@ -296,7 +296,7 @@ function buildSuspenseReels(mainChars, regionChars = [], totalSymbols = 23) {
     // который уже выпал. Это визуальная подсказка, а не изменение результата.
     const regionDigits = Array.from(regionChars || []).filter(char => /[0-9]/.test(char));
     if (regionDigits.length) {
-        [2, 6, 10, 14, 18, 21].forEach((symbolIndex, echoIndex) => {
+        [2, 6, 10, 14, 18].forEach((symbolIndex, echoIndex) => {
             const echoed = [
                 regionDigits[0],
                 regionDigits[1] || regionDigits[0],

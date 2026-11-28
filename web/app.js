@@ -1146,17 +1146,20 @@ function renderLeaderboard(data) {
     const best = data.best_plate;
     const bestRows = best?.top || [];
     const bestSection = `
-        <section class="leaderboard-section">
+        <section class="leaderboard-section leaderboard-best-plate">
             <h3>🏆 По лучшему номеру</h3>
-            ${best?.my_rank ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО</strong><b>№${best.my_rank.rank}</b><small>${escapeHtml(best.my_rank.number)} · ${Number(best.my_rank.value).toLocaleString("ru-RU")} ₽</small></div>` : ""}
+            ${best?.my_rank ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО · №${best.my_rank.rank}</strong><div class="leaderboard-best-plate-visual">${createMiniPlate(best.my_rank.number, best.my_rank.rarity || "Common")}</div><small>${escapeHtml(best.my_rank.rarity_ru || "")}</small></div>` : ""}
             <div class="leaderboard-list">
                 ${bestRows.map(player => {
                     const place = player.rank === 1 ? "🥇" : player.rank === 2 ? "🥈" : player.rank === 3 ? "🥉" : `#${player.rank}`;
                     return `
                         <article class="leaderboard-player ${player.is_me ? "is-me" : ""}">
                             <span class="leaderboard-place">${place}</span>
-                            <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}<small style="display:block;color:var(--muted,#91a0b5);font-weight:500">${escapeHtml(player.number)} · ${escapeHtml(player.rarity_ru)}</small></strong>
-                            <b class="leaderboard-score">${Number(player.value).toLocaleString("ru-RU")} <small>₽</small></b>
+                            <div class="leaderboard-best-player-info">
+                                <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}</strong>
+                                <div class="leaderboard-best-plate-visual">${createMiniPlate(player.number, player.rarity || "Common")}</div>
+                                <small class="leaderboard-best-rarity">${escapeHtml(player.rarity_ru || "")}</small>
+                            </div>
                         </article>
                     `;
                 }).join("") || '<p class="daily-tasks-note">Пока здесь никого нет.</p>'}

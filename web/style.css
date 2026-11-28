@@ -3900,11 +3900,12 @@ header { margin-bottom: 8px; }
 #leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
     grid-column: 2 !important;
     grid-row: 2 !important;
-    width: 5px !important;
-    min-width: 5px !important;
-    height: 3px !important;
-    min-height: 3px !important;
+    width: 4px !important;
+    min-width: 4px !important;
+    height: 2px !important;
+    min-height: 2px !important;
     aspect-ratio: auto !important;
     border-width: 0 !important;
-    transform: translate(1px, -3px) !important;
+    align-self: center !important;
+    transform: translate(1px, -1px) !important;
 }

@@ -3586,13 +3586,75 @@ header { margin-bottom: 8px; }
 }
 
 
-/* Рейтинги игроков располагаются вертикально */
+/* Четыре рейтинга — в одну горизонтальную линию; на узком экране доступна прокрутка ряда */
 #leaderboard #leaderboard-content {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: repeat(4, minmax(235px, 1fr)) !important;
+    grid-auto-flow: column;
+    align-items: stretch;
     gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 2px 10px;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
 }
 #leaderboard #leaderboard-content > .leaderboard-section {
     width: 100%;
     min-width: 0;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* В колонке лучших номеров знак центрирован и сохраняет одинаковые пропорции */
+#leaderboard .leaderboard-best-plate .leaderboard-player {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-items: start;
+    gap: 6px;
+}
+#leaderboard .leaderboard-best-player-info {
+    width: 100%;
+    min-width: 0;
+    align-items: center !important;
+    text-align: center;
+}
+#leaderboard .leaderboard-best-player-info .leaderboard-name {
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+#leaderboard .leaderboard-best-plate-visual {
+    width: min(100%, 172px) !important;
+    max-width: 172px !important;
+    margin-inline: auto;
+}
+#leaderboard .leaderboard-best-plate-visual .mini-plate {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+#leaderboard .leaderboard-best-plate-visual .mini-plate-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me {
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual {
+    width: min(100%, 190px) !important;
+    max-width: 190px !important;
+}
+@media (max-width: 600px) {
+    #leaderboard #leaderboard-content {
+        grid-template-columns: repeat(4, minmax(235px, 1fr)) !important;
+        gap: 9px;
+    }
 }

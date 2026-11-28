@@ -3584,3 +3584,14 @@ header { margin-bottom: 8px; }
 #leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-flag {
     transform: translate(5px, -1px) !important;
 }
+
+
+/* Четыре рейтинга игроков: опыт добавлен отдельно, остальные сохранены */
+#leaderboard #leaderboard-content {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+@media (max-width: 700px) {
+    #leaderboard #leaderboard-content {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}

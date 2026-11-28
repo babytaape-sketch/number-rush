@@ -185,10 +185,11 @@ async function rollSlot(element, finalChar, options = {}) {
     windowElement.style.overflow = "hidden";
 
     const totalSymbols = options.totalSymbols || 10;
+    const reelSymbols = Array.isArray(options.symbols) ? options.symbols : [];
     for (let i = 0; i < totalSymbols; i++) {
         const symbol = document.createElement("span");
         symbol.className = "slot-symbol";
-        symbol.textContent = randomSymbol(finalChar);
+        symbol.textContent = reelSymbols[i] || randomSymbol(finalChar);
         symbol.style.height = `${symbolHeight}px`;
         symbol.style.flexBasis = `${symbolHeight}px`;
         strip.appendChild(symbol);
@@ -258,6 +259,54 @@ function chooseSpinMood() {
     if (roll < 0.07) return "showtime";
     if (roll < 0.25) return "suspense";
     return "normal";
+}
+
+function buildSuspenseReels(mainChars, totalSymbols = 19) {
+    const reels = mainChars.map(char =>
+        Array.from({ length: totalSymbols }, () => randomSymbol(char))
+    );
+    const letterPositions = [0, 4, 5];
+    const digitPositions = [1, 2, 3];
+    const teaserPatterns = [
+        ["АМР", "777"], ["ЕКХ", "007"], ["ААА", "123"],
+        ["МММ", "888"], ["ХАМ", "999"], ["ООО", "000"],
+        ["ССС", "555"], ["ВВВ", "111"], ["КОО", "789"],
+        ["АКР", "222"], ["ВКР", "333"], ["ВАУ", "666"]
+    ];
+    const teaserIndexes = [3, 7, 11, 15];
+    teaserIndexes.forEach((symbolIndex, teaserIndex) => {
+        const [letters, digits] = teaserPatterns[
+            Math.floor(Math.random() * teaserPatterns.length)
+        ];
+        letterPositions.forEach((position, index) => {
+            if (reels[position]) reels[position][symbolIndex] = letters[index];
+        });
+        digitPositions.forEach((position, index) => {
+            if (reels[position]) reels[position][symbolIndex] = digits[index];
+        });
+    });
+
+    // Несколько почти собранных сочетаний создают эффект «чуть-чуть не хватило».
+    [5, 9, 13, 17].forEach(symbolIndex => {
+        const [letters, digits] = teaserPatterns[
+            Math.floor(Math.random() * teaserPatterns.length)
+        ];
+        const miss = Math.floor(Math.random() * 3);
+        letterPositions.forEach((position, index) => {
+            if (reels[position]) {
+                reels[position][symbolIndex] = index === miss
+                    ? randomSymbol("А") : letters[index];
+            }
+        });
+        digitPositions.forEach((position, index) => {
+            if (reels[position]) {
+                reels[position][symbolIndex] = index === miss
+                    ? randomSymbol("0") : digits[index];
+            }
+        });
+    });
+
+    return reels;
 }
 
 function isBeautifulPlate(number) {
@@ -340,12 +389,15 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
         [lateIndexes[1], latestRegularStop + 3400 + rarityLevel * 220]
     ]);
 
-    // Эти два случайных символа гарантированно остановятся последними.
+    // В барабанах чаще мелькают красивые серии и популярные буквенные сочетания.
+    // Это только визуальные «тизеры»: итоговый номер и шансы генерации не меняются.
+    const suspenseReels = buildSuspenseReels(mainChars, 19);
     await Promise.all(mainSlots.map((slot, index) =>
         rollSlot(slot, mainChars[index], {
             duration: lateDurations.get(index) || regularDurations[index],
             delay: index === lateIndexes[1] ? moodPause : 0,
-            totalSymbols: 19
+            totalSymbols: 19,
+            symbols: suspenseReels[index]
         })
     ));
 

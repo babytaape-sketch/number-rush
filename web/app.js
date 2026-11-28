@@ -1038,11 +1038,14 @@ function renderShop(packages) {
     const platePackages = (packages || []).filter(pack => pack.type === "plate");
 
     rublesRoot.innerHTML = rublePackages.map((pack, index) => `
-        <article class="shop-package shop-ruble-card">
-            <div class="shop-ruble-art" aria-hidden="true"><span>${index === 0 ? "₽" : index === 1 ? "₽₽" : "₽₽₽"}</span></div>
-            <strong>${formatRubles(pack.coins)}</strong>
-            <span class="shop-package-price">⭐ ${Number(pack.stars)} Stars</span>
-            <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}">КУПИТЬ</button>
+        <article class="shop-package shop-ruble-card shop-ruble-card-${index + 1}">
+            <div class="shop-ruble-card-head">
+                <span class="shop-ruble-tier">${["СТАРТ", "ОПТИМАЛЬНЫЙ", "МАКСИМАЛЬНЫЙ"][index] || "ПАКЕТ"}</span>
+                <span class="shop-ruble-icon" aria-hidden="true">₽</span>
+            </div>
+            <strong class="shop-ruble-amount">${formatRubles(pack.coins)}</strong>
+            <span class="shop-ruble-caption">ИГРОВЫХ МОНЕТ</span>
+            <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}"><span>⭐ ${Number(pack.stars)} Stars</span><span>КУПИТЬ</span></button>
         </article>
     `).join("");
 

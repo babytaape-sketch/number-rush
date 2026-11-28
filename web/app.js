@@ -1006,6 +1006,7 @@ function finishRewardClaim(button) {
 
 async function claimDailyTask(taskKey, button) {
     if (!button || button.disabled) return;
+    triggerTapHaptic(button);
     button.disabled = true;
     button.textContent = "ЗАБИРАЕМ…";
     try {
@@ -1083,6 +1084,7 @@ function renderAchievements(data) {
 
 async function claimAchievement(key, button) {
     if (!button || button.disabled) return;
+    triggerTapHaptic(button);
     button.disabled = true;
     button.textContent = "ЗАБИРАЕМ…";
     try {

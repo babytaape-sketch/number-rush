@@ -1409,7 +1409,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
 
     with db() as con:
         rows = con.execute(
-            """SELECT user_id, username, coins, total_spins
+            """SELECT user_id, username, coins, total_spins, COALESCE(xp, 0) AS xp
             FROM users
             ORDER BY coins DESC, total_spins DESC, username COLLATE NOCASE ASC"""
         ).fetchall()
@@ -1473,6 +1473,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
     return {
         "money": make_ranking("coins"),
         "spins": make_ranking("total_spins"),
+        "xp": make_ranking("xp"),
         "best_plate": {
             "top": best_result[:10],
             "my_rank": next((item for item in best_result if item["is_me"]), None),

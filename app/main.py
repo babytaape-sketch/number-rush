@@ -895,9 +895,6 @@ def classify_plate(letters, digits, region_code):
     if special and digits in BEAUTIFUL_DIGITS:
         return "Legendary"
 
-    if special:
-        return "Legendary"
-
     if digits == "000":
         return "Legendary"
 
@@ -942,6 +939,30 @@ with db() as con:
             body, region_code = parts
             letters, digits = body[0] + body[4:6], body[1:4]
             if letters == "ОВЕ" and region_code == "77":
+                new_rarity = classify_plate(letters, digits, region_code)
+                con.execute("UPDATE plates SET rarity=? WHERE id=?", (new_rarity, row["id"]))
+        con.execute(
+            """UPDATE users SET rare_plates=(
+                SELECT COUNT(*) FROM plates
+                WHERE plates.owner_id=users.user_id
+                AND plates.rarity IN ('Rare','Epic','Legendary','Mythic')
+            )"""
+        )
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (migration_id, int(time.time())))
+
+
+# Historical letter series are Legendary only with a special digit pattern.
+with db() as con:
+    migration_id = "require_special_digits_for_historical_legendary_2026_11"
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", (migration_id,)).fetchone():
+        rows = con.execute("SELECT id, owner_id, number FROM plates WHERE rarity='Legendary'").fetchall()
+        for row in rows:
+            parts = str(row["number"] or "").strip().split()
+            if len(parts) != 2 or len(parts[0]) != 6:
+                continue
+            body, region_code = parts
+            letters, digits = body[0] + body[4:6], body[1:4]
+            if is_special_series(letters, region_code) and digits not in BEAUTIFUL_DIGITS:
                 new_rarity = classify_plate(letters, digits, region_code)
                 con.execute("UPDATE plates SET rarity=? WHERE id=?", (new_rarity, row["id"]))
         con.execute(
@@ -1223,15 +1244,12 @@ def generate_plate_details(forced_rarity=None):
 
     elif rarity == "Legendary":
         if random.random() < 0.65:
-            # Специальная серия с НЕмифическими цифрами остаётся Legendary.
-            # Красивые комбинации в специальной серии тоже относятся к Legendary.
+            # Историческая серия легендарна только вместе с особой комбинацией цифр.
             letters, region_code, region_name = pick_special_series()
-            digits = random_digits()
-            while digits in BEAUTIFUL_DIGITS:
-                digits = random_digits()
+            digits = random.choice(sorted(BEAUTIFUL_DIGITS))
         else:
             letters = random_letters(ordinary=True)
-            digits = random.choice(["000", "777"])
+            digits = "000"
 
     else:  # Legacy Mythic requests are normalized to Legendary
         letters, region_code, region_name = pick_special_series()

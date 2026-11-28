@@ -261,7 +261,7 @@ function chooseSpinMood() {
     return "normal";
 }
 
-function buildSuspenseReels(mainChars, totalSymbols = 19) {
+function buildSuspenseReels(mainChars, regionChars = [], totalSymbols = 23) {
     const reels = mainChars.map(char =>
         Array.from({ length: totalSymbols }, () => randomSymbol(char))
     );
@@ -272,9 +272,14 @@ function buildSuspenseReels(mainChars, totalSymbols = 19) {
         ["МММ", "888"], ["ХАМ", "999"], ["ООО", "000"],
         ["ССС", "555"], ["ВВВ", "111"], ["КОО", "789"],
         ["АКР", "222"], ["ВКР", "333"], ["ВАУ", "666"],
-        ["ХЕР", "004"], ["ВКО", "004"]
+        ["ХЕР", "004"], ["ВКО", "004"], ["ААА", "121"],
+        ["МММ", "232"], ["ККК", "343"], ["ООО", "454"],
+        ["РРР", "565"], ["ССС", "676"], ["ХХХ", "787"],
+        ["ТТТ", "898"], ["АВТ", "909"], ["КРК", "101"],
+        ["ВОР", "212"], ["АЕК", "321"], ["МРТ", "987"],
+        ["ЕКХ", "789"], ["АМР", "001"], ["ВВВ", "700"]
     ];
-    const teaserIndexes = [3, 7, 11, 15];
+    const teaserIndexes = [3, 7, 11, 15, 19, 22];
     teaserIndexes.forEach((symbolIndex, teaserIndex) => {
         const [letters, digits] = teaserPatterns[
             Math.floor(Math.random() * teaserPatterns.length)
@@ -286,6 +291,24 @@ function buildSuspenseReels(mainChars, totalSymbols = 19) {
             if (reels[position]) reels[position][symbolIndex] = digits[index];
         });
     });
+
+    // Иногда на барабанах номера мелькает именно тот код региона,
+    // который уже выпал. Это визуальная подсказка, а не изменение результата.
+    const regionDigits = Array.from(regionChars || []).filter(char => /\\d/.test(char));
+    if (regionDigits.length) {
+        [2, 6, 10, 14, 18, 21].forEach((symbolIndex, echoIndex) => {
+            const echoed = [
+                regionDigits[0],
+                regionDigits[1] || regionDigits[0],
+                regionDigits[2] || regionDigits[0]
+            ];
+            digitPositions.forEach((position, digitIndex) => {
+                if (reels[position]?.[symbolIndex] !== undefined) {
+                    reels[position][symbolIndex] = echoed[digitIndex];
+                }
+            });
+        });
+    }
 
     // Несколько почти собранных сочетаний создают эффект «чуть-чуть не хватило».
     [5, 9, 13, 17].forEach(symbolIndex => {
@@ -392,7 +415,7 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
 
     // В барабанах чаще мелькают красивые серии и популярные буквенные сочетания.
     // Это только визуальные «тизеры»: итоговый номер и шансы генерации не меняются.
-    const suspenseReels = buildSuspenseReels(mainChars, 19);
+    const suspenseReels = buildSuspenseReels(mainChars, regionChars, 23);
     await Promise.all(mainSlots.map((slot, index) => {
         const isLateStop = lateDurations.has(index);
         const originalDuration = lateDurations.get(index) || regularDurations[index];
@@ -401,7 +424,7 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
         return rollSlot(slot, mainChars[index], {
             duration: originalDuration * (isLateStop ? 0.85 : 0.8),
             delay: index === lateIndexes[1] ? moodPause : 0,
-            totalSymbols: 19,
+            totalSymbols: 23,
             symbols: suspenseReels[index]
         });
     }));

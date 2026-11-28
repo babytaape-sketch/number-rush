@@ -1426,6 +1426,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
                 "rank": index + 1,
                 "username": item["username"],
                 "value": int(item[field] or 0),
+                **({"title": player_level_info(item["xp"])["title"]} if field == "xp" else {}),
                 "is_me": item["user_id"] == user["user_id"],
             }
             for index, item in enumerate(ordered)

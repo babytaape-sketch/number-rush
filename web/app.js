@@ -294,7 +294,7 @@ function buildSuspenseReels(mainChars, regionChars = [], totalSymbols = 23) {
 
     // Иногда на барабанах номера мелькает именно тот код региона,
     // который уже выпал. Это визуальная подсказка, а не изменение результата.
-    const regionDigits = Array.from(regionChars || []).filter(char => /\\d/.test(char));
+    const regionDigits = Array.from(regionChars || []).filter(char => /[0-9]/.test(char));
     if (regionDigits.length) {
         [2, 6, 10, 14, 18, 21].forEach((symbolIndex, echoIndex) => {
             const echoed = [

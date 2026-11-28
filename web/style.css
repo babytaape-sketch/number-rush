@@ -3305,3 +3305,118 @@ header { margin-bottom: 8px; }
         margin-bottom: 3px !important;
     }
 }
+
+
+/* Новый дизайн наборов игровых монет за Telegram Stars */
+#shop-packages .shop-ruble-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    min-height: 190px;
+    padding: 12px 9px 10px;
+    overflow: hidden;
+    border: 1px solid rgba(112, 160, 205, .25);
+    border-radius: 16px;
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(79, 148, 213, .17), transparent 58%),
+        linear-gradient(160deg, #17283a 0%, #101a28 62%, #0c1420 100%);
+    box-shadow: inset 0 1px rgba(255,255,255,.055), 0 7px 18px rgba(0,0,0,.16);
+}
+#shop-packages .shop-ruble-card::after {
+    content: "";
+    position: absolute;
+    inset: auto 16% 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(106,174,230,.55), transparent);
+}
+.shop-ruble-card-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+.shop-ruble-tier {
+    color: #8faac4;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+.shop-ruble-icon {
+    width: 29px;
+    height: 29px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,213,122,.5);
+    border-radius: 50%;
+    color: #ffe0a0;
+    background: radial-gradient(circle at 35% 25%, #806333, #35291c 72%);
+    box-shadow: 0 0 13px rgba(237,183,83,.13), inset 0 1px rgba(255,255,255,.18);
+    font-size: 19px;
+    font-weight: 900;
+}
+#shop-packages .shop-ruble-amount {
+    margin-top: 7px;
+    color: #f3f7fc;
+    font-size: clamp(14px, 3.8vw, 19px);
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: -.4px;
+    white-space: nowrap;
+    text-shadow: 0 2px 12px rgba(116,177,226,.16);
+}
+.shop-ruble-caption {
+    color: #8093a8;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+#shop-packages .shop-ruble-card .shop-buy-button {
+    width: 100%;
+    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    margin-top: auto;
+    padding: 6px 3px;
+    border: 1px solid rgba(255,213,133,.48);
+    border-radius: 10px;
+    color: #ffe3a8;
+    background: linear-gradient(180deg, #59472a, #342a1d);
+    box-shadow: inset 0 1px rgba(255,255,255,.13), 0 3px 10px rgba(0,0,0,.2);
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1.15;
+}
+#shop-packages .shop-ruble-card .shop-buy-button span:first-child {
+    color: #ffda8b;
+    font-size: 10px;
+}
+#shop-packages .shop-ruble-card .shop-buy-button span:last-child {
+    color: #fff4dc;
+    font-size: 8px;
+    letter-spacing: 1px;
+}
+#shop-packages .shop-ruble-card-2 {
+    border-color: rgba(91,169,224,.42);
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(84,166,229,.23), transparent 60%),
+        linear-gradient(160deg, #1a3045, #101c2a 72%);
+}
+#shop-packages .shop-ruble-card-3 {
+    border-color: rgba(225,181,92,.42);
+    background:
+        radial-gradient(ellipse at 50% 0%, rgba(225,181,92,.2), transparent 60%),
+        linear-gradient(160deg, #302a20, #171b22 72%);
+}
+@media (max-width: 380px) {
+    #shop-packages .shop-ruble-card { min-height: 178px; padding: 10px 6px 8px; }
+    .shop-ruble-tier { font-size: 7px; letter-spacing: .5px; }
+    #shop-packages .shop-ruble-amount { font-size: 13px; }
+}

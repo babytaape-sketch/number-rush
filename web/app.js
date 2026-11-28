@@ -1329,9 +1329,9 @@ function renderLeaderboard(data) {
                 ${mine ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО</strong><b>№${mine.rank}</b><small>${valueText(mine)}</small></div>` : ""}
                 <div class="leaderboard-list">
                     ${rows.map(player => {
-                        const place = player.rank === 1 ? "🥇" : player.rank === 2 ? "🥈" : player.rank === 3 ? "🥉" : `#${player.rank}`;
+                        const place = `№${player.rank}`;
                         return `
-                            <article class="leaderboard-player ${player.is_me ? "is-me" : ""}">
+                            <article class="leaderboard-player leaderboard-player-clickable ${player.is_me ? "is-me" : ""}" data-player-id="${escapeHtml(player.user_id || "")}" role="button" tabindex="0" aria-label="Статистика игрока ${escapeHtml(player.username || "Player")}">
                                 <span class="leaderboard-place">${place}</span>
                                 <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}</strong>
                                 <b class="leaderboard-score">${valueText(player)}</b>
@@ -1351,9 +1351,9 @@ function renderLeaderboard(data) {
             ${best?.my_rank ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО · №${best.my_rank.rank}</strong><div class="leaderboard-best-plate-visual">${createMiniPlate(best.my_rank.number, best.my_rank.rarity || "Common")}</div><small>${escapeHtml(best.my_rank.rarity_ru || "")}</small></div>` : ""}
             <div class="leaderboard-list">
                 ${bestRows.map(player => {
-                    const place = player.rank === 1 ? "🥇" : player.rank === 2 ? "🥈" : player.rank === 3 ? "🥉" : `#${player.rank}`;
+                    const place = `№${player.rank}`;
                     return `
-                        <article class="leaderboard-player ${player.is_me ? "is-me" : ""}">
+                        <article class="leaderboard-player leaderboard-player-clickable ${player.is_me ? "is-me" : ""}" data-player-id="${escapeHtml(player.user_id || "")}" role="button" tabindex="0" aria-label="Статистика игрока ${escapeHtml(player.username || "Player")}">
                             <span class="leaderboard-place">${place}</span>
                             <div class="leaderboard-best-player-info">
                                 <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}</strong>
@@ -1372,6 +1372,66 @@ function renderLeaderboard(data) {
         bestSection +
         renderTable("По балансу", data.money, "руб.", "💰");
 }
+
+
+async function showPublicPlayerStats(playerId) {
+    if (!playerId) return;
+    document.querySelector(".public-player-overlay")?.remove();
+    const overlay = document.createElement("div");
+    overlay.className = "plate-details-overlay public-player-overlay";
+    overlay.innerHTML = '<section class="plate-details-modal public-player-modal" role="dialog" aria-modal="true"><button type="button" class="plate-details-close" aria-label="Закрыть">×</button><div class="public-player-loading">Загружаем статистику игрока…</div></section>';
+    const close = () => {
+        overlay.remove();
+        document.removeEventListener("keydown", onEscape);
+    };
+    const onEscape = event => { if (event.key === "Escape") close(); };
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay || event.target.closest(".plate-details-close")) close();
+    });
+    document.addEventListener("keydown", onEscape);
+    document.body.appendChild(overlay);
+    try {
+        const p = await api("/api/player/" + encodeURIComponent(playerId));
+        const rarityOrder = ["Legendary", "Epic", "Rare", "Uncommon", "Common"];
+        const rarityLabels = {Legendary:"Легендарные",Epic:"Эпические",Rare:"Редкие",Uncommon:"Необычные",Common:"Обычные"};
+        const rarityMarkup = rarityOrder.filter(key => Number(p.rarities?.[key] || 0) > 0)
+            .map(key => '<div class="public-player-rarity"><span>' + rarityLabels[key] + '</span><b>' + Number(p.rarities[key]) + '</b></div>').join("");
+        const bestMarkup = p.best_plate
+            ? '<div class="public-player-best">' + createMiniPlate(p.best_plate.number, p.best_plate.rarity || "Common") + '<small>' + escapeHtml(p.best_plate.rarity_ru || "") + '</small></div>'
+            : '<div class="public-player-empty">Пока нет номеров в коллекции</div>';
+        overlay.querySelector(".public-player-modal").innerHTML = `
+            <button type="button" class="plate-details-close" aria-label="Закрыть">×</button>
+            <div class="public-player-kicker">ПРОФИЛЬ ИГРОКА</div>
+            <h3 class="public-player-name">${escapeHtml(p.username || "Player")}</h3>
+            <div class="public-player-level"><strong>Уровень ${Number(p.level)}</strong><span>${escapeHtml(p.title || "Новичок")}</span><small>${Number(p.xp).toLocaleString("ru-RU")} XP · до следующего уровня: ${Number(p.xp_to_next).toLocaleString("ru-RU")} XP</small><div class="public-player-xp"><i style="width:${Math.max(0,Math.min(100,Number(p.progress_percent)||0))}%"></i></div></div>
+            <div class="public-player-stats">
+                <div><small>Баланс</small><b>${formatRubles(p.coins)}</b></div>
+                <div><small>Всего спинов</small><b>${Number(p.total_spins).toLocaleString("ru-RU")}</b></div>
+                <div><small>Коллекция</small><b>${Number(p.collection_count)} / 50</b></div>
+                <div><small>Редких номеров</small><b>${Number(p.rare_plates).toLocaleString("ru-RU")}</b></div>
+                <div><small>Продаж</small><b>${Number(p.sales_count).toLocaleString("ru-RU")}</b></div>
+                <div><small>Покупок</small><b>${Number(p.purchases_count).toLocaleString("ru-RU")}</b></div>
+            </div>
+            <h4>ЛУЧШИЙ НОМЕР</h4>${bestMarkup}
+            <h4>СОСТАВ КОЛЛЕКЦИИ</h4><div class="public-player-rarities">${rarityMarkup || '<span class="public-player-empty">Коллекция пока пуста</span>'}</div>
+            <div class="public-player-trades"><span>Продано на рынке: <b>${formatRubles(p.sales_total)}</b></span><span>Покупки на рынке: <b>${formatRubles(p.purchases_total)}</b></span></div>
+        `;
+    } catch (error) {
+        const body = overlay.querySelector(".public-player-modal");
+        if (body) body.innerHTML = '<button type="button" class="plate-details-close" aria-label="Закрыть">×</button><p class="public-player-loading">' + escapeHtml(error.message || "Не удалось загрузить статистику") + '</p>';
+    }
+}
+
+
+$("leaderboard-content")?.addEventListener("click", event => {
+    const player = event.target.closest(".leaderboard-player-clickable[data-player-id]");
+    if (player) showPublicPlayerStats(player.dataset.playerId);
+});
+$("leaderboard-content")?.addEventListener("keydown", event => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const player = event.target.closest(".leaderboard-player-clickable[data-player-id]");
+    if (player) { event.preventDefault(); showPublicPlayerStats(player.dataset.playerId); }
+});
 
 async function refresh() {
     const me = await api("/api/me");

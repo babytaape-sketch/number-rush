@@ -3256,3 +3256,21 @@ header { margin-bottom: 8px; }
     cursor: pointer;
 }
 .collection-sale-status:active { transform: scale(.98); }
+
+
+/* Profile rarest plate: keep the six main glyphs visually balanced */
+.profile-rarest-plate .mini-plate-main {
+    font-family: "GOSTPlate", Arial, sans-serif !important;
+    font-size: 43px !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.6px !important;
+    transform: scaleY(.82) !important;
+    transform-origin: center center !important;
+}
+@media (max-width: 520px) {
+    .profile-rarest-plate .mini-plate-main {
+        font-size: 38px !important;
+        letter-spacing: -0.5px !important;
+        transform: scaleY(.82) !important;
+    }
+}

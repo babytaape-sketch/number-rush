@@ -1643,7 +1643,10 @@ def collection(authorization: str | None = Header(default=None)):
                 p.id, p.number, p.rarity, p.created_at,
                 EXISTS(
                     SELECT 1 FROM listings l WHERE l.plate_id=p.id
-                ) AS is_listed
+                ) AS is_listed,
+                (
+                    SELECT l.id FROM listings l WHERE l.plate_id=p.id LIMIT 1
+                ) AS listing_id
             FROM plates p
             WHERE p.owner_id=?
             ORDER BY p.id DESC

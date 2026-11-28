@@ -353,7 +353,7 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
 
     // Сначала останавливается регион.
     await Promise.all(regionSlots.map((slot, index) =>
-        rollSlot(slot, regionChars[index], { duration: 2100, totalSymbols: 19 })
+        rollSlot(slot, regionChars[index], { duration: 1800, totalSymbols: 19 })
     ));
 
     const rarityLevel = {
@@ -393,14 +393,18 @@ async function animatePlate(finalPlate, rarity, mood = "normal") {
     // В барабанах чаще мелькают красивые серии и популярные буквенные сочетания.
     // Это только визуальные «тизеры»: итоговый номер и шансы генерации не меняются.
     const suspenseReels = buildSuspenseReels(mainChars, 19);
-    await Promise.all(mainSlots.map((slot, index) =>
-        rollSlot(slot, mainChars[index], {
-            duration: lateDurations.get(index) || regularDurations[index],
+    await Promise.all(mainSlots.map((slot, index) => {
+        const isLateStop = lateDurations.has(index);
+        const originalDuration = lateDurations.get(index) || regularDurations[index];
+        // Обычные барабаны ускоряем на 20%, последние два — лишь на 15%,
+        // чтобы сохранить выразительное замедление перед остановкой.
+        return rollSlot(slot, mainChars[index], {
+            duration: originalDuration * (isLateStop ? 0.85 : 0.8),
             delay: index === lateIndexes[1] ? moodPause : 0,
             totalSymbols: 19,
             symbols: suspenseReels[index]
-        })
-    ));
+        });
+    }));
 
     setRarityEffect(rarity);
     const rarityClass = "spin-rarity-" + (["Common", "Uncommon", "Rare", "Epic", "Legendary"].includes(rarity) ? rarity.toLowerCase() : "common");

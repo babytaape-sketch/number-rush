@@ -3586,34 +3586,49 @@ header { margin-bottom: 8px; }
 }
 
 
-/* Четыре рейтинга — в одну горизонтальную линию; на узком экране доступна прокрутка ряда */
+/* Четыре рейтинга стоят в один ряд; прокрутка страницы остаётся вертикальной */
 #leaderboard #leaderboard-content {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(235px, 1fr)) !important;
-    grid-auto-flow: column;
-    align-items: stretch;
-    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-auto-flow: row;
+    align-items: start;
+    gap: clamp(4px, 1.2vw, 12px);
     width: 100%;
     max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 2px 2px 10px;
-    overscroll-behavior-x: contain;
-    scrollbar-width: thin;
+    min-width: 0;
+    overflow: visible !important;
+    padding: 2px 0;
 }
 #leaderboard #leaderboard-content > .leaderboard-section {
     width: 100%;
     min-width: 0;
-    height: 100%;
+    height: auto;
     box-sizing: border-box;
+    padding: clamp(4px, .8vw, 10px);
 }
-
-/* В колонке лучших номеров знак центрирован и сохраняет одинаковые пропорции */
-#leaderboard .leaderboard-best-plate .leaderboard-player {
-    display: grid;
-    grid-template-columns: 22px minmax(0, 1fr);
-    align-items: start;
-    gap: 6px;
+#leaderboard .leaderboard-section h3 {
+    overflow-wrap: anywhere;
+    font-size: clamp(8px, 1.15vw, 15px);
+}
+#leaderboard .leaderboard-section .leaderboard-player {
+    min-width: 0;
+    padding: 6px 3px;
+    gap: 3px;
+}
+#leaderboard .leaderboard-section .leaderboard-name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(7px, .85vw, 11px);
+}
+#leaderboard .leaderboard-section .leaderboard-score {
+    min-width: 0;
+    padding-left: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(7px, .85vw, 11px);
+}
+#leaderboard .leaderboard-section .leaderboard-place {
+    flex-basis: 16px;
+    font-size: clamp(8px, .9vw, 12px);
 }
 #leaderboard .leaderboard-best-player-info {
     width: 100%;
@@ -3622,8 +3637,15 @@ header { margin-bottom: 8px; }
     text-align: center;
 }
 #leaderboard .leaderboard-best-player-info .leaderboard-name {
+    width: 100%;
     text-align: center;
     overflow-wrap: anywhere;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-player {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    align-items: start;
+    gap: 3px;
 }
 #leaderboard .leaderboard-best-plate-visual {
     width: min(100%, 172px) !important;
@@ -3633,6 +3655,7 @@ header { margin-bottom: 8px; }
 #leaderboard .leaderboard-best-plate-visual .mini-plate {
     display: flex;
     width: 100%;
+    min-width: 0;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -3652,9 +3675,31 @@ header { margin-bottom: 8px; }
     width: min(100%, 190px) !important;
     max-width: 190px !important;
 }
-@media (max-width: 600px) {
+@media (max-width: 480px) {
     #leaderboard #leaderboard-content {
-        grid-template-columns: repeat(4, minmax(235px, 1fr)) !important;
-        gap: 9px;
+        gap: 4px;
+    }
+    #leaderboard #leaderboard-content > .leaderboard-section {
+        padding: 4px 3px;
+        border-radius: 9px;
+        gap: 6px;
+    }
+    #leaderboard .leaderboard-section h3 {
+        font-size: clamp(7px, 2.2vw, 10px);
+        line-height: 1.15;
+    }
+    #leaderboard .leaderboard-section .leaderboard-player {
+        padding: 5px 2px;
+        gap: 2px;
+    }
+    #leaderboard .leaderboard-section .leaderboard-name,
+    #leaderboard .leaderboard-section .leaderboard-score {
+        font-size: clamp(7px, 1.8vw, 9px);
+    }
+    #leaderboard .leaderboard-best-plate-visual .mini-plate-main {
+        font-size: clamp(6px, 2vw, 10px) !important;
+    }
+    #leaderboard .leaderboard-best-plate-visual .mini-region-code {
+        font-size: clamp(5px, 1.5vw, 8px) !important;
     }
 }

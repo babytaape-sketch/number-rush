@@ -3938,3 +3938,38 @@ header { margin-bottom: 8px; }
 #leaderboard #leaderboard-content > .leaderboard-section > .leaderboard-list {
     margin-top: 0 !important;
 }
+
+
+/* Compact personal-rank cards; keep every player card below them uniform */
+#leaderboard #leaderboard-content > .leaderboard-section > .leaderboard-me {
+    height: 78px !important;
+    min-height: 78px !important;
+    padding: 7px 8px !important;
+    gap: 3px !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+#leaderboard #leaderboard-content > .leaderboard-section.leaderboard-best-plate > .leaderboard-me {
+    height: 88px !important;
+    min-height: 88px !important;
+    padding: 4px 6px !important;
+    gap: 2px !important;
+}
+#leaderboard #leaderboard-content > .leaderboard-section > .leaderboard-list > .leaderboard-player {
+    height: 104px !important;
+    min-height: 104px !important;
+    max-height: 104px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+#leaderboard #leaderboard-content > .leaderboard-section:not(.leaderboard-best-plate) > .leaderboard-list > .leaderboard-player {
+    justify-content: center !important;
+}
+#leaderboard #leaderboard-content > .leaderboard-section.leaderboard-best-plate > .leaderboard-list > .leaderboard-player {
+    align-items: center !important;
+}
+#leaderboard .leaderboard-best-player-info {
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+}

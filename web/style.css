@@ -3909,3 +3909,16 @@ header { margin-bottom: 8px; }
     align-self: center !important;
     transform: translate(1px, -1px) !important;
 }
+
+
+/* Выравниваем блоки «ТВОЁ МЕСТО» по одной горизонтальной линии во всех рейтингах */
+#leaderboard #leaderboard-content > .leaderboard-section > h3 {
+    height: 3.2em !important;
+    min-height: 3.2em !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    line-height: 1.15 !important;
+    box-sizing: border-box !important;
+}

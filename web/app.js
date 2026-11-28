@@ -1249,6 +1249,7 @@ function renderLeaderboard(data) {
     // Порядок колонок: прокрутки слева, лучший номер по центру, деньги справа.
     root.innerHTML =
         renderTable("По прокруткам", data.spins, "спинов", "🎰") +
+        renderTable("По опыту", data.xp, "XP", "⭐") +
         bestSection +
         renderTable("По балансу", data.money, "руб.", "💰");
 }

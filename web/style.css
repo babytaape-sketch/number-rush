@@ -3559,8 +3559,9 @@ header { margin-bottom: 8px; }
     white-space: nowrap !important;
 }
 #leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
-    width: 11px !important;
-    height: 7px !important;
-    min-width: 11px !important;
-    margin: 0 !important;
+    width: 10px !important;
+    height: 6px !important;
+    min-width: 10px !important;
+    margin: 1px 1px 0 0 !important;
+    transform: translate(1px, 1px) !important;
 }

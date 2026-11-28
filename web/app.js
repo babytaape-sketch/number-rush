@@ -1201,13 +1201,16 @@ function renderLeaderboard(data) {
     const root = $("leaderboard-content");
     if (!root) return;
 
-    const renderTable = (title, ranking, suffix, icon) => {
+    const renderTable = (title, ranking, suffix, icon, displayValue = null) => {
         const mine = ranking?.my_rank;
         const rows = ranking?.top || [];
+        const valueText = item => displayValue
+            ? escapeHtml(displayValue(item))
+            : `${Number(item.value).toLocaleString("ru-RU")} ${suffix}`;
         return `
             <section class="leaderboard-section">
                 <h3>${icon} ${title}</h3>
-                ${mine ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО</strong><b>№${mine.rank}</b><small>${Number(mine.value).toLocaleString("ru-RU")} ${suffix}</small></div>` : ""}
+                ${mine ? `<div class="leaderboard-me"><strong>ТВОЁ МЕСТО</strong><b>№${mine.rank}</b><small>${valueText(mine)}</small></div>` : ""}
                 <div class="leaderboard-list">
                     ${rows.map(player => {
                         const place = player.rank === 1 ? "🥇" : player.rank === 2 ? "🥈" : player.rank === 3 ? "🥉" : `#${player.rank}`;
@@ -1215,7 +1218,7 @@ function renderLeaderboard(data) {
                             <article class="leaderboard-player ${player.is_me ? "is-me" : ""}">
                                 <span class="leaderboard-place">${place}</span>
                                 <strong class="leaderboard-name">${escapeHtml(player.username || "Player")}${player.is_me ? " · Вы" : ""}</strong>
-                                <b class="leaderboard-score">${Number(player.value).toLocaleString("ru-RU")} <small>${suffix}</small></b>
+                                <b class="leaderboard-score">${valueText(player)}</b>
                             </article>
                         `;
                     }).join("") || '<p class="daily-tasks-note">Пока здесь никого нет.</p>'}
@@ -1249,7 +1252,7 @@ function renderLeaderboard(data) {
     // Порядок колонок: прокрутки слева, лучший номер по центру, деньги справа.
     root.innerHTML =
         renderTable("По прокруткам", data.spins, "спинов", "🎰") +
-        renderTable("По опыту", data.xp, "XP", "⭐") +
+        renderTable("По опыту", data.xp, "", "⭐", player => player.title || "Новичок") +
         bestSection +
         renderTable("По балансу", data.money, "руб.", "💰");
 }

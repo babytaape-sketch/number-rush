@@ -1566,6 +1566,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
         result = [
             {
                 "rank": index + 1,
+                "user_id": item["user_id"],
                 "username": item["username"],
                 "value": int(item[field] or 0),
                 **({"title": player_level_info(item["xp"])["title"]} if field == "xp" else {}),
@@ -1603,6 +1604,7 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
     best_result = [
         {
             "rank": index + 1,
+            "user_id": item["user_id"],
             "username": item["username"],
             "number": item["number"],
             "rarity": item["rarity"],
@@ -1623,6 +1625,62 @@ def get_leaderboard(authorization: str | None = Header(default=None)):
         },
         "total_players": len(players),
     }
+
+@app.get("/api/player/{player_id}")
+def get_public_player(player_id: str, authorization: str | None = Header(default=None)):
+    current_user(authorization)
+    with db() as con:
+        player = con.execute(
+            """SELECT user_id, username, coins, total_spins, COALESCE(xp, 0) AS xp,
+            created_at, rare_plates FROM users WHERE user_id=?""",
+            (player_id,)
+        ).fetchone()
+        if not player:
+            raise HTTPException(404, "Игрок не найден")
+
+        collection_count = con.execute(
+            "SELECT COUNT(*) FROM plates WHERE owner_id=?", (player_id,)
+        ).fetchone()[0]
+        rarity_rows = con.execute(
+            "SELECT rarity, COUNT(*) AS amount FROM plates WHERE owner_id=? GROUP BY rarity",
+            (player_id,)
+        ).fetchall()
+        sales = con.execute(
+            "SELECT COUNT(*) AS amount, COALESCE(SUM(price), 0) AS total FROM market_transactions WHERE seller_id=?",
+            (player_id,)
+        ).fetchone()
+        purchases = con.execute(
+            "SELECT COUNT(*) AS amount, COALESCE(SUM(price), 0) AS total FROM market_transactions WHERE buyer_id=?",
+            (player_id,)
+        ).fetchone()
+        best = con.execute(
+            """SELECT number, rarity FROM plates WHERE owner_id=?
+            ORDER BY CASE rarity WHEN 'Mythic' THEN 5 WHEN 'Legendary' THEN 5
+            WHEN 'Epic' THEN 4 WHEN 'Rare' THEN 3 WHEN 'Uncommon' THEN 2 ELSE 1 END DESC,
+            id DESC LIMIT 1""",
+            (player_id,)
+        ).fetchone()
+
+    level = player_level_info(player["xp"])
+    return {
+        "username": player["username"],
+        "coins": int(player["coins"] or 0),
+        "total_spins": int(player["total_spins"] or 0),
+        "rare_plates": int(player["rare_plates"] or 0),
+        "collection_count": int(collection_count),
+        "created_at": int(player["created_at"] or 0),
+        "rarities": {row["rarity"]: int(row["amount"]) for row in rarity_rows},
+        "sales_count": int(sales["amount"]),
+        "sales_total": int(sales["total"]),
+        "purchases_count": int(purchases["amount"]),
+        "purchases_total": int(purchases["total"]),
+        "best_plate": {
+            "number": best["number"], "rarity": best["rarity"],
+            "rarity_ru": RARITY_NAMES.get(best["rarity"], best["rarity"])
+        } if best else None,
+        **level
+    }
+
 
 
 # =========================================================

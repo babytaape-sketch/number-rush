@@ -271,16 +271,20 @@ class RegionChoicePurchase(BaseModel):
 @app.get("/api/region-choice/options")
 def region_choice_options(authorization: str | None = Header(default=None)):
     current_user(authorization)
-    eligible_codes = sorted({code for codes in SPECIAL_SERIES.values() for code in codes}, key=lambda value: (len(value), value))
-    return [{"code": code, "name": next((name for name, codes in REGIONS.items() if code in codes), "Регион")} for code in eligible_codes]
+    all_regions = [
+        {"code": code, "name": name}
+        for name, codes in REGIONS.items()
+        for code in codes
+    ]
+    return sorted(all_regions, key=lambda item: (len(item["code"]), item["code"], item["name"]))
 
 
 @app.post("/api/region-choice/purchase")
 def purchase_region_choice(payload: RegionChoicePurchase, authorization: str | None = Header(default=None)):
     user = current_user(authorization)
     code = str(payload.region_code).strip()
-    eligible_codes = {code for codes in SPECIAL_SERIES.values() for code in codes}
-    if code not in eligible_codes:
+    available_codes = {code for codes in REGIONS.values() for code in codes}
+    if code not in available_codes:
         raise HTTPException(400, "Выбери доступный код региона из списка.")
     region_name = next((name for name, codes in REGIONS.items() if code in codes), "Регион")
     with db() as con:
@@ -1269,6 +1273,17 @@ def generate_plate_details(forced_rarity=None, forced_region_code=None):
             raise ValueError("Unsupported forced region")
     else:
         region_code, region_name = pick_region()
+
+    if forced_region_code and rarity == "Legendary":
+        compatible_series = [
+            series for series, codes in SPECIAL_SERIES.items()
+            if region_code in codes
+        ]
+        # Легендарная серия допустима только для закреплённых за ней регионов.
+        # Для остальных выбранных регионов этот редкий исход становится Epic,
+        # чтобы выбранный код региона всегда сохранялся.
+        if not compatible_series:
+            rarity = "Epic"
 
     if rarity == "Common":
         while True:

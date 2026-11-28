@@ -28,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 WEB_DIR = BASE_DIR / "web"
 DB_PATH = os.getenv("DATABASE_PATH", str(BASE_DIR / "number_rush.db"))
 MAX_COLLECTION_SIZE = 50
+REGION_CHOICE_PRICE = 10000
 DEV_MODE = os.getenv("DEV_MODE", "true").lower() == "true"
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 
@@ -197,6 +198,9 @@ with db() as con:
             "TEXT NOT NULL DEFAULT ''"
         )
 
+    if "next_region_code" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN next_region_code TEXT")
+
     con.execute("""CREATE TABLE IF NOT EXISTS app_migrations (migration_id TEXT PRIMARY KEY, applied_at INTEGER NOT NULL)""")
     if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", ("backfill_rare_plates_counter",)).fetchone():
         con.execute(
@@ -259,6 +263,39 @@ STAR_PACKAGES = {
     "plate_mythic": {"type": "plate", "coins": 0, "rarity": "Legendary", "stars": 500, "title": "Легендарный номер"},
 }
 
+
+class RegionChoicePurchase(BaseModel):
+    region_code: str
+
+
+@app.get("/api/region-choice/options")
+def region_choice_options(authorization: str | None = Header(default=None)):
+    current_user(authorization)
+    eligible_codes = sorted({code for codes in SPECIAL_SERIES.values() for code in codes}, key=lambda value: (len(value), value))
+    return [{"code": code, "name": next((name for name, codes in REGIONS.items() if code in codes), "Регион")} for code in eligible_codes]
+
+
+@app.post("/api/region-choice/purchase")
+def purchase_region_choice(payload: RegionChoicePurchase, authorization: str | None = Header(default=None)):
+    user = current_user(authorization)
+    code = str(payload.region_code).strip()
+    eligible_codes = {code for codes in SPECIAL_SERIES.values() for code in codes}
+    if code not in eligible_codes:
+        raise HTTPException(400, "Выбери доступный код региона из списка.")
+    region_name = next((name for name, codes in REGIONS.items() if code in codes), "Регион")
+    with db() as con:
+        con.execute("BEGIN IMMEDIATE")
+        row = con.execute("SELECT coins, next_region_code FROM users WHERE user_id=?", (user["user_id"],)).fetchone()
+        if row["next_region_code"]:
+            con.rollback()
+            raise HTTPException(400, "У тебя уже выбран регион для следующего номера. Сначала прокрути номер.")
+        if row["coins"] < REGION_CHOICE_PRICE:
+            con.rollback()
+            raise HTTPException(400, "Недостаточно рублей. Нужно 10 000₽.")
+        con.execute("UPDATE users SET coins=coins-?, next_region_code=? WHERE user_id=?", (REGION_CHOICE_PRICE, code, user["user_id"]))
+        new_balance = row["coins"] - REGION_CHOICE_PRICE
+        con.commit()
+    return {"success": True, "coins": new_balance, "region_code": code, "region_name": region_name, "price": REGION_CHOICE_PRICE}
 
 @app.get("/api/shop")
 def get_shop(authorization: str | None = Header(default=None)):
@@ -1216,7 +1253,7 @@ def calculate_quick_sell_price(number, rarity):
 # ГЕНЕРАЦИЯ НОМЕРОВ ПОД КОНКРЕТНУЮ РЕДКОСТЬ
 # =========================================================
 
-def generate_plate_details(forced_rarity=None):
+def generate_plate_details(forced_rarity=None, forced_region_code=None):
     if forced_rarity == "Mythic":
         forced_rarity = "Legendary"
     rarity = forced_rarity or random.choices(
@@ -1225,7 +1262,13 @@ def generate_plate_details(forced_rarity=None):
         k=1
     )[0]
 
-    region_code, region_name = pick_region()
+    if forced_region_code:
+        region_code = str(forced_region_code)
+        region_name = next((name for name, codes in REGIONS.items() if region_code in codes), None)
+        if not region_name:
+            raise ValueError("Unsupported forced region")
+    else:
+        region_code, region_name = pick_region()
 
     if rarity == "Common":
         while True:
@@ -1281,18 +1324,30 @@ def generate_plate_details(forced_rarity=None):
 
     elif rarity == "Legendary":
         # Легендарный номер всегда использует подтверждённую серию и допустимую особую комбинацию.
-        letters, region_code, region_name = pick_special_series()
+        if forced_region_code:
+            compatible = [series for series, codes in SPECIAL_SERIES.items() if region_code in codes]
+            if not compatible:
+                raise ValueError("No Legendary series for selected region")
+            letters = random.choice(compatible)
+        else:
+            letters, region_code, region_name = pick_special_series()
         digits = random.choice(sorted(SPECIAL_DIGITS))
 
     else:  # Legacy Mythic requests are normalized to Legendary
-        letters, region_code, region_name = pick_special_series()
+        if forced_region_code:
+            compatible = [series for series, codes in SPECIAL_SERIES.items() if region_code in codes]
+            if not compatible:
+                raise ValueError("No Legendary series for selected region")
+            letters = random.choice(compatible)
+        else:
+            letters, region_code, region_name = pick_special_series()
         digits = random_digits()
         while digits in BEAUTIFUL_DIGITS:
             digits = random_digits()
 
     # Комбинация 000 не существует: блокируем её независимо от ветки генерации.
     if digits == "000":
-        return generate_plate_details(forced_rarity)
+        return generate_plate_details(forced_rarity, forced_region_code)
 
     # Дополнительная проверка: номер должен соответствовать редкости.
     actual_rarity = classify_plate(letters, digits, region_code)
@@ -1395,7 +1450,7 @@ def me(authorization: str | None = Header(default=None)):
             "SELECT COUNT(*) n FROM market_transactions WHERE buyer_id=?", (uid,)
         ).fetchone()["n"]
         row = con.execute(
-            "SELECT last_free_spin_at, total_spins, bonus_spin_progress, bonus_spins_pending, xp FROM users WHERE user_id=?", (uid,)
+            "SELECT last_free_spin_at, total_spins, bonus_spin_progress, bonus_spins_pending, xp, next_region_code FROM users WHERE user_id=?", (uid,)
         ).fetchone()
 
     level_info = player_level_info(row["xp"])
@@ -1411,6 +1466,7 @@ def me(authorization: str | None = Header(default=None)):
         "free_spin_seconds": seconds_left,
         "bonus_spin_progress": int(row["bonus_spin_progress"]),
         "bonus_spins_pending": int(row["bonus_spins_pending"]),
+        "next_region_code": row["next_region_code"],
         "rescue_fund_seconds": max(0, 180 - (now - int(user["rescue_fund_last_claim_at"] or 0)))
     }
 
@@ -1535,7 +1591,7 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
 
         row = con.execute(
             """
-            SELECT coins, spins, last_free_spin_at, bonus_spins_pending
+            SELECT coins, spins, last_free_spin_at, bonus_spins_pending, next_region_code
             FROM users WHERE user_id=?
             """,
             (uid,)
@@ -1601,7 +1657,8 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
                 "1 спин - 1 000₽"
             )
 
-        plate_data = generate_plate_details()
+        selected_region_code = row["next_region_code"]
+        plate_data = generate_plate_details(forced_region_code=selected_region_code)
 
         number = plate_data["number"]
         rarity = plate_data["rarity"]
@@ -1625,7 +1682,7 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
             )
 
         xp_gain = 10 + (20 if rarity in ("Rare", "Epic", "Legendary", "Mythic") else 0)
-        con.execute("UPDATE users SET xp=xp+? WHERE user_id=?", (xp_gain, uid))
+        con.execute("UPDATE users SET xp=xp+?, next_region_code=NULL WHERE user_id=?", (xp_gain, uid))
 
         cur = con.execute(
             """
@@ -1675,6 +1732,7 @@ def spin(free: bool = False, bonus: bool = False, authorization: str | None = He
         "bonus_spin_progress": int(updated["bonus_spin_progress"]),
         "bonus_spins_pending": int(updated["bonus_spins_pending"]),
         "used_paid_spin": used_paid_spin,
+        "used_region_choice": bool(selected_region_code),
         "free_spin_available": seconds_left == 0,
         "free_spin_seconds": seconds_left,
         "plate_analysis": analyze_standard_plate(number, rarity)

@@ -1262,7 +1262,7 @@ def generate_plate_details(forced_rarity=None):
         ]
         # Mirror digits and 001 are Rare; ladders need a strong letter pattern.
         digits = random.choice(rare_patterns)
-        letters = random_rare_letters() if digits in LADDER_DIGITS else random_letters(ordinary=True)
+        letters = random_rare_letters() if digits in LADDER_DIGITS else random_pretty_letters()
 
     elif rarity == "Epic":
         epic_patterns = [

@@ -892,7 +892,7 @@ def random_rare_letters():
 def classify_plate(letters, digits, region_code):
     special = is_special_series(letters, region_code)
 
-    if special and digits in BEAUTIFUL_DIGITS:
+    if special and digits in SPECIAL_DIGITS:
         return "Legendary"
 
     if digits == "000":

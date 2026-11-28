@@ -3462,6 +3462,10 @@ header { margin-bottom: 8px; }
     line-height: 1;
     letter-spacing: 0;
 }
+#leaderboard .leaderboard-best-plate-visual .mini-plate-main {
+    position: relative;
+    top: -2px;
+}
 #leaderboard .leaderboard-best-plate-visual .mini-plate-region {
     flex: 0 0 25%;
     width: 25%;

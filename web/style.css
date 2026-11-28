@@ -3454,17 +3454,37 @@ header { margin-bottom: 8px; }
     border-radius: 5px;
 }
 #leaderboard .leaderboard-best-plate-visual .mini-plate-main {
-    font-size: clamp(12px, 2.2vw, 19px);
+    flex: 0 0 75%;
+    width: 75%;
+    font-family: "GOSTPlate", Arial, sans-serif;
+    font-size: clamp(15px, 3vw, 23px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0;
+}
+#leaderboard .leaderboard-best-plate-visual .mini-plate-region {
+    flex: 0 0 25%;
+    width: 25%;
+    box-sizing: border-box;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 2px;
+    padding: 2px 3px;
+    border-left-width: 1px;
 }
 #leaderboard .leaderboard-best-plate-visual .mini-region-code {
-    font-size: clamp(10px, 1.7vw, 15px);
+    font-family: "GOSTPlate", Arial, sans-serif;
+    font-size: clamp(9px, 1.8vw, 14px);
+    font-weight: 400;
+    line-height: 1;
 }
 #leaderboard .leaderboard-best-plate-visual .mini-region-country {
-    font-size: 5px;
+    font-size: clamp(4px, .7vw, 5px);
 }
 #leaderboard .leaderboard-best-plate-visual .mini-region-flag {
-    width: 11px;
-    height: 7px;
+    width: clamp(8px, 1.5vw, 11px);
+    height: auto;
+    aspect-ratio: 3 / 2;
+    border-width: .5px;
 }
 #leaderboard .leaderboard-best-rarity,
 #leaderboard .leaderboard-me small {

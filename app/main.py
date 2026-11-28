@@ -804,7 +804,7 @@ WORD_SERIES = [
 ]
 
 SPECIAL_DIGITS = {
-    "000", "007", "100",
+    "007", "100",
     "111", "222", "333", "444",
     "555", "666", "700", "777",
     "800", "888", "900", "999"
@@ -862,7 +862,10 @@ def random_letters(ordinary=False):
 
 
 def random_digits():
-    return "".join(random.choices("0123456789", k=3))
+    digits = "".join(random.choices("0123456789", k=3))
+    while digits == "000":
+        digits = "".join(random.choices("0123456789", k=3))
+    return digits
 
 
 # =========================================================
@@ -895,7 +898,7 @@ def classify_plate(letters, digits, region_code):
         return "Legendary"
 
     if digits == "000":
-        return "Legendary"
+        return "Common"
 
     # 001 is a recognizable but less powerful pattern: Rare, not Epic.
     if digits == "001":
@@ -1028,8 +1031,6 @@ with db() as con:
 def get_legacy_plate_tags(letters, digits, region_code=None):
     """Keep the original compact feature count for the in-game price formula."""
     tags = []
-    if digits == "000":
-        tags.append("Три нуля")
     if len(set(digits)) == 1:
         tags.append("Три одинаковые цифры")
     elif digits[0] == digits[2]:
@@ -1172,7 +1173,7 @@ def calculate_plate_value(number, rarity):
         value *= 1.39
     elif digits[0] == digits[1] or digits[1] == digits[2]:
         value *= 1.18
-    if digits in {"000", "007", "100", "777", "888", "999"}:
+    if digits in {"007", "100", "777", "888", "999"}:
         value *= 1.145
 
     if letters in SPECIAL_SERIES and region in SPECIAL_SERIES[letters]:
@@ -1270,13 +1271,9 @@ def generate_plate_details(forced_rarity=None):
         letters = random_letters(ordinary=True)
 
     elif rarity == "Legendary":
-        if random.random() < 0.65:
-            # Историческая серия легендарна только вместе с особой комбинацией цифр.
-            letters, region_code, region_name = pick_special_series()
-            digits = random.choice(sorted(BEAUTIFUL_DIGITS))
-        else:
-            letters = random_letters(ordinary=True)
-            digits = "000"
+        # Легендарный номер всегда использует подтверждённую серию и допустимую особую комбинацию.
+        letters, region_code, region_name = pick_special_series()
+        digits = random.choice(sorted(SPECIAL_DIGITS))
 
     else:  # Legacy Mythic requests are normalized to Legendary
         letters, region_code, region_name = pick_special_series()

@@ -3973,3 +3973,31 @@ header { margin-bottom: 8px; }
     justify-content: center !important;
     width: 100% !important;
 }
+
+
+/* Placeholder for future cash-purchase products */
+#shop-cash-view .shop-cash-placeholder {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 24px 16px;
+    border: 1px dashed rgba(219,171,76,.35);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(219,171,76,.08), rgba(255,255,255,.015));
+    text-align: center;
+}
+#shop-cash-view .shop-cash-placeholder > span {
+    font-size: 34px;
+}
+#shop-cash-view .shop-cash-placeholder strong {
+    color: var(--lime, #c8ff50);
+    font-size: 15px;
+}
+#shop-cash-view .shop-cash-placeholder p {
+    margin: 0;
+    color: var(--muted, #91a0b5);
+    font-size: 12px;
+}

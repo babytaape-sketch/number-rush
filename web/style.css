@@ -3578,3 +3578,9 @@ header { margin-bottom: 8px; }
 #leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-flag {
     transform: translateX(2px) !important;
 }
+
+/* Нижняя табличка рейтинга: RUS и триколор ещё на 3 px вправо и на 1 px вверх */
+#leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-country,
+#leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-flag {
+    transform: translate(5px, -1px) !important;
+}

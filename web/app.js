@@ -1142,7 +1142,7 @@ $("achievement-list")?.addEventListener("click", event => {
 });
 
 
-function renderShop(packages) {
+function renderShop(packages, regionOptions = [], pendingRegionCode = null) {
     const rublesRoot = $("shop-packages");
     const platesRoot = $("shop-plate-packages");
     if (!rublesRoot || !platesRoot) return;
@@ -1161,6 +1161,39 @@ function renderShop(packages) {
             <button class="shop-buy-button" data-buy-package="${escapeHtml(pack.id)}"><span>⭐ ${Number(pack.stars)} Stars</span><span>КУПИТЬ</span></button>
         </article>
     `).join("");
+
+    const regionRoot = $("shop-region-choice");
+    if (regionRoot) {
+        if (pendingRegionCode) {
+            const selected = (regionOptions || []).find(item => item.code === pendingRegionCode);
+            regionRoot.innerHTML = `
+                <article class="shop-region-card is-pending">
+                    <div class="shop-region-icon">📍</div>
+                    <div class="shop-region-copy">
+                        <strong>Регион уже выбран</strong>
+                        <p>Следующий номер будет с кодом <b>${escapeHtml(pendingRegionCode)}</b> — ${escapeHtml(selected?.name || "выбранный регион")}. Выбор автоматически сбросится после прокрутки.</p>
+                    </div>
+                    <span class="shop-region-status">ОЖИДАЕТ СПИН</span>
+                </article>`;
+        } else {
+            const options = (regionOptions || []).map(item =>
+                `<option value="${escapeHtml(item.code)}">${escapeHtml(item.code)} · ${escapeHtml(item.name)}</option>`
+            ).join("");
+            regionRoot.innerHTML = `
+                <article class="shop-region-card">
+                    <div class="shop-region-icon">📍</div>
+                    <div class="shop-region-copy">
+                        <span class="shop-region-kicker">ПЕРСОНАЛЬНЫЙ РЕГИОН</span>
+                        <strong>Выбор своего региона</strong>
+                        <p>Выбери код — он гарантированно появится на следующем номере. После одной прокрутки выбор сбросится.</p>
+                    </div>
+                    <label class="shop-region-label" for="shop-region-select">КОД РЕГИОНА</label>
+                    <select id="shop-region-select" class="shop-region-select">${options}</select>
+                    <div class="shop-region-price">10 000₽</div>
+                    <button type="button" class="shop-buy-button shop-region-buy" data-buy-region-choice>КУПИТЬ ЗА 10 000₽</button>
+                </article>`;
+        }
+    }
 
     platesRoot.innerHTML = platePackages.map(pack => {
         const title = "ЛЕГЕНДАРНЫЙ";
@@ -1198,9 +1231,39 @@ $("shop")?.addEventListener("click", event => {
         $("shop-cash-view")?.classList.toggle("hidden", view !== "cash");
         return;
     }
+    const regionButton = event.target.closest("[data-buy-region-choice]");
+    if (regionButton) {
+        purchaseRegionChoice(regionButton);
+        return;
+    }
     const buyButton = event.target.closest("[data-buy-package]");
     if (buyButton) buyStarPackage(buyButton.dataset.buyPackage, buyButton);
 });
+
+async function purchaseRegionChoice(button) {
+    const select = $("shop-region-select");
+    const regionCode = select?.value;
+    if (!regionCode || button.disabled) return;
+    button.disabled = true;
+    button.textContent = "ПОКУПАЕМ…";
+    try {
+        const result = await api("/api/region-choice/purchase", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ region_code: regionCode })
+        });
+        currentCoins = Number(result.coins);
+        const coinsElement = $("coins");
+        if (coinsElement) coinsElement.textContent = formatRubles(currentCoins);
+        updateSpinAvailability();
+        await refresh();
+        alert(`Регион ${result.region_code} выбран! Следующий номер будет с этим кодом.`);
+    } catch (error) {
+        alert(error.message);
+        button.disabled = false;
+        button.textContent = "КУПИТЬ ЗА 10 000₽";
+    }
+}
 
 async function buyStarPackage(packageId, button) {
     if (!tg || typeof tg.openInvoice !== "function") {
@@ -1345,7 +1408,8 @@ async function refresh() {
     renderAchievements(achievements);
 
     const shopPackages = await api("/api/shop");
-    renderShop(shopPackages);
+    const regionOptions = await api("/api/region-choice/options");
+    renderShop(shopPackages, regionOptions, me.next_region_code || null);
 }
 
 // =========================================================

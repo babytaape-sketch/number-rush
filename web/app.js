@@ -1172,6 +1172,7 @@ $("shop")?.addEventListener("click", event => {
         });
         $("shop-rubles-view")?.classList.toggle("hidden", view !== "rubles");
         $("shop-plates-view")?.classList.toggle("hidden", view !== "plates");
+        $("shop-cash-view")?.classList.toggle("hidden", view !== "cash");
         return;
     }
     const buyButton = event.target.closest("[data-buy-package]");

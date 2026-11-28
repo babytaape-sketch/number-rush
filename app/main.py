@@ -1281,6 +1281,10 @@ def generate_plate_details(forced_rarity=None):
         while digits in BEAUTIFUL_DIGITS:
             digits = random_digits()
 
+    # Комбинация 000 не существует: блокируем её независимо от ветки генерации.
+    if digits == "000":
+        return generate_plate_details(forced_rarity)
+
     # Дополнительная проверка: номер должен соответствовать редкости.
     actual_rarity = classify_plate(letters, digits, region_code)
 

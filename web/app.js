@@ -994,14 +994,30 @@ function renderDailyTasks(data) {
     }).join("");
 }
 
+function finishRewardClaim(button) {
+    const card = button?.closest(".daily-task-card");
+    if (card) {
+        card.classList.add("is-claimed");
+        const status = card.querySelector(".daily-task-bottom b");
+        if (status) status.textContent = "НАГРАДА ПОЛУЧЕНА";
+    }
+    button?.remove();
+}
+
 async function claimDailyTask(taskKey, button) {
-    if (button) button.disabled = true;
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    button.textContent = "ЗАБИРАЕМ…";
     try {
         await api(`/api/daily-tasks/${encodeURIComponent(taskKey)}/claim`, { method: "POST" });
-        await refresh();
+        finishRewardClaim(button);
+        refresh().catch(() => {});
     } catch (e) {
         alert(e.message);
-        if (button) button.disabled = false;
+        if (button.isConnected) {
+            button.disabled = false;
+            button.textContent = "ЗАБРАТЬ НАГРАДУ";
+        }
     }
 }
 
@@ -1066,13 +1082,19 @@ function renderAchievements(data) {
 }
 
 async function claimAchievement(key, button) {
-    if (button) button.disabled = true;
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    button.textContent = "ЗАБИРАЕМ…";
     try {
         await api(`/api/achievements/${encodeURIComponent(key)}/claim`, { method: "POST" });
-        await refresh();
+        finishRewardClaim(button);
+        refresh().catch(() => {});
     } catch (e) {
         alert(e.message);
-        if (button) button.disabled = false;
+        if (button.isConnected) {
+            button.disabled = false;
+            button.textContent = "ЗАБРАТЬ НАГРАДУ";
+        }
     }
 }
 

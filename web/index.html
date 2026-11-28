@@ -150,6 +150,7 @@
       <div class="shop-switch" role="tablist" aria-label="Раздел магазина">
         <button type="button" class="shop-switch-button active" data-shop-view="rubles" role="tab" aria-selected="true">🪙 Рубли за Stars</button>
         <button type="button" class="shop-switch-button" data-shop-view="plates" role="tab" aria-selected="false">▣ Номера</button>
+        <button type="button" class="shop-switch-button" data-shop-view="cash" role="tab" aria-selected="false">🛍️ Товары за рубли</button>
       </div>
       <div id="shop-rubles-view" class="shop-view">
         <div class="shop-section-heading">
@@ -164,6 +165,17 @@
           <p>Гарантированная редкость. Номер сразу попадёт в коллекцию</p>
         </div>
         <div id="shop-plate-packages" class="shop-plate-packages">Загрузка номеров...</div>
+      </div>
+      <div id="shop-cash-view" class="shop-view hidden">
+        <div class="shop-section-heading">
+          <h3>Товары за рубли</h3>
+          <p>Здесь появятся товары, которые можно будет приобрести за рубли</p>
+        </div>
+        <div class="shop-cash-placeholder">
+          <span aria-hidden="true">🛍️</span>
+          <strong>Скоро в продаже</strong>
+          <p>Ассортимент товаров скоро появится</p>
+        </div>
       </div>
       <p class="shop-security">🛡️ Безопасная оплата через Telegram Stars</p>
     </section>

@@ -4105,3 +4105,32 @@ header { margin-bottom: 8px; }
     letter-spacing: .5px;
 }
 .shop-region-card.is-pending { border-color: rgba(120,196,151,.4); }
+
+
+/* Интерактивные строки рейтинга и карточка публичной статистики */
+.leaderboard-player-clickable { cursor:pointer; transition:border-color .18s ease,background .18s ease,transform .18s ease; }
+.leaderboard-player-clickable:hover,.leaderboard-player-clickable:focus-visible { border-color:rgba(190,255,80,.48); background:rgba(190,255,80,.055); outline:none; }
+.leaderboard-player-clickable:active { transform:scale(.985); }
+.public-player-modal { width:min(440px,calc(100vw - 28px)); max-height:min(86vh,760px); overflow-y:auto; }
+.public-player-kicker { color:#dcb65f; font-size:10px; font-weight:900; letter-spacing:2px; text-align:center; }
+.public-player-name { margin:7px 30px 14px; text-align:center; font-size:23px; overflow-wrap:anywhere; }
+.public-player-level { padding:13px; border:1px solid rgba(190,255,80,.28); border-radius:14px; background:rgba(190,255,80,.055); display:grid; gap:5px; text-align:center; }
+.public-player-level strong { color:var(--lime,#c8ff50); font-size:19px; }
+.public-player-level span { color:#e7edf5; font-weight:800; }
+.public-player-level small,.public-player-modal h4 { color:var(--muted,#91a0b5); font-size:10px; }
+.public-player-xp { height:7px; overflow:hidden; border-radius:9px; background:#273342; }
+.public-player-xp i { display:block; height:100%; border-radius:9px; background:linear-gradient(90deg,#86d93e,#d5ff71); }
+.public-player-stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:13px 0; }
+.public-player-stats > div { min-width:0; padding:10px; border:1px solid rgba(255,255,255,.08); border-radius:11px; background:rgba(255,255,255,.025); display:grid; gap:4px; }
+.public-player-stats small,.public-player-rarity span { color:var(--muted,#91a0b5); font-size:10px; }
+.public-player-stats b { color:#f3f5f8; font-size:13px; overflow-wrap:anywhere; }
+.public-player-modal h4 { margin:15px 0 8px; letter-spacing:1px; }
+.public-player-best { display:grid; justify-items:center; gap:5px; }
+.public-player-best .mini-plate { max-width:240px; }
+.public-player-best small { color:#dcb65f; font-size:10px; }
+.public-player-rarities { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+.public-player-rarity { display:flex; justify-content:space-between; gap:6px; padding:8px 10px; border-radius:9px; background:rgba(255,255,255,.035); }
+.public-player-rarity b { color:#f3f5f8; font-size:11px; }
+.public-player-trades { display:grid; gap:6px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,.08); color:var(--muted,#91a0b5); font-size:11px; }
+.public-player-trades b { color:#f3f5f8; }
+.public-player-empty,.public-player-loading { color:var(--muted,#91a0b5); font-size:12px; text-align:center; }

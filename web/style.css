@@ -3842,3 +3842,34 @@ header { margin-bottom: 8px; }
         width: 7px !important;
     }
 }
+
+
+/* Leaderboard best plate: keep RUS clear of the tricolor on the personal plate */
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-plate-region {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    column-gap: 2px !important;
+    padding-inline: 3px !important;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-country {
+    justify-self: center !important;
+    width: auto !important;
+    min-width: 0 !important;
+    font-size: 5px !important;
+    letter-spacing: 0 !important;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
+    width: 7px !important;
+    min-width: 7px !important;
+}
+
+/* In the lower ranking list, raise and slightly enlarge the region digits */
+#leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-code {
+    font-size: clamp(8px, 1.65vw, 14px) !important;
+    transform: translateY(-2px) !important;
+}
+@media (max-width: 480px) {
+    #leaderboard .leaderboard-list .leaderboard-best-plate-visual .mini-region-code {
+        font-size: clamp(7px, 1.8vw, 9px) !important;
+        transform: translateY(-2px) !important;
+    }
+}

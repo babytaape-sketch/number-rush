@@ -700,6 +700,11 @@ $("items").addEventListener("click", event => {
     const detailsButton = event.target.closest("[data-plate-details]");
     const quickButton = event.target.closest("[data-quick-sell]");
     const listButton = event.target.closest("[data-list-plate]");
+    const cancelListingButton = event.target.closest("[data-cancel-listing]");
+    if (cancelListingButton) {
+        marketAction("cancel", Number(cancelListingButton.dataset.cancelListing));
+        return;
+    }
     if (detailsButton) {
         openCollectionPlateDetails(Number(detailsButton.dataset.plateDetails));
         return;
@@ -765,7 +770,7 @@ function renderCollection() {
                 </div>
                 <small class="collection-value">Оценка: ${formatRubles(p.market_value || 0)}</small>
                 ${p.is_listed
-                    ? '<span class="collection-sale-status">НА ПРОДАЖЕ</span>'
+                    ? `<button type="button" class="collection-sale-status" data-cancel-listing="${p.listing_id}">НА ПРОДАЖЕ · СНЯТЬ</button>`
                     : `<div class="collection-actions">
                         <button class="market-action quick-sell" data-quick-sell="${p.id}">ПРОДАТЬ ЗА ${formatRubles(p.quick_sell_price || 0)}</button>
                         <button class="market-action" data-list-plate="${p.id}">ВЫСТАВИТЬ</button>

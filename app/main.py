@@ -860,6 +860,12 @@ def random_letters(ordinary=False):
 
         return letters
 
+def random_pretty_letters():
+    # Чаще выдаём запоминающиеся буквенные сочетания, не меняя редкость номера.
+    if random.random() < 0.35:
+        return random.choice(WORD_SERIES)
+    return random_letters(ordinary=True)
+
 
 def random_digits():
     digits = "".join(random.choices("0123456789", k=3))
@@ -885,9 +891,12 @@ def has_rare_letter_feature(letters):
 
 
 def random_rare_letters():
+    # В редких номерах чаще показываем красивые словесные серии и зеркальные буквы.
+    if random.random() < 0.5:
+        return random.choice(WORD_SERIES)
     while True:
         letters = random_letters(ordinary=True)
-        if has_rare_letter_feature(letters):
+        if letters[0] == letters[2]:
             return letters
 
 
@@ -1220,7 +1229,7 @@ def generate_plate_details(forced_rarity=None):
 
     if rarity == "Common":
         while True:
-            letters = random_letters(ordinary=True)
+            letters = random_pretty_letters()
             digits = random_digits()
 
             if classify_plate(letters, digits, region_code) == "Common":
@@ -1240,10 +1249,10 @@ def generate_plate_details(forced_rarity=None):
             weights=[1.5 if value in featured else 1 for value in uncommon_patterns],
             k=1
         )[0]
-        letters = random_letters(ordinary=True)
+        letters = random_pretty_letters()
         if digits in LADDER_DIGITS:
             while has_rare_letter_feature(letters):
-                letters = random_letters(ordinary=True)
+                letters = random_pretty_letters()
 
     elif rarity == "Rare":
         rare_patterns = [
@@ -1268,7 +1277,7 @@ def generate_plate_details(forced_rarity=None):
             weights=[1.5 if len(set(value)) == 1 else 1 for value in epic_patterns],
             k=1
         )[0]
-        letters = random_letters(ordinary=True)
+        letters = random_pretty_letters()
 
     elif rarity == "Legendary":
         # Легендарный номер всегда использует подтверждённую серию и допустимую особую комбинацию.

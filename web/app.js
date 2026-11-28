@@ -1187,8 +1187,11 @@ function renderShop(packages, regionOptions = [], pendingRegionCode = null) {
                         <strong>Выбор своего региона</strong>
                         <p>Выбери код — он гарантированно появится на следующем номере. После одной прокрутки выбор сбросится.</p>
                     </div>
+                    <label class="shop-region-label" for="shop-region-search">НАЙТИ РЕГИОН</label>
+                    <input id="shop-region-search" class="shop-region-search" type="search" placeholder="Название или код региона…" autocomplete="off">
                     <label class="shop-region-label" for="shop-region-select">КОД РЕГИОНА</label>
                     <select id="shop-region-select" class="shop-region-select">${options}</select>
+                    <div id="shop-region-no-results" class="shop-region-no-results" hidden>Ничего не найдено. Попробуй другое название или код.</div>
                     <div class="shop-region-price">10 000₽</div>
                     <button type="button" class="shop-buy-button shop-region-buy" data-buy-region-choice>КУПИТЬ ЗА 10 000₽</button>
                 </article>`;
@@ -1216,6 +1219,23 @@ function renderShop(packages, regionOptions = [], pendingRegionCode = null) {
         `;
     }).join("");
 }
+
+$("shop")?.addEventListener("input", event => {
+    if (event.target.id !== "shop-region-search") return;
+    const search = event.target.value.trim().toLocaleLowerCase("ru");
+    const select = $("shop-region-select");
+    const options = Array.from(select?.options || []);
+    let firstVisible = null;
+    let visibleCount = 0;
+    for (const option of options) {
+        const matches = !search || option.textContent.toLocaleLowerCase("ru").includes(search) || option.value.toLocaleLowerCase("ru").includes(search);
+        option.hidden = !matches;
+        if (matches) { visibleCount++; if (!firstVisible) firstVisible = option; }
+    }
+    if (select?.selectedOptions[0]?.hidden && firstVisible) select.value = firstVisible.value;
+    const empty = $("shop-region-no-results");
+    if (empty) empty.hidden = visibleCount > 0;
+});
 
 $("shop")?.addEventListener("click", event => {
     const tab = event.target.closest("[data-shop-view]");

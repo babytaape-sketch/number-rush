@@ -3552,6 +3552,7 @@ header { margin-bottom: 8px; }
 #leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
     position: relative !important;
     top: 0 !important;
+    transform: translate(1px, -1px) !important;
 }
 #leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-country {
     font-size: 4px !important;
@@ -3563,5 +3564,5 @@ header { margin-bottom: 8px; }
     height: 6px !important;
     min-width: 10px !important;
     margin: 0 1px 0 0 !important;
-    transform: translateX(1px) !important;
+    transform: translate(1px, -1px) !important;
 }

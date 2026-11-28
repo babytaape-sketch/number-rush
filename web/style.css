@@ -2050,6 +2050,8 @@ html, body, button, a, input, select, textarea {
 .shop-real-plate .mini-plate { width:100%; max-width:310px; aspect-ratio:520 / 112; border-width:3px; border-radius:8px; padding:0 4px; box-shadow:0 0 0 1px #777,0 0 0 3px #080808,0 0 18px rgba(225,181,92,.25); }
 .shop-plate-card.is-mythic .shop-real-plate .mini-plate { box-shadow:0 0 0 1px #777,0 0 0 3px #080808,0 0 18px rgba(94,179,234,.3); }
 .shop-real-plate .mini-plate-main { font-size:clamp(19px,5vw,31px); }
+/* Магазин: вернуть основной набор символов на исходную вертикальную ось */
+.shop-real-plate .mini-plate-main { top:0 !important; padding-top:0 !important; }
 .shop-real-plate .mini-region-code { font-size:clamp(17px,3.8vw,25px); }
 .shop-real-plate .mini-region-country { font-size:8px; }
 .shop-real-plate .mini-region-flag { width:19px; height:12px; }

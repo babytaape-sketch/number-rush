@@ -3894,7 +3894,7 @@ header { margin-bottom: 8px; }
     grid-row: 2 !important;
     font-size: 3px !important;
     line-height: 1 !important;
-    transform: none !important;
+    transform: translate(1px, -1px) !important;
     white-space: nowrap !important;
 }
 #leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
@@ -3906,5 +3906,5 @@ header { margin-bottom: 8px; }
     min-height: 3px !important;
     aspect-ratio: auto !important;
     border-width: 0 !important;
-    transform: translateY(-2px) !important;
+    transform: translate(1px, -3px) !important;
 }

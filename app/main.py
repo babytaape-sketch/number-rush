@@ -785,7 +785,6 @@ SPECIAL_SERIES = {
     "ХКХ": ["77"],
     "ВВВ": ["77"],
     "КОО": ["77"],
-    "АКР": ["177"],
     "ВКР": ["177"],
     "ААА": ["77", "99"],
     "ООО": ["77"],
@@ -988,6 +987,34 @@ with db() as con:
             letters, digits = body[0] + body[4:6], body[1:4]
             if digits == "777" and not is_special_series(letters, region_code):
                 con.execute("UPDATE plates SET rarity='Epic' WHERE id=?", (row["id"],))
+        con.execute(
+            """UPDATE users SET rare_plates=(
+                SELECT COUNT(*) FROM plates
+                WHERE plates.owner_id=users.user_id
+                AND plates.rarity IN ('Rare','Epic','Legendary','Mythic')
+            )"""
+        )
+        con.execute("INSERT INTO app_migrations (migration_id, applied_at) VALUES (?, ?)", (migration_id, int(time.time())))
+
+
+# АКР 177 is not a verified special series: remove its special rarity for existing plates too.
+with db() as con:
+    migration_id = "remove_unverified_akr_177_special_series_2026_11"
+    if not con.execute("SELECT 1 FROM app_migrations WHERE migration_id=?", (migration_id,)).fetchone():
+        rows = con.execute(
+            "SELECT id, number FROM plates WHERE rarity='Legendary' AND number LIKE '%АКР 177'"
+        ).fetchall()
+        for row in rows:
+            parts = str(row["number"] or "").strip().split()
+            if len(parts) != 2 or len(parts[0]) != 6:
+                continue
+            body, region_code = parts
+            letters, digits = body[0] + body[4:6], body[1:4]
+            if letters == "АКР" and region_code == "177":
+                con.execute(
+                    "UPDATE plates SET rarity=? WHERE id=?",
+                    (classify_plate(letters, digits, region_code), row["id"])
+                )
         con.execute(
             """UPDATE users SET rare_plates=(
                 SELECT COUNT(*) FROM plates

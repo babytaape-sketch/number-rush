@@ -3906,4 +3906,5 @@ header { margin-bottom: 8px; }
     min-height: 3px !important;
     aspect-ratio: auto !important;
     border-width: 0 !important;
+    transform: translateY(-2px) !important;
 }

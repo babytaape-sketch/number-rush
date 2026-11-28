@@ -51,12 +51,6 @@ const headers = { "Content-Type": "application/json" };
 
 let marketCache = [];
 let collectionCache = [];
-let marketFavorites = new Set();
-try {
-    marketFavorites = new Set(JSON.parse(localStorage.getItem("numberRushMarketFavorites") || "[]").map(String));
-} catch (_) {
-    marketFavorites = new Set();
-}
 
 if (initData) {
     headers.Authorization = "tma " + initData;
@@ -501,7 +495,6 @@ function renderMarket() {
     const query = ($("market-search")?.value || "").trim().toLowerCase();
     const rarity = $("market-rarity")?.value || "all";
     const sort = $("market-sort")?.value || "newest";
-    const favoritesOnly = $("market-favorites-only")?.classList.contains("active");
 
     let rows = marketCache.filter(p => {
         const matchesSearch = !query ||
@@ -509,8 +502,7 @@ function renderMarket() {
             String(p.rarity_ru || p.rarity).toLowerCase().includes(query) ||
             (p.tags || []).some(tag => String(tag).toLowerCase().includes(query));
         const matchesRarity = rarity === "all" || p.rarity === rarity || (rarity === "Legendary" && p.rarity === "Mythic");
-        const matchesFavorite = !favoritesOnly || marketFavorites.has(String(p.listing_id));
-        return matchesSearch && matchesRarity && matchesFavorite;
+        return matchesSearch && matchesRarity;
     });
 
     if (sort === "cheap") rows.sort((a,b) => a.price - b.price);
@@ -525,7 +517,6 @@ function renderMarket() {
 
     root.innerHTML = rows.length
         ? rows.map(p => {
-            const favorite = marketFavorites.has(String(p.listing_id));
             return `
                 <div class="item market-item">
                     <div class="market-item-info">
@@ -537,7 +528,6 @@ function renderMarket() {
                     </div>
                     <div class="market-price">
                         <strong>${formatRubles(p.price)}</strong>
-                        <button class="market-action favorite ${favorite ? "is-favorite" : ""}" data-favorite-listing="${p.listing_id}" aria-label="Избранное">${favorite ? "★" : "☆"}</button>
                         ${p.is_mine
                             ? `<button class="market-action cancel" data-cancel-listing="${p.listing_id}">СНЯТЬ</button>`
                             : `<button class="market-action" data-buy-listing="${p.listing_id}">КУПИТЬ</button>`}
@@ -548,24 +538,44 @@ function renderMarket() {
         : '<div class="empty">Ничего не найдено. Измени фильтры или поисковый запрос.</div>';
 }
 
-function toggleMarketFavorite(id) {
-    const key = String(id);
-    if (marketFavorites.has(key)) marketFavorites.delete(key);
-    else marketFavorites.add(key);
-    try {
-        localStorage.setItem("numberRushMarketFavorites", JSON.stringify([...marketFavorites]));
-    } catch (_) {}
-    renderMarket();
-}
 
 ["market-search", "market-rarity", "market-sort"].forEach(id => {
     $(id)?.addEventListener("input", renderMarket);
     $(id)?.addEventListener("change", renderMarket);
 });
-$("market-favorites-only")?.addEventListener("click", () => {
-    $("market-favorites-only").classList.toggle("active");
-    renderMarket();
+
+
+
+function updateMarketFilterIndicator() {
+    const indicator = $("market-filter-indicator");
+    if (!indicator) return;
+    const active = Boolean(($("market-search")?.value || "").trim()) ||
+        ($("market-rarity")?.value || "all") !== "all" ||
+        ($("market-sort")?.value || "newest") !== "newest";
+    indicator.hidden = !active;
+}
+
+$("market-filter-toggle")?.addEventListener("click", () => {
+    const button = $("market-filter-toggle");
+    const panel = $("market-filter-panel");
+    if (!button || !panel) return;
+    const expanded = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!expanded));
+    panel.hidden = expanded;
+    button.classList.toggle("is-open", !expanded);
 });
+
+["market-search", "market-rarity", "market-sort"].forEach(id => {
+    $(id)?.addEventListener("input", () => {
+        renderMarket();
+        updateMarketFilterIndicator();
+    });
+    $(id)?.addEventListener("change", () => {
+        renderMarket();
+        updateMarketFilterIndicator();
+    });
+});
+updateMarketFilterIndicator();
 
 // =========================================================
 // ДЕЙСТВИЯ НА РЫНКЕ

@@ -3538,3 +3538,29 @@ header { margin-bottom: 8px; }
     letter-spacing: 0 !important;
     transform: none !important;
 }
+
+
+/* Верхняя табличка личного места: освободить нижний край для RUS и триколора */
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-plate-region {
+    box-sizing: border-box !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: minmax(0, 1fr) auto !important;
+    padding: 2px 4px 6px !important;
+    overflow: hidden !important;
+}
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-country,
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
+    position: relative !important;
+    top: -2px !important;
+}
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-country {
+    font-size: 5px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+}
+#leaderboard .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
+    width: 11px !important;
+    height: 7px !important;
+    min-width: 11px !important;
+    margin: 0 !important;
+}

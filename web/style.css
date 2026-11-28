@@ -3873,3 +3873,37 @@ header { margin-bottom: 8px; }
         transform: translateY(-2px) !important;
     }
 }
+
+
+/* Personal best-plate card only: reserve a separate bottom row for tiny RUS + flag */
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-plate-region {
+    grid-template-columns: minmax(0, 1fr) 5px !important;
+    grid-template-rows: minmax(0, 1fr) 6px !important;
+    column-gap: 1px !important;
+    row-gap: 1px !important;
+    padding: 2px 2px 1px !important;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-code {
+    grid-row: 1 !important;
+    align-self: start !important;
+    height: auto !important;
+    line-height: 1 !important;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-country {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    font-size: 3px !important;
+    line-height: 1 !important;
+    transform: none !important;
+    white-space: nowrap !important;
+}
+#leaderboard .leaderboard-best-plate .leaderboard-me .leaderboard-best-plate-visual .mini-region-flag {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    width: 5px !important;
+    min-width: 5px !important;
+    height: 3px !important;
+    min-height: 3px !important;
+    aspect-ratio: auto !important;
+    border-width: 0 !important;
+}

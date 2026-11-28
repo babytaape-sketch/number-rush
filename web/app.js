@@ -1450,6 +1450,16 @@ if (moreToggle && moreNav) {
 document.querySelectorAll(".tab").forEach(btn => {
     btn.addEventListener("click", () => {
         document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b === btn));
+        if (btn.dataset.tab === "shop") {
+            document.querySelectorAll("[data-shop-view]").forEach(tab => {
+                const active = tab.dataset.shopView === "cash";
+                tab.classList.toggle("active", active);
+                tab.setAttribute("aria-selected", String(active));
+            });
+            $("shop-rubles-view")?.classList.add("hidden");
+            $("shop-plates-view")?.classList.add("hidden");
+            $("shop-cash-view")?.classList.remove("hidden");
+        }
         ["collection", "market", "garage", "leaderboard", "daily-tasks", "achievements", "shop", "profile"].forEach(id => {
             const panel = $(id);
             if (panel) panel.classList.toggle("hidden", btn.dataset.tab !== id);

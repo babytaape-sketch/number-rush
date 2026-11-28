@@ -903,6 +903,13 @@ function renderProfile(me) {
       '<div class="profile-rarest"><small>Самый редкий номер</small><div class="profile-rarest-plate">' + rarest + '</div></div>';
 }
 let dailyStreakBonusReady = false;
+let moreDailyNotificationCount = 0;
+let moreAchievementReadyCount = 0;
+
+function updateMoreNotificationIndicator() {
+    const indicator = $("more-achievement-indicator");
+    if (indicator) indicator.hidden = moreDailyNotificationCount + moreAchievementReadyCount === 0;
+}
 
 function renderDailyStreak(data) {
     const root = $("daily-streak");
@@ -970,6 +977,8 @@ function renderDailyTasks(data) {
     if (!root) return;
     const readyCount = (data.tasks || []).filter(task => task.completed && !task.claimed).length;
     const notificationCount = readyCount + (dailyStreakBonusReady ? 1 : 0);
+    moreDailyNotificationCount = notificationCount;
+    updateMoreNotificationIndicator();
     const badge = $("daily-task-badge");
     if (badge) {
         badge.textContent = notificationCount > 9 ? "9+" : String(notificationCount);
@@ -1048,8 +1057,8 @@ function renderAchievements(data) {
         badge.textContent = readyCount > 9 ? "9+" : String(readyCount);
         badge.hidden = readyCount === 0;
     }
-    const moreIndicator = $("more-achievement-indicator");
-    if (moreIndicator) moreIndicator.hidden = readyCount === 0;
+    moreAchievementReadyCount = readyCount;
+    updateMoreNotificationIndicator();
 
     const orderedAchievements = [...achievements].sort((a, b) => Number(b.completed && !b.claimed) - Number(a.completed && !a.claimed) || Number(b.completed) - Number(a.completed));
     root.innerHTML = orderedAchievements.map(item => {
